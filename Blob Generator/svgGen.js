@@ -1,4 +1,6 @@
 export function nSvg(request) {
+    console.log("TEST2");
+    console.log("TEST2");
     // ---------------------- SETUP SVG --------------
     let xmlns = "http://www.w3.org/2000/svg";
     let svg = document.createElementNS(xmlns, "svg");
