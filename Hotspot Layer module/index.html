@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+<style>
+    .test{
+        width: 75%;
+        height: 800px;
+    }
+    .responsive{
+        width: 100%;
+        height: auto;
+    }
+    .responsivecont{
+        width: 25vw;
+        height: 12.5vh;
+        overflow: overlay;
+    }
+    .responsivepp{
+        width: 100%;
+        height: auto;
+    }
+    .noScrollCont{
+        position: relative;
+    }
+    .noScrollHSLayer{
+        background-color:rgba(255,0,0,0.5);
+        width:564.5px;
+        height: 747.953px;
+        position: absolute;
+    }
+    .noScrollImg{
+        width: 50%;
+        height: auto;
+    }
+    .svgA{
+        stroke-width: 1%;
+        stroke-linecap: round; 
+        stroke-linejoin: round;
+        outline: none;
+        pointer-events: none;
+    }
+    .svgPoly{
+        pointer-events: all !important; 
+        fill: rgb(255, 144, 0); 
+        opacity: 1; 
+        stroke: rgb(0, 0, 0);
+        vector-effect: non-scaling-stroke;
+    }
+    .noScrollForeignObj{
+        x:25;
+        y:25;
+        width: 50%;
+        height: 50%;
+        opacity: 1;
+    }
+    .withScrollCont{
+        width: 50vw;
+        height: 25vh;
+        overflow: overlay;
+        position: relative;
+    }
+    .withScrollImg{
+        width: 100%;
+        height: auto;
+    }
+    .withScrollHSLayer{
+        background-color:rgba(255,0,0,0.5);
+        width:580px;
+        height: 768.5px;
+        position: absolute;
+    }
+    .withScrollForeignObj{
+        x:25;
+        y:25;
+        width: 50%;
+        height: 50%;
+        opacity: 1;
+    }
+    
+
+    /* hotspot-frame{
+        display: block;
+    } */
+    /* hotspots{
+        background-color:rgba(255,0,0,0.5);
+        position: absolute;
+    } */
+
+</style>
+
+
+<body>
+    <h1>Module in action (automated)</h1>
+    <hotspot-frame class="" load="sampPath" target="testIMG">
+    <!-- <hotspot-frame class="" load="sampRect" target="testIMG"> -->
+    <!-- <hotspot-frame class="" load="sampCirc" target="testIMG"> -->
+    <!-- <hotspot-frame class="" load="sampEllipse" target="testIMG"> -->
+    <!-- <hotspot-frame class="" load="sampLine" target="testIMG"> -->
+    <!-- <hotspot-frame class="" load="sampPolyLine" target="testIMG"> -->
+    <!-- <hotspot-frame class="" load="sampPolygon" target="testIMG"> -->
+    <!-- <hotspot-frame class="" load="dogSetPortrait" target="testIMG"> -->
+        <!-- <hotspot-frame class="" load="sampImg" target="testIMG"> -->
+    <!-- <hotspot-frame class="withScrollCont" load="dogSetPortrait" target="testIMG"> -->
+    <img id="testIMG" class="withScrollImg" src="picportrait.jpg">
+    </hotspot-frame>
+</body>
+
+<script type="module">
+
+    window.hotspotStorage ={
+        /* 
+        {   elementNS:"path",
+            props:{textContent:"TEST2"},
+            attributesNS:{x:25,y:25},
+            styles:{fontSize:"5px"},
+            events:{onOver:()=>{},}
+            append:[
+                {   elementNS:"textPath",
+                    props:{textContent:"ASDF"},
+                    attributesNS:{href:"#asdf0",startOffset:"50%",},
+                    styles:{textAnchor:"middle"}
+                }
+            ]
+        }
+        
+        */
+        sampPath:[
+            {   attributesNS:{
+                    class: "class0",
+                    id: "id0",
+                    preserveAspectRatio:"none",
+                },
+                append:[
+                    {   preset:"altText",
+                        presetArg:"TEST2",
+                        props:{textContent:"TEST2"}
+                    },
+                    {   elementNS:"path",   
+                        attributesNS:{id:"asdf0",class:"svgPoly hsShape",d:"M12.5,25 25,25 25,65 12.5,65"}
+                    },
+                    {   elementNS:"text",
+                        // props:{textContent:"TEST2"},
+                        // attributesNS:{x:25,y:25},
+                        styles:{fontSize:"5px"},
+                        append:[
+                            {   elementNS:"textPath",
+                                props:{textContent:"ASDF",...{a:"A",b:"b"}},
+                                attributesNS:{href:"#asdf0",startOffset:"50%",},
+                                styles:{textAnchor:"middle"}
+                            }
+                        ]
+                    }
+                ]
+            },
+    
+    
+            /* 
+            <path d="M250 250 L250 0 A250,250,0,0,1,466.50635094610965,124.99999999999997  L250 250 Z" fill="#ddd" stroke="#ddd"></path>
+            <defs>
+                <path id="p1" d="M250 50 A200,200,0,0,1,423.2050807568877,149.99999999999997" fill="#ddd" stroke="#ddd"></path>
+            </defs>
+            <text style="font-size: 24px;">
+                <textPath xlink:href="#p1" startOffset="50%" text-anchor="middle">1test text</textPath>
+            </text>
+            */
+        ],
+        sampRect:[
+            {   attributesNS:{
+                    class: "class1",
+                    id: "id1",
+                    preserveAspectRatio:"none",
+                },
+                append:[
+                    {   preset:"altText",
+                        presetArg:"TEST2",
+                        props:{textContent:"TEST2"}
+                    },
+                    {   elementNS:"rect",
+                        attributesNS:{id:"asdf",class:"svgPoly hsShape",x:0,y:0,rx:0,ry:0,width:50,height:50}
+                    },
+                    {   elementNS:"text",
+                        props:{textContent:"TEST2"},
+                        attributesNS:{x:25,y:25},
+                        styles:{textAnchor:"middle",dominantBaseline:"central",fontSize:"5px"}
+                    }
+                ]
+            },
+            {   attributesNS:{
+                    class: "class2",
+                    id: "id2",
+                },
+                append:[
+                    {   preset:"altText",
+                        presetArg:"TESTING"
+                    },
+                    {   elementNS:"rect",
+                        attributesNS:{id:"asdf2",class:"svgPoly hsShape",x:50,y:50,rx:0,ry:0,width:50,height:50}
+                    },
+                    {   preset:"centerLabel",
+                        presetArg:{x:75,y:75,textContent:"ASDF",}
+                    }
+                ]
+            }
+        ],
+        sampCirc:[
+        {   attributesNS:{
+                    class: "class3",
+                    id: "id3",
+                },
+                append:[
+                    {   preset:"altText",
+                        presetArg:"TESTING"
+                    },
+                    {   elementNS:"circle",
+                        attributesNS:{id:"asdf2",class:"svgPoly hsShape",cx:50,cy:50,r:10}
+                    },
+                    {   preset:"centerLabel",
+                        presetArg:{x:50,y:50,textContent:"ASDF",}
+                    }
+                ]
+            }
+        ],
+        sampEllipse:[
+        {   attributesNS:{
+                    class: "class4",
+                    id: "id4",
+                },
+                append:[
+                    {   preset:"altText",
+                        presetArg:"TESTING"
+                    },
+                    {   elementNS:"ellipse",
+                        attributesNS:{id:"asdf2",class:"svgPoly hsShape",cx:50,cy:50,rx:10,ry:10}
+                    },
+                    {   preset:"centerLabel",
+                        presetArg:{x:50,y:50,textContent:"ASDasF",}
+                    }
+                ]
+            }
+        ],
+        sampLine:[
+        {   attributesNS:{
+                class: "class4",
+                id: "id4",
+            },
+            append:[
+                {   preset:"altText",
+                    presetArg:"TESTING"
+                },
+                {   elementNS:"line",
+                    attributesNS:{id:"xcv",class:"svgPoly hsShape",x1:10,y1:10,x2:70,y2:70}
+                },
+                {   preset:"centerLabel",
+                    presetArg:{x:50,y:50,textContent:"ASDasF",}
+                }
+            ]
+        }
+        ],
+        sampPolyLine:[
+        {   attributesNS:{
+                class: "class5",
+                id: "id5",
+            },
+            append:[
+                {   preset:"altText",
+                    presetArg:"TESTING"
+                },
+                {   elementNS:"polyline",
+                    attributesNS:{id:"aaab",class:"svgPoly hsShape",points:"75.5,25 85,25 85,65 75.5,60"}
+                },
+                {   preset:"centerLabel",
+                    presetArg:{x:50,y:50,textContent:"ASDasF",}
+                }
+            ]
+        }
+        ],
+        sampPolygon:[
+            {   attributesNS:{
+                    class: "class6",
+                    id: "id6",
+                },
+                append:[
+                    {   preset:"altText",
+                        presetArg:"TESTING"
+                    },
+                    {   elementNS:"polygon",
+                        attributesNS:{id:"zxcv",class:"svgPoly hsShape",points:"75.5,25 85,25 85,65 75.5,60"}
+                    },
+                    {   preset:"centerLabel",
+                        presetArg:{x:50,y:50,textContent:"ASDasF",}
+                    }
+                ]
+            }
+        ],
+        sampImg:[
+        {   attributesNS:{
+                    class: "class7",
+                    id: "id7",
+                    preserveAspectRatio:"xMidYMid meet"
+                },
+                append:[
+                    {   preset:"altText",
+                        presetArg:"TESTING"
+                    },
+                    {   elementNS:"image",
+                        attributesNS:{id:"zxcasv",class:"svgPoly hsShape",href:"piclandscape.jpg"},
+                        styles:{x:20,y:20,width:"50%",height:"auto"}
+                    },
+                    {   preset:"centerLabel",
+                        presetArg:{x:50,y:50,textContent:"ASDasF",}
+                    }
+                ]
+                
+            }
+    
+            // shape.setAttributeNS(null,"href",obj.href)
+            //         shape.style.x = obj.x
+            //         shape.style.y = obj.y
+            //         shape.style.width = obj.width
+            //         shape.style.height = obj.height
+            // {cls:"lEye svgPoly", shape:"image", href:"piclandscape.jpg", x:20,y:20,width:"50%",height:"auto",altText:"Sleeping Dog",preserveAspectRatio:true},
+        ]
+    }
+    window.hotspotPresets ={
+        "altText": (text)=>{
+            return {elementNS:"title",props:{textContent:text,dog:"dog",cat:"cat"}}
+        },
+        "centerLabel": (obj)=>{
+            return{
+                elementNS:"text",
+                props:{textContent:obj.textContent},
+                attributesNS:{x:obj.x,y:obj.y},
+                styles:{textAnchor:"middle",dominantBaseline:"central",fontSize:"5px"}
+            }
+        }
+    }
+     
+    import {HotspotFrame} from "./hotspot.js"
+    
+    document.getElementsByTagName("hotspot-frame")[0].setupHSStorage()
+    document.getElementsByTagName("hotspot-frame")[0].setupPresetStorage()
+    document.getElementsByTagName("hotspot-frame")[0].load()
+</script>
+ </html>

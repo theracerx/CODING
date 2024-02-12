@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>Player</p>
+    <audio id="tmchkIntro" controls></audio><br>
+</body>
+<script type="module">
+    //produce an array of audio list to play in sequential order
+    import tmchkaudfiles from "./tmchkaudfiles.json" assert {type:"json"}
+    import {genTimechkArray} from "./gentmchkarray.js"
+    let tmchkfiles = {
+        part0 : tmchkaudfiles.part0,
+        part1 : tmchkaudfiles.part1,
+        part2Hours : tmchkaudfiles.part2Hours,
+        part2HourPhrase : tmchkaudfiles.part2HourPhrase,
+        part2MinutePhrase : tmchkaudfiles.part2MinutePhrase,
+        part2Minutes : tmchkaudfiles.part2Minutes,
+        part2Misc : tmchkaudfiles.part2Misc,
+        part3 : tmchkaudfiles.part3,
+        part4 : tmchkaudfiles.part4,
+    }
+
+    let tmchkPlayer = document.getElementById("tmchkIntro")
+    let list = genTimechkArray(tmchkfiles)
+    console.log(list)
+    tmchkPlayer.queue = [...list]
+    tmchkPlayer.onended = (e)=>{
+        if(e.target.queue.length){
+            e.target.src = e.target.queue[0]
+            e.target.queue.shift()
+            e.target.play()
+        }
+    }
+   
+   setTimeout(()=>{
+        tmchkPlayer.src = tmchkPlayer.queue[0]
+        tmchkPlayer.queue.shift()
+   },500)
+</script>
+<script>
+   /*  let tmchkPlayer = document.getElementById("tmchkIntro")
+    tmchkPlayer.src = tmchkfiles.part0
+    tmchkPlayer.queue = []
+
+    tmchkPlayer.onplay = ()=>{
+        if(tmchkPlayer.queue.length != 0 || decodeURI(tmchkPlayer.src).replace(window.location.href,"") == part4){
+            return
+        }
+
+        let d = new Date()
+        let HH = d.getHours() > 12 ? d.getHours() - 12 : d.getHours()
+        let MM = d.getMinutes()
+
+        //setup Part1
+        tmchkPlayer.queue.push(part1[Math.floor(Math.random() * part1.length)])
+        //setup Part2
+        if(MM != 0){
+            let rnd = Math.floor(Math.random() * 2) 
+            if(MM <= 15 && !rnd){ //ex 5:03 3 minutes past 5 oclock
+                tmchkPlayer.queue.push(part2MinutePhrase[MM-1]) //3 minutes
+                tmchkPlayer.queue.push(Math.floor(Math.random() * 2) ? part2Misc[0] : part2Misc[2])//after || past
+                tmchkPlayer.queue.push(part2HourPhrase[HH-1])//5 oclock
+            } else if (MM >= 45 && !rnd){ //ex 5:53 7 minutes before 6 oclock
+                tmchkPlayer.queue.push(part2MinutePhrase[59 - MM]) //7 minutes
+                tmchkPlayer.queue.push(part2Misc[1])//before
+                tmchkPlayer.queue.push(part2HourPhrase[HH == 12 ? 0 : HH + 1])//6 oclock (THIS IS CORRECT)
+                    //if 12:53 then it must be part2HourPhrase[0]
+            } else { // for time mostly between 16-44 minutes
+                tmchkPlayer.queue.push(part2Hours[HH-1])
+                tmchkPlayer.queue.push(part2Minutes[MM-1])
+            }
+        } else tmchkPlayer.queue.push(part2HourPhrase[HH - 1]) //fixed for hourly update
+        //setup Part3
+        if(d.getHours() >= 5 && d.getHours() < 12){ //morning
+            tmchkPlayer.queue.push(part3[2])
+        } else if (d.getHours() >= 12 && d.getHours() < 18){ //afternoon
+            tmchkPlayer.queue.push(part3[0])
+        } else if (d.getHours() >= 18 && d.getHours() < 20){ //evening
+            tmchkPlayer.queue.push(part3[1])
+        } else { //night
+            tmchkPlayer.queue.push(part3[3])
+        }
+        //setup Outro
+        tmchkPlayer.queue.push(part4)
+    }
+    tmchkPlayer.onended = (e)=>{
+        if(e.target.queue.length){
+            e.target.src = e.target.queue[0]
+            e.target.queue.shift()
+            e.target.play()
+        } else tmchkPlayer.src = part0
+    }
+ */
+</script>
+</html>

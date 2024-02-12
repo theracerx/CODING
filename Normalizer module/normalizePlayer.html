@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <audio src="sample-a.mp3?gain=2.794" controls></audio>
+    <audio src="sample-x.mp3?gain=0.4825" controls></audio>
+</body>
+<script type="module">
+    import {addNormalizePlayer} from "./normalizeplayer.js"
+    addNormalizePlayer()
+
+    let audio0 = document.getElementsByTagName("audio")[0]
+    let audio1 = document.getElementsByTagName("audio")[1]
+
+    let testAudCtx = new AudioContext()
+
+    audio0.setupNormalizedPlayer(testAudCtx)
+    audio1.setupNormalizedPlayer()
+</script>
+</html>

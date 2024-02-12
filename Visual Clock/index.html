@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        background-color: burlywood;
+        margin:0;
+    }
+    #clockContainer{
+        display: flex;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+        width: 90vw;
+        height: 90vw;
+        border: 3vw solid black;
+        /* width: 300px; */
+        /* height: 300px; */
+        /* border: 10px solid black; */
+        border-radius: 100%;
+        background: url("clock_vector.svg");
+        background-size: cover;
+        overflow: hidden;
+        box-sizing: border-box;
+        margin: 0 auto;
+        /* transform: translateX(50%); */
+    }
+    #clockContainer::after{
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(125,125,125,1);
+        width: 5vw;
+        height: 3vw;
+        /* width: 12px;
+        height: 12px; */
+    }
+    #hour{
+        position: absolute;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border-right: 3vw solid red;
+        height: 25vw;
+        top:17vw;
+        border-radius: 2vw;
+        transform-origin: bottom;
+    }
+    #minute{
+        position: absolute;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border-right: 2vw solid black;
+        height: 30vw;
+        top:12vw;
+        border-radius: 1vw;
+        transform-origin: bottom;
+    }
+    #second{
+        position: absolute;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        border-right: 1vw solid rgba(125,125,125,1);
+        height: 35vw;
+        top:7vw;
+        border-radius: 1vw;
+        transform-origin: bottom;
+    }
+    #testhand{
+        display: none;
+        width: 50%;
+        height: 50%;
+        position: absolute;
+        top:0;
+        left: 0;
+        background-color: blueviolet;
+        transform-origin: bottom right;
+        transform: rotate(45deg);
+    }
+</style>
+<body>
+    <h1>Time:</h1>
+    <p>
+        <li>add task</li>
+        <li>fix popup response</li>
+        <li>find random svg blob generator</li>
+        <li>fix responsive desing of clock hands</li>
+    </p>
+    <h2 id="target">00:00:00</h2>
+    <!-- <div id="timeContainer"> -->
+        <div id="clockContainer">
+            <div id="hour"></div>
+            <div id="minute"></div>
+            <div id="second"></div>
+            <div id="testhand"></div>
+        </div>
+    <!-- </div> -->
+
+
+    
+</body>
+<script>
+    let synth = window.speechSynthesis
+    let voices = synth.getVoices()
+    const update = new SpeechSynthesisUtterance()
+    let isOclock = false
+    let isHalfOclock = false
+
+    window.addEventListener("storage",(e)=>{
+        //WORKS ONLY ON RELATED WEB PAGES
+        /* 
+            to trigger.. open related html on same folder
+            the update localStorage or sessionStorage
+        */
+        console.log(e)
+    })
+    let firePopup = ()=>{
+        let uniqueId = Math.floor(Math.random() * Math.floor(Math.random() * Date.now()))
+        let scrnCenterX = window.screen.width / 2
+        let scrnCenterY = window.screen.height / 2
+
+        let popupHeight = "height=" + (scrnCenterX * .7)
+        let popupWidth = "width=" + (scrnCenterX * 1)
+
+        let spawnPointX = "left=" + (scrnCenterX - (scrnCenterX / 4))
+        let spawnPointY = "top=" + (scrnCenterY - (scrnCenterY / 4))
+
+        let popupConfig = "toolbar=no,menubar=no,scrollbar=yes,dialog=yes,resizable=no" + popupHeight + "," + popupWidth + "," + spawnPointX + "," + spawnPointY
+        let urlParam = popupHeight + "&" + popupWidth + "&" + spawnPointX + "&" + spawnPointY + "&id=" + uniqueId
+        
+        localStorage.setItem(uniqueId,"null")
+        console.log("popup created with " + popupWidth + " x " + popupHeight)
+        let nPopUp = window.open("popup.html?" + urlParam, "_blank", "popup=1," + popupConfig )
+        
+    }
+
+    setInterval(()=>{
+        let date = new Date()
+        let partOfTheDay = date.getHours() >= 18 ? "evening" : date.getHours() >= 12 ? "afternoon ": "morning"
+        let HH = date.getHours() > 12 ? date.getHours() - 12: date.getHours()
+        let MM = date.getMinutes()
+        let SS = date.getSeconds()
+
+        let hhHand = document.getElementById("hour")
+        let mmHand = document.getElementById("minute")
+        let ssHand = document.getElementById("second")
+        let ssDeg = SS * 6
+        let mmDeg = (MM*6) + ((SS/60) * 6)
+        let hhDeg = (HH * 30) + (((MM + (SS/60))/60)*30)
+        ssHand.style.transform = "rotate(" + ssDeg +"deg)"
+        mmHand.style.transform = "rotate(" + mmDeg +"deg)"
+        hhHand.style.transform = "rotate(" + hhDeg +"deg)"
+
+        if(!isOclock && MM == 0 && SS == 0){
+            isOclock = true
+            update.text = "It's now " + HH + "o'clock in the " + partOfTheDay
+            window.speechSynthesis.speak(update)
+        } else if (!isHalfOclock && MM == 30 && SS == 0){
+            isHalfOclock = true
+            update.text = "It's now " + HH + " " + MM + "o'clock in the " + partOfTheDay
+            window.speechSynthesis.speak(update)
+        } else if (MM != 0 && SS != 0){
+            isOclock = false
+            isHalfOclock = false
+        }
+
+
+        let cTime = HH + ":" + 
+        (MM> 9 ? MM : "0" + MM) +
+         ":" + (SS > 9 ? SS : "0" + SS)
+        document.getElementById("target").textContent = cTime
+
+    },500)
+</script>
+</html>
+
+
+
+<!-- 
+579.50 share la crepe\
+465 angus beef la crepe
+265 frozen hot choco la crepe
+170 cheesy hungaria at buko cream pie
+250 ice latte coffee project
+ -->
+
+

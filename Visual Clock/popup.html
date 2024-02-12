@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        margin: 0;
+        overflow: hidden;
+    }
+    #btnCont{
+        width: 100%;
+        /* background-color: blue; */
+        display: flex;
+        position: relative;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+    button{
+        border: 1vh solid black;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 10vh;
+        width: 25vw;
+        height: 15vh;
+    }
+    #dismissBtn{
+        background-color: #4681f4;
+        color: white;
+    }
+    #snoozeBtn{
+        background-color:white;
+        color: black;
+    }
+    img{
+        display: block;
+        margin: 0 auto;
+        height: 60vh;
+        width:auto;
+    }
+    #msgCont{
+        display: block;
+        margin: 3vh auto;
+        text-align: center;
+        font-size: 9vh;
+    }
+    svg{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 125vh;
+        z-index: -100;
+    }
+</style>
+<body>
+    <!-- <img src="https://c.tenor.com/aS37ibwqql8AAAAC/tenor.gif"> -->
+    <img src="https://c.tenor.com/MDXvKWaErKcAAAAC/tenor.gif">
+    <p id="msgCont">"The time is now <strong>10:30</strong>"</p>
+    <div id="btnCont">
+        <button id="dismissBtn">
+            Dismiss
+        </button>
+        <button id="snoozeBtn">
+            Snooze
+        </button>
+    </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="visual" viewBox="0 0 640 448" width="640" height="448" version="1.1"><path d="M0 156L9.7 149.5C19.3 143 38.7 130 58 131.7C77.3 133.3 96.7 149.7 116.2 147C135.7 144.3 155.3 122.7 174.8 117.2C194.3 111.7 213.7 122.3 233 128C252.3 133.7 271.7 134.3 291 123.2C310.3 112 329.7 89 349 78.2C368.3 67.3 387.7 68.7 407 72.2C426.3 75.7 445.7 81.3 465.2 80.3C484.7 79.3 504.3 71.7 523.8 79.8C543.3 88 562.7 112 582 122C601.3 132 620.7 128 630.3 126L640 124" fill="none" stroke-linecap="round" stroke-linejoin="miter" stroke="#0066FF" stroke-width="40"/></svg>
+
+</body>
+<script>
+    let urlParams = new URLSearchParams(window.location.search)
+    let size = [urlParams.get("width"),urlParams.get("height")]
+    let coord = [urlParams.get("left"),urlParams.get("top")]
+    setInterval(()=>{
+        if(window.outerWidth != size[0]) {
+            // window.resizeBy(size[0] - window.outerWidth,size[1] - window.outerHeight )
+            window.resizeTo(size[0],size[1])
+            console.log("adjusting X")
+        } else if (window.outerHeight != size[1]){
+            // window.resizeBy(scrnCenterX - window.outerWidth,size[1] - window.outerHeight )
+            window.resizeTo(size[0],size[1])
+            console.log("adjusting Y")
+        } 
+        // else window.moveTo(coord[0],coord[1])
+    },250)
+
+    let dismissBtn = document.getElementById("dismissBtn")
+    let snoozeBtn = document.getElementById("snoozeBtn")
+
+    dismissBtn.onpointerup = ()=>{
+        localStorage.setItem(urlParams.get("id"), "dimissed")
+    }
+    snoozeBtn.onpointerup = ()=>{
+        localStorage.setItem(urlParams.get("id"), "snoozed")
+    }
+
+</script>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <label for="src"><strong>SRC:</strong></label>
+    <input id="src" type="text" style="width:50%;"placeholder="sample-a.mp3" onkeyup="onEnter()" value="sample-a.mp3">
+    <input type="submit" onclick="test()">
+    <button onclick="checkArray()">Submit Array</button>
+    
+
+
+    <h1>Original:</h1>
+        <audio id="pl1" controls></audio>
+    <h1>Normalized:</h1>
+        <audio id="pl2" controls></audio><br>
+        <label for="gain">Gain</label>
+        <input id="gain" type="text" placeholder="1" value="1" onkeyup="onEnter2()" >
+        <input type="submit" onclick="updateGain()">
+
+        <!-- <p>Decibel: <span id="db0">0</span> </p> -->
+        <h1>New link: <i style="color:green;" id="nLink">null</i>
+        <br>
+        <button onclick="prevArray()"><</button>
+    <span id="arrCount" data-count="0"></span>
+    <button onclick="nextArray()">></button>
+    <button onclick="copyLink()">Copy</button></h1>
+        
+        <label for="prog">Decibel meter:</label>
+         <progress id="prog" value="0" max="1"></progress> <span id="db1"> 0 </span>
+        <input type="button" value="Reset" onclick="reset()">
+</body>
+<script>
+
+var audioCtx = new AudioContext();
+var audGainNode
+var audSrcNode
+var eventSetup
+function checkArray(){
+    let arr = document.getElementById("src").value
+    let arr1 = arr.split(",")
+    window.arr2 = []
+    for(let i=0;i<arr1.length;i++){
+        console.log(arr1[i].replace(/^[ \t]+|[ \t]+$/,""))
+        let temp = arr1[i].replace(/^[ \t]+|[ \t]+$/,"")
+        arr2.push(temp.substring(1,temp.length-1))
+    }
+    document.getElementById("arrCount").textContent = "0/" + (arr2.length)
+    document.getElementById("arrCount").dataset.count = 0
+    console.log(arr2)
+
+
+    // if(!["'",'"'].includes(arr[arr.length-1])){
+    //     console.log(arr1)
+    //     console.log("OHNO")
+    //     let arr2 = arr1.substring(0,arr1.length - 1)
+    //     console.log(arr2)
+    // }
+
+    // console.log(arr1)
+    // let arr2 = arr1.split(",")
+    // console.log(arr2)
+    // let arr3 = []
+    
+    // console.log(typeof(arr))
+    // console.log(arr1.split(","))
+    
+}
+function nextArray(){
+    let count = document.getElementById("arrCount")
+    count.dataset.count++
+    let i = count.dataset.count - 1
+    console.log(arr2[i])
+    test2(arr2[i])
+    count.textContent = count.dataset.count + "/" + (arr2.length)
+}
+function prevArray(){
+    let count = document.getElementById("arrCount")
+    count.dataset.count--
+    let i = count.dataset.count - 1
+    console.log(arr2[i])
+    test2(arr2[i])
+    count.textContent = count.dataset.count + "/" + (arr2.length)
+}
+function copyLink(){
+    let link = document.getElementById("nLink")
+    // link.select();
+    // link.setSelectionRange(0, 99999); // For mobile devices
+
+    // Copy the text inside the text field
+    navigator.clipboard.writeText(link.textContent);
+}
+function onEnter(){
+    if(event.key == "Enter"){
+        test()
+    }
+}
+function onEnter2(){
+    if(event.key == "Enter"){
+        updateGain()
+    }
+}
+function updateGain(){
+    audGainNode.gain.value = document.getElementById("gain").value
+    let url = chkURL()
+    document.getElementById("nLink").textContent = url + "?gain=" + document.getElementById("gain").value
+
+}
+function reset(){
+    document.getElementById("prog").max = 0
+    document.getElementById("db1").textContent = 0
+}
+function test(){
+    let player = document.getElementsByTagName("audio")
+    let src = document.getElementById("src")
+    let normalGain
+
+    player[0].src = src.value
+    
+
+    fetch(player[0].src)
+    .then(res => res.blob())
+    .then(blob => blob.arrayBuffer())
+    .then(buf => audioCtx.decodeAudioData(buf))
+    .then(decodedData => {
+        // Normalize calculations
+        var decodedBuffer = decodedData.getChannelData(0);
+        var sliceLen = Math.floor(decodedData.sampleRate * 0.05);
+        var averages = [];
+        var sum = 0.0;
+        for (var i = 0; i < decodedBuffer.length; i++) {
+            sum += decodedBuffer[i] ** 2; 
+            if (i % sliceLen === 0) {
+                sum = Math.sqrt(sum / sliceLen);
+                averages.push(sum);
+                sum = 0;
+            }
+        }
+        // Ascending sort of the averages array
+        averages.sort(function(a, b) { return a - b; });
+        // Take the average at the 95th percentile
+        var a = averages[Math.floor(averages.length * 0.95)];
+
+        //set new gain
+        normalGain = ((1.0 / a) / 10).toPrecision(4)
+
+        //setup Normalized player
+        player[1].src = src.value
+        document.getElementById("gain").value = normalGain
+        let url = chkURL()
+        document.getElementById("nLink").textContent = url + "?gain=" + normalGain
+        
+        //set AudioSourceNode
+        if(!audSrcNode){
+            audSrcNode = audioCtx.createMediaElementSource(player[1]);
+        }
+    
+        //set GainNode
+        if(!audGainNode){
+            audGainNode = audioCtx.createGain()
+        }
+        audGainNode.gain.value = normalGain
+    
+        //set processor
+        let processor = audioCtx.createScriptProcessor(2048, 1, 1)
+        processor.onaudioprocess = function(evt){
+            var input = evt.inputBuffer.getChannelData(0)
+            , len = input.length   
+            , total = i = 0
+            , rms;
+            while ( i < len ) total += Math.abs( input[i++] );
+            rms = Math.sqrt( total / len );
+
+            let db = Math.round((rms * 100)* 100) / 100
+            // document.getElementById("db0").textContent = db
+            document.getElementById("prog").value = db
+            
+            if(db >  document.getElementById("prog").max){
+                document.getElementById("prog").max = db
+                document.getElementById("db1").textContent = db
+            }
+
+        };
+        //setup connect and disconnect funcs
+
+        let connectNode = ()=>{
+            console.log("connecting node")
+            audSrcNode.connect(audGainNode)
+            audSrcNode.connect(processor)
+            audGainNode.connect(audioCtx.destination)
+            processor.connect(audioCtx.destination);
+        }
+
+        let disconnectNode = ()=>{
+            console.log("disconnecting node")
+            audSrcNode.disconnect(audGainNode)
+            audSrcNode.disconnect(processor)
+            audGainNode.disconnect(audioCtx.destination)
+            processor.disconnect(audioCtx.destination);
+        }
+        
+        //set Events
+        if(!eventSetup){
+            eventSetup = true
+            player[1].addEventListener("play",async(e)=>{  // isSrcReady???
+                connectNode()
+            })
+            player[1].addEventListener("pause",async(e)=>{
+                disconnectNode()
+            })
+        }
+
+    })
+}
+function test2(src){
+    let player = document.getElementsByTagName("audio")
+
+    let normalGain
+
+    player[0].src = src
+    
+
+    fetch(player[0].src)
+    .then(res => res.blob())
+    .then(blob => blob.arrayBuffer())
+    .then(buf => audioCtx.decodeAudioData(buf))
+    .then(decodedData => {
+        // Normalize calculations
+        var decodedBuffer = decodedData.getChannelData(0);
+        var sliceLen = Math.floor(decodedData.sampleRate * 0.05);
+        var averages = [];
+        var sum = 0.0;
+        for (var i = 0; i < decodedBuffer.length; i++) {
+            sum += decodedBuffer[i] ** 2; 
+            if (i % sliceLen === 0) {
+                sum = Math.sqrt(sum / sliceLen);
+                averages.push(sum);
+                sum = 0;
+            }
+        }
+        // Ascending sort of the averages array
+        averages.sort(function(a, b) { return a - b; });
+        // Take the average at the 95th percentile
+        var a = averages[Math.floor(averages.length * 0.95)];
+
+        //set new gain
+        normalGain = ((1.0 / a) / 10).toPrecision(4)
+
+        //setup Normalized player
+        player[1].src = src
+        document.getElementById("gain").value = normalGain
+        let url = chkURL()
+        document.getElementById("nLink").textContent = url + "?gain=" + normalGain
+        
+        //set AudioSourceNode
+        if(!audSrcNode){
+            audSrcNode = audioCtx.createMediaElementSource(player[1]);
+        }
+    
+        //set GainNode
+        if(!audGainNode){
+            audGainNode = audioCtx.createGain()
+        }
+        audGainNode.gain.value = normalGain
+    
+        //set processor
+        let processor = audioCtx.createScriptProcessor(2048, 1, 1)
+        processor.onaudioprocess = function(evt){
+            var input = evt.inputBuffer.getChannelData(0)
+            , len = input.length   
+            , total = i = 0
+            , rms;
+            while ( i < len ) total += Math.abs( input[i++] );
+            rms = Math.sqrt( total / len );
+
+            let db = Math.round((rms * 100)* 100) / 100
+            // document.getElementById("db0").textContent = db
+            document.getElementById("prog").value = db
+            
+            if(db >  document.getElementById("prog").max){
+                document.getElementById("prog").max = db
+                document.getElementById("db1").textContent = db
+            }
+
+        };
+        //setup connect and disconnect funcs
+
+        let connectNode = ()=>{
+            console.log("connecting node")
+            audSrcNode.connect(audGainNode)
+            audSrcNode.connect(processor)
+            audGainNode.connect(audioCtx.destination)
+            processor.connect(audioCtx.destination);
+        }
+
+        let disconnectNode = ()=>{
+            console.log("disconnecting node")
+            audSrcNode.disconnect(audGainNode)
+            audSrcNode.disconnect(processor)
+            audGainNode.disconnect(audioCtx.destination)
+            processor.disconnect(audioCtx.destination);
+        }
+        
+        //set Events
+        if(!eventSetup){
+            eventSetup = true
+            player[1].addEventListener("play",async(e)=>{  // isSrcReady???
+                connectNode()
+            })
+            player[1].addEventListener("pause",async(e)=>{
+                disconnectNode()
+            })
+        }
+
+    })
+}
+function chkURL(){
+    let url = document.getElementById("src").value
+    if((url.match(/,/g) || []).length > 0){
+        let count = document.getElementById("arrCount")
+        let i = count.dataset.count - 1
+        url = arr2[i]
+    }
+    return url
+}
+
+
+</script>
+</html>
