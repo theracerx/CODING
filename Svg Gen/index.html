@@ -30,9 +30,6 @@
 </body>
 <script type="module" >
     import {nSvg,normalizeSvg} from "./svgGen.js"
-    console.log(nSvg)
-    console.log(normalizeSvg)
-
     const dataImage = {//SVG Icons
     loading:{
         viewBox: "0 0 24 24",
@@ -66,7 +63,16 @@
                         {
                             name:"transform", val:"scale(0.5)"
                         }
-                    ]    
+                    ],
+                    props:[
+                        {   name:"adsf", val:"dasadf"}
+                    ],
+                    attributes:[
+                        { name:"dog",val:"Asdfad"}
+                    ],
+                    events:[
+                        {name:"pointerup",val:()=>{console.log("asdfa")}}
+                    ] 
                 }
                 ]
             }
@@ -505,10 +511,73 @@
             }
         ]
     },
+    
+    circle:{
+        viewBox:"0 0 100 100",
+        groups:[
+            {
+                shapes:[
+                    {type:"circle",r:45,cx:50,cy:50}
+                ]
+            }
+        ]
+    },
+    rect:{
+        viewBox:"100 100",
+        groups:[
+            {
+                shapes:[
+                    {type:"rect",width:30,height:30,x:50,ry:10}
+                ]
+            }
+        ]
+    },
+    line:{
+        viewBox:"0 0 100 100",
+        groups:[
+            {
+                shapes:[
+                    {type:"line",x1:"0",y1:"0",x2:"10",y2:"10"}
+                ]
+            }
+        ]
+    },
+    polygon:{
+        viewBox:"0 0 100 100",
+        groups:[
+            {
+                shapes:[
+                    {type:"polyg",points:"0,100 50,25 50,75 100,0"}
+                ]
+            }
+        ]
+    },
+    polyline:{
+        viewBox:"0 0 100 100",
+        groups:[
+            {
+                shapes:[
+                    {type:"polyg",points:"0,100 50,25 50,75 100,0"}
+                ]
+            }
+        ]
+    },
+    path:{
+        viewBox: "100 100",
+        groups:[
+            {
+                shapes:[
+                    {d:"M50.00 12.50 a37.50 37.50 0 0 1 17.08 70.83 H75.00 a4.17 4.17 0 0 1 0.42 8.33 H75.00 h-16.67 a4.17 4.17 0 0 1 -4.17 -3.75 V87.50 v-16.67 a4.17 4.17 0 0 1 8.33 -0.42 v0.42 v5.42 A29.17 29.17 0 0 0 50.00 20.83 a29.17 29.17 0 0 0 -29.17 29.17 a4.17 4.17 0 1 1 -8.33 0.00 a37.50 37.50 0 0 1 37.50 -37.50 z m0.00 25.00 a12.50 12.50 0 1 1 0.00 25.00 a12.50 12.50 0 1 1 0.00 -25.00 z m0.00 8.33 a4.17 4.17 0 1 0 0.00 8.33 a4.17 4.17 0 1 0 0.00 -8.33 z ",}
+                ]
+            }
+        ]
+    },
+
 }
 
 let targetDiv = document.getElementById("spawnSVG")
 targetDiv.appendChild(nSvg(dataImage.enterFullscreen))
+// targetDiv.appendChild(nSvg(dataImage.path))
 normalizeSvg(dataImage.rotateRight)
 
 </script>

@@ -89,47 +89,74 @@ declare global {
 
         appendTo?:any
     }
-    interface mediaTemplate{
-        type?:string,
-        src:string,
-        sub?:string,
-        cls:string,
-    }
+
 
     interface svgTemplate{
         viewBox?:string,
-        styles?:svgStyle[]
         groups:svgPaths[]
+        styles?:keyValPair[]
+        props?:keyValPair[]
+        attributes?:keyValPair[]
+        events?:any
     }
     interface svgPaths{
         shapes:svgShape[]
-        styles?:svgStyle[]
+        styles?:keyValPair[]
+        props?:keyValPair[]
+        attributes?:keyValPair[]
+        events?:any
     }
     interface svgShape { 
-        //svg.setAttributeNS only allows "string" as input :(
         type?:string,
         d?:string,
         points?:string,
-        x1?:string,
-        x2?:string,
-        y1?:string,
-        y2?:string,
-        rx?:string,
-        ry?:string,
-        cx?:string,
-        cy?:string,
-        r?:string,
-        x?:string,
-        y?:string,
-        width?:string,
-        height?:string,
+        x1?:number,
+        x2?:number,
+        y1?:number,
+        y2?:number,
+        rx?:number,
+        ry?:number,
+        cx?:number,
+        cy?:number,
+        r?:number,
+        x?:number,
+        y?:number,
+        width?:number,
+        height?:number,
         fill?:string,
         stroke?:string,
-        styles?:svgStyle[]
+        styles?:keyValPair[]
+        props?:keyValPair[]
+        attributes?:keyValPair[]
+        events?:keyValPair[]
     }
-    interface svgStyle{
+    interface keyValPair{
         name:string,
-        val:string
+        val:any
+    }
+}
+
+let addPEAS = (elem:any, obj:svgShape)=>{
+    if ( obj.styles) { //set svg styles
+        obj.styles.forEach((style) => {
+            elem.setAttributeNS(null,style.name,style.val)
+        });
+    }
+    if (obj.props){
+        obj.props.forEach((prop) => {
+            Object.assign(elem,{[prop.name] : prop.val})
+        });
+    } 
+    if (obj.attributes){
+        obj.attributes.forEach((attr) => {
+            // console.log(attr)
+            elem.setAttribute(attr.name,attr.val)
+        });
+    }
+    if (obj.events){
+        obj.events.forEach((event) => {
+            elem.addEventListener(event.name,event.val)
+        });
     }
 }
 export function nSvg(request:svgTemplate){ 
@@ -140,8 +167,11 @@ export function nSvg(request:svgTemplate){
     if(typeof request.viewBox == "string"){
         let length = request.viewBox.split(" ").length
         if(length != 4){
-            if(length == 2 ){
-                request.viewBox = "0 0 " + request.viewBox
+            if(length < 4){
+                while ( 4 > length){
+                    request.viewBox = "0 " + request.viewBox
+                    length++
+                }
             }
         }
     }
@@ -150,105 +180,71 @@ export function nSvg(request:svgTemplate){
     svg.setAttribute("xmlns", xmlns);
     // preserveAspectRatio?
 
-    if (typeof request.styles != "undefined") { //set svg styles
-        request.styles.forEach((style) => {
-            svg.setAttributeNS(null,style.name,style.val)
-        });
-    }
-
+    addPEAS(svg,request)
     // ---------------------- SETUP GROUPS --------------
     request.groups.forEach((group) => {
         let cGroup = document.createElementNS(xmlns, "g");
 
-        if (typeof group.styles != "undefined") { //set group styles
-            group.styles.forEach((style) => {
-                cGroup.setAttributeNS(null,style.name,style.val)
-            });
-        }
-        group.shapes.forEach((shape,i) => { //set shapes
+        addPEAS(cGroup,group)
+        group.shapes.forEach((shape) => { //set shapes
             let nShape:any;
 
-            /*
-             Object.keys(shape).forEach((key)=>{
-                //converts any type `number` to `string` to allow setAttribute
-                let cVal = shape[key as keyof typeof shape]
-                
-                if(typeof cVal == "number"){
-                    Object.assign(shape,{[key]:cVal.toString()})
-                }
-            }) 
-            */
+            Object.entries(shape).forEach(([key,val])=>{
+                // console.log(shape) //obj
+                // console.log(key) //shape["key"] = "value"
+                if(key == "type"){
+                    if (val.includes("circ")) {
+                        nShape = document.createElementNS(xmlns, "circle");
+                        nShape.setAttributeNS(null, "r", shape.r!);
+                        nShape.setAttributeNS(null, "cx", shape.cx!);
+                        nShape.setAttributeNS(null, "cy", shape.cy!);
+                    } else if (val.includes("rect")) {
+                        nShape = document.createElementNS(xmlns, "rect");
+                        nShape.setAttributeNS(null, "width", shape.width || "");
+                        nShape.setAttributeNS(null, "height", shape.height || "");
 
-            if (shape.type == "circle") {
-                nShape = document.createElementNS(xmlns, "circle");
-                nShape.setAttributeNS(null, "r", shape.r!);
-                nShape.setAttributeNS(null, "cx", shape.cx!);
-                nShape.setAttributeNS(null, "cy", shape.cy!);
-            }
-            else if (shape.type == "rect") {
-                nShape = document.createElementNS(xmlns, "rect");
-                nShape.setAttributeNS(null, "width", shape.width || "");
-                nShape.setAttributeNS(null, "height", shape.height || "");
-                alert("fix condition for rect")
-                if (typeof shape.rx != "undefined") {
-                    nShape.setAttributeNS(null, "rx", shape.rx || "");
-                }
-                if (typeof shape.ry != "undefined") {
-                    nShape.setAttributeNS(null, "ry", shape.ry || "");
-                }
-                if (typeof shape.x != "undefined") {
-                    nShape.setAttributeNS(null, "x", shape.x || "");
-                }
-                if (typeof shape.y != "undefined") {
-                    nShape.setAttributeNS(null, "y", shape.y || "");
-                }
-            }
-            else if (shape.type == "ellipse") {
-                nShape = document.createElementNS(xmlns, "ellipse");
-                nShape.setAttributeNS(null, "cx", shape.cx!);
-                nShape.setAttributeNS(null, "cy", shape.cy!);
-                nShape.setAttributeNS(null, "rx", shape.rx!);
-                nShape.setAttributeNS(null, "ry", shape.ry!);
-            }
-            else if (shape.type == "line") {
-                nShape = document.createElementNS(xmlns, "line");
-                nShape.setAttributeNS(null, "x1", shape.x1!);
-                nShape.setAttributeNS(null, "x2", shape.x2!);
-                nShape.setAttributeNS(null, "y1", shape.y1!);
-                nShape.setAttributeNS(null, "y2", shape.y2!);
-            }
-            else if (shape.type == "polyline") {
-                nShape = document.createElementNS(xmlns, "polyline");
-                nShape.setAttributeNS(null, "points", shape.points!);
-            }
-            else if (shape.type == "polygon") {
-                nShape = document.createElementNS(xmlns, "polygon");
-                nShape.setAttributeNS(null, "points", shape.points!);
-            }
-            else {
-                nShape = document.createElementNS(xmlns, "path");
-                nShape.setAttributeNS(null, "d", shape.d!);
-            }
-            //colors
-            if (typeof shape.fill != "undefined") {
-                nShape.setAttribute("fill", shape.fill);
-            }
-            if (typeof shape.stroke != "undefined") {
-                nShape.setAttribute("stroke", shape.stroke);
-            }
-            if (typeof shape.styles != "undefined") { //set nShape styles
-                shape.styles.forEach((style) => {
-                    console.log(style)
-                    // nShape.setAttributeNS(null,style.name,style.val)
-                    nShape.style.setProperty(style.name,style.val)
+                        if (shape.rx) {
+                            nShape.setAttributeNS(null, "rx", shape.rx || "");
+                        }
+                        if (shape.ry) {
+                            nShape.setAttributeNS(null, "ry", shape.ry || "");
+                        }
+                        if (shape.x) {
+                            nShape.setAttributeNS(null, "x", shape.x || "");
+                        }
+                        if (shape.y) {
+                            nShape.setAttributeNS(null, "y", shape.y || "");
+                        }
 
-                });
-            }
-            // shape.attribute
-            // shape.attributeNS
-            // shape.props
-            alert("find way to add prop attr attrNS styles to elem")
-
+                    } else if (val.includes("ellip")) {
+                        nShape = document.createElementNS(xmlns, "ellipse");
+                        nShape.setAttributeNS(null, "cx", shape.cx!);
+                        nShape.setAttributeNS(null, "cy", shape.cy!);
+                        nShape.setAttributeNS(null, "rx", shape.rx!);
+                        nShape.setAttributeNS(null, "ry", shape.ry!);
+                    } else if (val.includes("line")) {
+                        nShape = document.createElementNS(xmlns, "line");
+                        nShape.setAttributeNS(null, "x1", shape.x1!);
+                        nShape.setAttributeNS(null, "x2", shape.x2!);
+                        nShape.setAttributeNS(null, "y1", shape.y1!);
+                        nShape.setAttributeNS(null, "y2", shape.y2!);
+                    } else if (val.includes("polyl")) {
+                        nShape = document.createElementNS(xmlns, "polyline");
+                        nShape.setAttributeNS(null, "points", shape.points!);
+                    } else if (val.includes("polyg")) {
+                        nShape = document.createElementNS(xmlns, "polygon");
+                        nShape.setAttributeNS(null, "points", shape.points!);
+                    }
+                } else if (key == "d"){
+                    nShape = document.createElementNS(xmlns, "path");
+                    nShape.setAttributeNS(null, "d", shape.d!);
+                } else if (key == "fill"){
+                    nShape.setAttribute("fill", val);
+                } else if (key == "stroke"){
+                    nShape.setAttribute("stroke", val);
+                } 
+            })
+            addPEAS(nShape,shape)
 
             cGroup.appendChild(nShape);
         });
@@ -367,14 +363,8 @@ export function normalizeSvg(request:svgTemplate){
                     // let normalizeHeight = (y:string)=>(y)
                     // let normalizeWidth = (x:string)=>(x)
                     
-                    // let propVal = parseFloat(propVal)
-
-                    if(hasWidthParam.includes(prop)){ nPropVal = normalizeWidth(propVal)
-                    } else if (hasHeightParam.includes(prop)){nPropVal = normalizeHeight(propVal)
-                    } else if (prefersSmallerSideParam.includes(prop)){
-                        nPropVal = prevViewbox.width > prevViewbox.height ?
-                            normalizeHeight(propVal):normalizeWidth(propVal)
-                    } else if (hasBothParams.includes(prop)){
+                    
+                    if (hasBothParams.includes(prop)){
 
                         if(prop == "d"){
 
@@ -407,7 +397,8 @@ export function normalizeSvg(request:svgTemplate){
                                     isNega = hasDecimal = isNum2 = false
                                 }
                             })
-                            console.log(nArr.join(" "))
+                            // console.log(nArr.join(" "))
+
                             let prevLPos = 0
                             let maxPos = 0
                             let d=""
@@ -517,113 +508,28 @@ export function normalizeSvg(request:svgTemplate){
 
                             })
                             nPropVal = d
-                            console.log(d)
+                            // console.log(d)
 
-                        }else if(prop == "x"){ // old `d` method
-                            let d=""
-
-                            // alert("do arr.split('') and update and segregate manually")
-                            // console.log("METHOD INEFFECTIVE")
-
-                            var regex = /[+-.]?[+-.]?\d+(\.\d+)?/g;
-                            var tempCoords = propVal.match(regex)
-                            // console.log(coords);
-                            //fix -.2.5
-
-                            let coords = [...tempCoords!]
-                            tempCoords!.forEach((x,i)=>{
-                                if(x.match(/\./g)?.length == 2){
-                                    let pair = x.split(".")
-                                    let coord2 = "." + pair[pair.length-1]
-                                    pair.pop()
-                                    let coord1 = pair.join(".")
-
-                                    let offset = coords.length - tempCoords!.length
-                                    coords.splice(i + offset,1,coord1)
-                                    coords.splice(i + 1 + offset,0,coord2)
-                                }
-                            })
-                            
-                            var regex2 = /[a-z]/gi;
-                            var letters = propVal.match(regex2)
-                            // var letters = propVal.match(regex2)?.map(l=>l.toUpperCase())
-                            console.log(letters);
-                            
-                            let i = 0 //for coords index
-                            letters?.forEach((letter)=>{
-                                let params= ""
-
-                                if (["H","h"].includes(letter)){
-                                    let x = normalizeWidth(coords![i++])
-                                    params = " " + x
-                                } else if (["V","v"].includes(letter)){
-                                    let y = normalizeHeight(coords![i++])
-                                    params = " " + y
-                                } else if(["M","L","T","m","l","t"].includes(letter)){
-                                    let x = normalizeWidth(coords![i++])
-                                    let y = normalizeHeight(coords![i++])
-                                    params = " " + x + " " + y
-                                } else if(["S","Q","s","q"].includes(letter)){
-                                    let x2 = normalizeWidth(coords![i++])
-                                    let y2 = normalizeHeight(coords![i++])
-                                    let x = normalizeWidth(coords![i++])
-                                    let y = normalizeHeight(coords![i++])
-                                    params = " " + x2 + " " + y2 + " " + x + " " + y
-                                } else if (["C","c"].includes(letter)){
-                                    let x2 = normalizeWidth(coords![i++])
-                                    let y2 = normalizeHeight(coords![i++])
-                                    let x1 = normalizeWidth(coords![i++])
-                                    let y1 = normalizeHeight(coords![i++])
-                                    let x = normalizeWidth(coords![i++])
-                                    let y = normalizeHeight(coords![i++])
-                                    params = " " + x2 + " " + y2 + " " + x1 + " " + y1 + " " + x + " " + y
-                                } else if (["A","a"].includes(letter)){
-                                    let x2 = normalizeWidth(coords![i++])
-                                    let y2 = normalizeHeight(coords![i++])
-                                    let angle = coords![i++]
-                                    let largeArcFlag = coords![i++]
-                                    let sweepFlag = coords![i++]
-                                    let x = normalizeWidth(coords![i++])
-                                    let y = normalizeHeight(coords![i++])
-                                    params = " " + x2 + " " + y2 + " " + angle + " " + largeArcFlag + " " + sweepFlag + " " + x + " " + y
-                                } else if (["Z","z"].includes(letter)){
-                                    d = d! + "z"
-                                    return
-                                }
-
-                                d = d! + " " + letter + params
-                            })
-
-                            nPropVal = d
-                            /* 
-                            M x,y (start)...
-                            L x,y...
-                            H x...
-                            V y...
-                            Z (end)...
-                            C x1,y1 x2,y2 x,y...
-                            S x2,y2 x,y...
-                            Q x1,y2 x,y...
-                            T x,y...
-                            A x,y 0 0 0 x,y...
-    
-
-
-                             A 30 50 0 0 1 162.55 162.45
-                             A 1  2  3 4 5 6      7
-                             A rx, ry, x-axis-rotation, large-arc-flag, sweep-flag, dx, dy
-                            */
-                            //  nPropVal = "final glued array"
-                        } else if (prop = "points"){
+                        }
+                        else if (prop = "points"){
                             propVal.split(" ").map(i=>i.split(",")).toString().split(",").forEach((i,pos)=>{
                                 if((pos+1)%2){ nPropVal = normalizeWidth(i) + ","
                                 } else nPropVal = normalizeHeight(i) + " "
                             })
                         }
-                        
 
+                    }
+                } else if (typeof propVal == "number"){
+                    let normalizeWidth = (x:number)=>((x / prevViewbox.width) * 100).toFixed(2)
+                    let normalizeHeight = (y:number)=>((y / prevViewbox.height) * 100).toFixed(2)
+                    // let normalizeHeight = (y:string)=>(y)
+                    // let normalizeWidth = (x:string)=>(x)
 
-                        // alert("TO DO: make adjustment to accomodat viewbox 0 0 100 100")
+                    if(hasWidthParam.includes(prop)){ nPropVal = normalizeWidth(propVal)
+                    } else if (hasHeightParam.includes(prop)){nPropVal = normalizeHeight(propVal)
+                    } else if (prefersSmallerSideParam.includes(prop)){
+                        nPropVal = prevViewbox.width > prevViewbox.height ?
+                            normalizeHeight(propVal):normalizeWidth(propVal)
                     }
                 }
            
@@ -652,7 +558,40 @@ export function normalizeSvg(request:svgTemplate){
         })
     })
 
-    console.log(request)
+    // console.log(request)
 }
+/* 
+use case
+for pragrammatical adding of SVG
 
+    import {nSvg,normalizeSvg} from "./svgGen.js"
+
+    container.appendChild(nSvg(dataImage.path))
+    normalizeSvg(dataImage.rotateRight)
+
+
+    sampleSVG:{
+        viewBox: "24 24", // max 4 num, missing nums will be replaced by 0s
+        groups:[
+            {
+                shapes:[
+                    {d:""},
+                    styles:[{name:"",val:""}],
+                    props:[{name:"",val:""}],
+                    attributes:[{ name:"",val:""}]    
+                    event:[{ name:"",val:""}]    
+                }
+                ],
+                styles:[{name:"",val:""}],
+                props:[{name:"",val:""}],
+                attributes:[{ name:"",val:""}]  
+                event:[{ name:"",val:""}]    
+            }
+        ],
+        styles:[{name:"",val:""}],
+        props:[{name:"",val:""}],
+        attributes:[{ name:"",val:""}]  
+        event:[{ name:"",val:""}]    
+    },
+*/
 
