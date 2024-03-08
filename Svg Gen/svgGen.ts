@@ -93,18 +93,27 @@ declare global {
 
     interface svgTemplate{
         viewBox?:string,
-        groups:svgPaths[]
-        styles?:keyValPair[]
-        props?:keyValPair[]
-        attributes?:keyValPair[]
-        events?:any
+        groups:svgGroups[]
+        styles?:object
+        props?:object
+        attributes?:object
+        events?:object
+
     }
-    interface svgPaths{
+    interface svgGroups{
         shapes:svgShape[]
-        styles?:keyValPair[]
-        props?:keyValPair[]
-        attributes?:keyValPair[]
-        events?:any
+        blobs?:svgBlob[]
+        styles?:object
+        props?:object
+        attributes?:object
+        events?:object
+    }
+    interface svgBlob{
+        x:number //centerX
+        y:number //centerY
+        r:number //radius
+        c:number //complexity 1-4
+        rnd:boolean
     }
     interface svgShape { 
         type?:string,
@@ -123,41 +132,162 @@ declare global {
         y?:number,
         width?:number,
         height?:number,
+        blob?:svgBlob,
         fill?:string,
         stroke?:string,
-        styles?:keyValPair[]
-        props?:keyValPair[]
-        attributes?:keyValPair[]
-        events?:keyValPair[]
-    }
-    interface keyValPair{
-        name:string,
-        val:any
+        styles?:object
+        props?:object
+        attributes?:object
+        events?:object
     }
 }
 
+
 let addPEAS = (elem:any, obj:svgShape)=>{
-    if ( obj.styles) { //set svg styles
-        obj.styles.forEach((style) => {
-            elem.setAttributeNS(null,style.name,style.val)
-        });
+    if (obj.styles) { //set svg styles
+        Object.entries(obj.styles).forEach(([key,val])=>{
+            elem.setAttribute(key,val)
+        })
     }
     if (obj.props){
-        obj.props.forEach((prop) => {
-            Object.assign(elem,{[prop.name] : prop.val})
-        });
+        Object.entries(obj.props).forEach(([key,val])=>{
+            Object.assign(elem,{[key] : val})
+        })
     } 
     if (obj.attributes){
-        obj.attributes.forEach((attr) => {
-            // console.log(attr)
-            elem.setAttribute(attr.name,attr.val)
-        });
+        Object.entries(obj.attributes).forEach(([key,val])=>{
+            elem.setAttribute(key,val)
+        })
     }
     if (obj.events){
-        obj.events.forEach((event) => {
-            elem.addEventListener(event.name,event.val)
-        });
+        Object.entries(obj.events).forEach(([key,val])=>{
+            elem.addEventListener(key,val)
+        })
     }
+}
+let blobGen =(obj:{
+    x:number //centerX
+    y:number //centerY
+    r:number //radius
+    c:number //complexity 1-4
+    rnd:boolean
+})=>{
+    let isRNG = ()=>{
+        if(obj.rnd){
+            return Math.random() * (1 - 0.25) + .25
+        } else return 1
+    }
+    let getXYCoord =(obj:{
+        r:number
+        deg:number
+        x:number
+        y:number
+    })=>{
+        let rng = obj.r * isRNG()!
+        // let rng2 = obj.deg * (Math.random() * (1 - 0.9875) + 0.975)
+        // let x = Math.round((obj.x + ((rng) *Math.sin((rng2 * Math.PI)/180)))*100)/100
+        // let y = Math.round((obj.y - ((rng) *Math.cos((rng2 * Math.PI)/180)))*100)/100
+        let x = Math.round((obj.x + ((rng) *Math.sin((obj.deg * Math.PI)/180)))*100)/100
+        let y = Math.round((obj.y - ((rng) *Math.cos((obj.deg * Math.PI)/180)))*100)/100
+        
+        // console.log(rng1,rng2,"total:",(rng1+rng2).toFixed(2))
+        return {x,y,deg:obj.deg,rng}
+    }
+    let getR = (obj:{ //get proper radius for proper Circle
+        c:number
+        r:number
+    })=>{
+        switch(obj.c){
+            case 1: return obj.r *.77
+            case 2: return obj.r *.55
+            case 3: return obj.r *.4
+            case 4: return obj.r *.33
+        }
+    }
+    let getA1CoordDeg =(obj:{ //get proper degree for anchor coordinate to create a circle
+        c:number
+        prevDeg:number
+        deg:number
+    })=>{
+        switch(obj.c){
+            case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*.75
+            case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*1
+            case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.2
+            case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.475
+        }
+    }
+    let getA2CoordDeg =(obj:{ //get proper degree for anchor coordinate to create a circle
+        c:number
+        prevDeg:number
+        deg:number
+    })=>{
+        switch(obj.c){
+            case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*.25
+            case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*0
+            case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.2
+            case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.475
+        }
+    }
+
+    let startPoint = {x:obj.x, y:Math.round((obj.y - (obj.r*isRNG()))*100)/100}
+    // console.log(startPoint)
+    let d= "M " + startPoint.x + "," + startPoint.y + " "
+    if([1,2,3,4].includes(obj.c)){
+        //get number of circle points depending on complexity (min:3 max:6)
+        let points = obj.c == 1 ? 3 : obj.c == 2 ? 4 : obj.c == 3 ? 5 : 6
+        let space = 360/points
+        let pos = 0
+        let prevPoint = startPoint
+        let prevDeg = 0
+
+        while(pos != points){
+            let deg = space * (pos + 1)
+            let cPoint = getXYCoord({ //accurate next point on the perfect circle
+                r:obj.r,
+                x:obj.x,
+                y:obj.y,
+                deg:deg
+            })
+            if(points == (pos + 1)){
+                cPoint.x = startPoint.x
+                cPoint.y = startPoint.y
+            }
+            
+            let anchorRadius = getR({c:obj.c,r:obj.r})
+            let a1Deg = getA1CoordDeg({c:obj.c,deg:deg,prevDeg:prevDeg})!
+            let a2Deg = getA2CoordDeg({c:obj.c,deg:deg,prevDeg:prevDeg})!
+
+            let a1 = getXYCoord({ //anchor for prevPoint
+                r:anchorRadius!,
+                x:prevPoint.x,
+                y:prevPoint.y,
+                deg:a1Deg
+            })
+            let a2 = getXYCoord({ //anchor for cPoint
+                r:anchorRadius!,
+                x:cPoint.x,
+                y:cPoint.y,
+                deg:a2Deg
+            })
+            // console.log("newPoint",cPoint)
+            // console.log("a1",a1)
+            // console.log("a2",a2)
+
+            // guidePath = guidePath + "M" + prevPoint.x + "," + prevPoint.y + " L" + a1.x + "," + a1.y + " M" + cPoint.x + "," + cPoint.y + " L" + a2.x + "," + a2.y + " "
+            let c = "C " + a1.x + "," + a1.y + " " + a2.x + "," + a2.y + " " + cPoint.x + "," + cPoint.y
+            if(points == (pos + 1)){c = c + "z"}
+            d = d + c + " "
+            
+            // console.log(c)
+
+            prevPoint = cPoint //transfer coords of currentPoint
+            prevDeg = deg //transfer deg of currentPoint
+            pos++
+        }
+        
+        // console.log(d)
+        return d
+    } else throw Error ("Blob complexity can only be 1-4")
 }
 export function nSvg(request:svgTemplate){ 
     // ---------------------- SETUP SVG --------------
@@ -234,10 +364,19 @@ export function nSvg(request:svgTemplate){
                     } else if (val.includes("polyg")) {
                         nShape = document.createElementNS(xmlns, "polygon");
                         nShape.setAttributeNS(null, "points", shape.points!);
+                    } else if (val.includes("blob")) {
+                        nShape = document.createElementNS(xmlns, "path");
+                        nShape.setAttribute("type", val);
+                        nShape.setAttributeNS(null, "d", blobGen(shape.blob!));
+                        Object.assign(nShape,{ //store blob request parameters
+                            config:shape.blob!,
+                            update:function(){
+                                nShape.setAttribute("d",blobGen(this.config!) )
+                            }
+                        })
                     }
                 } else if (key == "d"){
                     nShape = document.createElementNS(xmlns, "path");
-                    nShape.setAttributeNS(null, "d", shape.d!);
                 } else if (key == "fill"){
                     nShape.setAttribute("fill", val);
                 } else if (key == "stroke"){
@@ -560,6 +699,245 @@ export function normalizeSvg(request:svgTemplate){
 
     // console.log(request)
 }
+export function genBlob234(obj:{
+    x:number //centerX
+    y:number //centerY
+    r:number //radius
+    c:number //complexity 1-4
+    rnd:boolean
+}){
+    console.log("TO DO: TRY isPointInStroke for collision detection")
+    console.log("TO DO: TRY isPointInStroke if stroke is none")
+    console.log("TO DO: do viewbox as numbers []1,2,...]")
+    /* 
+    sampleSVG:{
+        viewBox: "24 24", // max 4 num, missing nums will be replaced by 0s
+        groups:[
+            {
+                blobs:[
+                    {
+                        x: number
+                        y: number
+                        r: number
+                        c: number
+                        rnd: boolean
+                        styles:[{name:"",val:""}],
+                        props:[{name:"",val:""}],
+                        attributes:[{ name:"",val:""}]    
+                        event:[{ name:"",val:""}]   
+                    }
+                ]
+                shapes:[
+                    {
+                        d:"",
+                        styles:[{name:"",val:""}],
+                        props:[{name:"",val:""}],
+                        attributes:[{ name:"",val:""}]    
+                        event:[{ name:"",val:""}]  
+                    }   
+                ],
+                styles:[{name:"",val:""}],
+                props:[{name:"",val:""}],
+                attributes:[{ name:"",val:""}]  
+                event:[{ name:"",val:""}]    
+            }
+        ],
+        styles:[{name:"",val:""}],
+        props:[{name:"",val:""}],
+        attributes:[{ name:"",val:""}]  
+        event:[{ name:"",val:""}]    
+    },
+    
+    */
+    
+    let xmlns = "http://www.w3.org/2000/svg"
+    let svg = document.createElementNS(xmlns, "svg");
+
+    svg.setAttributeNS(null, "viewBox", "0 0 100 100");
+    svg.setAttribute("xmlns", xmlns);
+    svg.setAttribute("stroke", "black");
+    svg.setAttribute("fill", "none");
+
+    //gen path
+    let nShape = document.createElementNS(xmlns, "path");
+    nShape.setAttribute("stroke","white")
+    nShape.setAttribute("fill","white")
+    Object.assign(nShape,{
+        config:obj,
+        update:function(){
+            nShape.setAttribute("d",blobGen(this.config!) )
+        }
+    })
+
+
+    //for troubleshooting
+    /* let guide2 = document.createElementNS(xmlns, "path");
+    let guidePath = ""
+    guide2.setAttribute("stroke","rgba(144,144,144,.5)")
+    guide2.setAttribute("stroke","none")
+
+    let guide = document.createElementNS(xmlns, "circle");
+    guide.setAttribute("r","25")
+    guide.setAttribute("cx","50")
+    guide.setAttribute("cy","50") */
+
+    /* GUIDE
+        start first point between center and shortest side
+        to check if it is a vertex of a circ do x^2 + y^2 = r^2
+        to check if vertex complies its circ do (x-h)^2 + (y-k)^2 = r^2 (if origin is not 0,0)
+        x = rSin(deg) , y = rCos(deg)
+        get coordinates by using origin, angle and radius
+        x= r*Math.sin((deg * Math.PI)/180) 
+        y= r*Math.cos((deg * Math.PI)/180)
+
+        let start = "M 50,50 L 50,25z"
+        let p1 = "M 50,50 L 71.65,62.50z"
+        let p2 = "M 50,50 L 28.35,62.50z"
+        let p3 = "";
+    */
+    let blobGen =(obj:{
+        x:number //centerX
+        y:number //centerY
+        r:number //radius
+        c:number //complexity 1-4
+        rnd:boolean
+    })=>{
+        let isRNG = ()=>{
+            if(obj.rnd){
+                return Math.random() * (1 - 0.25) + .25
+            } else return 1
+        }
+        let getXYCoord =(obj:{
+            r:number
+            deg:number
+            x:number
+            y:number
+        })=>{
+            let rng = obj.r * isRNG()!
+            // let rng2 = obj.deg * (Math.random() * (1 - 0.9875) + 0.975)
+            // let x = Math.round((obj.x + ((rng) *Math.sin((rng2 * Math.PI)/180)))*100)/100
+            // let y = Math.round((obj.y - ((rng) *Math.cos((rng2 * Math.PI)/180)))*100)/100
+            let x = Math.round((obj.x + ((rng) *Math.sin((obj.deg * Math.PI)/180)))*100)/100
+            let y = Math.round((obj.y - ((rng) *Math.cos((obj.deg * Math.PI)/180)))*100)/100
+            
+            // console.log(rng1,rng2,"total:",(rng1+rng2).toFixed(2))
+            return {x,y,deg:obj.deg,rng}
+        }
+        let getR = (obj:{ //get proper radius for proper Circle
+            c:number
+            r:number
+        })=>{
+            switch(obj.c){
+                case 1: return obj.r *.77
+                case 2: return obj.r *.55
+                case 3: return obj.r *.4
+                case 4: return obj.r *.33
+            }
+        }
+        let getA1CoordDeg =(obj:{ //get proper degree for anchor coordinate to create a circle
+            c:number
+            prevDeg:number
+            deg:number
+        })=>{
+            switch(obj.c){
+                case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*.75
+                case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*1
+                case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.2
+                case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.475
+            }
+        }
+        let getA2CoordDeg =(obj:{ //get proper degree for anchor coordinate to create a circle
+            c:number
+            prevDeg:number
+            deg:number
+        })=>{
+            switch(obj.c){
+                case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*.25
+                case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*0
+                case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.2
+                case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.475
+            }
+        }
+
+        let startPoint = {x:obj.x, y:obj.y - (obj.r*isRNG())}
+        // console.log(startPoint)
+        let d= "M " + startPoint.x + "," + startPoint.y + " "
+        if([1,2,3,4].includes(obj.c)){
+            //get number of circle points depending on complexity (min:3 max:6)
+            let points = obj.c == 1 ? 3 : obj.c == 2 ? 4 : obj.c == 3 ? 5 : 6
+            let space = 360/points
+            let pos = 0
+            let prevPoint = startPoint
+            let prevDeg = 0
+
+            while(pos != points){
+                let deg = space * (pos + 1)
+                let cPoint = getXYCoord({ //accurate next point on the perfect circle
+                    r:obj.r,
+                    x:obj.x,
+                    y:obj.y,
+                    deg:deg
+                })
+                if(points == (pos + 1)){
+                    cPoint.x = startPoint.x
+                    cPoint.y = startPoint.y
+                }
+                
+                let anchorRadius = getR({c:obj.c,r:obj.r})
+                let a1Deg = getA1CoordDeg({c:obj.c,deg:deg,prevDeg:prevDeg})!
+                let a2Deg = getA2CoordDeg({c:obj.c,deg:deg,prevDeg:prevDeg})!
+
+                let a1 = getXYCoord({ //anchor for prevPoint
+                    r:anchorRadius!,
+                    x:prevPoint.x,
+                    y:prevPoint.y,
+                    deg:a1Deg
+                })
+                let a2 = getXYCoord({ //anchor for cPoint
+                    r:anchorRadius!,
+                    x:cPoint.x,
+                    y:cPoint.y,
+                    deg:a2Deg
+                })
+                // console.log("newPoint",cPoint)
+                // console.log("a1",a1)
+                // console.log("a2",a2)
+
+                // guidePath = guidePath + "M" + prevPoint.x + "," + prevPoint.y + " L" + a1.x + "," + a1.y + " M" + cPoint.x + "," + cPoint.y + " L" + a2.x + "," + a2.y + " "
+                let c = "C " + a1.x + "," + a1.y + " " + a2.x + "," + a2.y + " " + cPoint.x + "," + cPoint.y
+                if(points == (pos + 1)){c = c + "z"}
+                d = d + c + " "
+                
+                // console.log(c)
+
+                prevPoint = cPoint //transfer coords of currentPoint
+                prevDeg = deg //transfer deg of currentPoint
+                pos++
+            }
+            
+            // console.log(d)
+            return d
+        } else throw Error ("Blob complexity can only be 1-4")
+    }
+    // let d = blobGen({r:25,x:50,y:50,c:1,rnd:true})
+    // let d = blobGen({r:25,x:50,y:50,c:1,rnd:false})
+    // let d = blobGen({r:25,x:50,y:50,c:2,rnd:true})
+    // let d = blobGen({r:25,x:50,y:50,c:2,rnd:false})
+    // let d = blobGen({r:25,x:50,y:50,c:3,rnd:false})
+    // let d = blobGen({r:25,x:50,y:50,c:4,rnd:true})
+    // let d = blobGen({r:25,x:50,y:50,c:4,rnd:false})
+    
+
+    nShape.setAttributeNS(null, "d", blobGen(obj));
+    svg.appendChild(nShape)
+
+    //for troubleshooting
+    // guide2.setAttributeNS(null, "d", guidePath);
+    // svg.appendChild(guide)
+    // svg.appendChild(guide2)
+    return svg
+}
+
 /* 
 use case
 for pragrammatical adding of SVG
@@ -594,4 +972,3 @@ for pragrammatical adding of SVG
         event:[{ name:"",val:""}]    
     },
 */
-

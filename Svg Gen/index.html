@@ -572,12 +572,36 @@
             }
         ]
     },
+    blob:{
+        viewBox: "100 100",
+        groups:[
+            {
+                shapes:[
+                    {
+                        type:"blob",
+                        blob:{r:25,x:50,y:50,c:1,rnd:true},
+                        styles:{
+                            stroke:"white",
+                            fill:"none"
+                        },
+                    },
+                    {
+                        type:"rect",
+                        width:25,
+                        height:20,
+                        x:20,
+                        y:20
+                    }
+                ]
+            }
+        ]
+    },
 
 }
 
 let targetDiv = document.getElementById("spawnSVG")
-targetDiv.appendChild(nSvg(dataImage.enterFullscreen))
-// targetDiv.appendChild(nSvg(dataImage.path))
+// targetDiv.appendChild(nSvg(dataImage.enterFullscreen))
+targetDiv.appendChild(nSvg(dataImage.blob))
 normalizeSvg(dataImage.rotateRight)
 
 </script>
