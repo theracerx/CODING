@@ -15,7 +15,8 @@
         background-color: antiquewhite;
     }
     svg{
-        background-color: red;
+        /* background-color: #FF0066; */
+        background-color: grey;
     }
 </style>
 <body>
@@ -58,22 +59,23 @@
         groups:[
             {
                 shapes:[
-                    {d:"M3 15h.1a1 1 0 0 1 .9.9v.1 4h4 .1a1 1 0 0 1 0 2H8 3h-.1a1 1 0 0 1-.9-.9V21v-5-.1a1 1 0 0 1 .9-.9H3zm18 0a1 1 0 0 1 1 .9v.1 5a1 1 0 0 1-.9 1H21h-5a1 1 0 0 1-.1-2h.1 4v-4a1 1 0 0 1 .9-1h.1zM8 2a1 1 0 0 1 .1 2H8 4v4a1 1 0 0 1-.9 1H3a1 1 0 0 1-1-.9V8 3a1 1 0 0 1 .9-1H3h5zm13 0h.1a1 1 0 0 1 .9.9V3v5 .1a1 1 0 0 1-.9.9H21h-.1a1 1 0 0 1-.9-.9V8 4h-4-.1a1 1 0 0 1 0-2h.1 5z",
-                    styles:[
-                        {
-                            name:"transform", val:"scale(0.5)"
-                        }
-                    ],
-                    props:[
-                        {   name:"adsf", val:"dasadf"}
-                    ],
-                    attributes:[
-                        { name:"dog",val:"Asdfad"}
-                    ],
-                    events:[
-                        {name:"pointerup",val:()=>{console.log("asdfa")}}
-                    ] 
-                }
+                    {
+                        path:{d:"M3 15h.1a1 1 0 0 1 .9.9v.1 4h4 .1a1 1 0 0 1 0 2H8 3h-.1a1 1 0 0 1-.9-.9V21v-5-.1a1 1 0 0 1 .9-.9H3zm18 0a1 1 0 0 1 1 .9v.1 5a1 1 0 0 1-.9 1H21h-5a1 1 0 0 1-.1-2h.1 4v-4a1 1 0 0 1 .9-1h.1zM8 2a1 1 0 0 1 .1 2H8 4v4a1 1 0 0 1-.9 1H3a1 1 0 0 1-1-.9V8 3a1 1 0 0 1 .9-1H3h5zm13 0h.1a1 1 0 0 1 .9.9V3v5 .1a1 1 0 0 1-.9.9H21h-.1a1 1 0 0 1-.9-.9V8 4h-4-.1a1 1 0 0 1 0-2h.1 5z"},
+                        styles:[
+                            {
+                                name:"transform", val:"scale(0.5)"
+                            }
+                        ],
+                        props:[
+                            {   name:"adsf", val:"dasadf"}
+                        ],
+                        attributes:[
+                            { name:"dog",val:"Asdfad"}
+                        ],
+                        events:[
+                            {name:"pointerup",val:()=>{console.log("asdfa")}}
+                        ] 
+                    }
                 ]
             }
         ]
@@ -577,21 +579,81 @@
         groups:[
             {
                 shapes:[
-                    {
-                        type:"blob",
-                        blob:{r:25,x:50,y:50,c:1,rnd:true},
+                    { //MAIN GUIDE
+                        circle:{r:40,cx:50,cy:50},
                         styles:{
-                            stroke:"white",
-                            fill:"none"
+                            stroke:"black",
+                            // stroke:"none",
+                            "stroke-width":"1px",
+                            // "stroke-width":"3px",
+                            // fill:"#BB004B",
+                            fill:"none",
+                            transition:"all .25s ease",
+                            "stroke-linejoin":"round"
                         },
                     },
                     {
-                        type:"rect",
-                        width:25,
-                        height:20,
-                        x:20,
-                        y:20
+                        blob:{r:40,x:50,y:50,complexity:8,contrast:5},
+                        styles:{
+                            stroke:"green",
+                            // stroke:"yellow",
+                            "stroke-width":"1px",
+                            // fill:"#BB004B",
+                            fill:"none",
+                            transition:"all .25s ease",
+                            "stroke-linejoin":"round"
+                        },
+                    },
+                    {
+                        wave:{
+                            bal:0, // 0-9 
+                            complexity:0, // 0-30
+                            contrast:0, // 0-10
+                        }
+                    },
+                    // {
+                    //     blob:{r:25,x:50,y:50,complexity:0,contrast:0,rnd:true},
+                    //     styles:{
+                    //         stroke:"black",
+                    //         "stroke-width":"3px",
+                    //         fill:"none",
+                    //         transition:"all .25s ease",
+                    //         "stroke-linejoin":"round"
+                    //     },
+                    // },
+                    {
+                        rect:{
+                            width:25,
+                            height:20,
+                            x:20,
+                            y:20
+                        },
+                        styles:{
+                            fill:"none",
+                            stroke:"yellow"
+                        }
+
                     }
+                ]
+            }
+        ]
+    },
+    wave:{
+        viewBox: "100 100",
+        groups:[
+            {
+                shapes:[
+                    {
+                        wave:{
+                            bal:9, // 0-9 origin of line from 95% to 50%
+                            complexity:0, // 0-30 num of spaces bet points
+                            contrast:10, // 0-10 usable space from origin from 10% to 100%
+                        },
+                        styles:{
+                            stroke:"black",
+                            fill:"none"
+                        }
+                    },
                 ]
             }
         ]
@@ -601,8 +663,9 @@
 
 let targetDiv = document.getElementById("spawnSVG")
 // targetDiv.appendChild(nSvg(dataImage.enterFullscreen))
-targetDiv.appendChild(nSvg(dataImage.blob))
-normalizeSvg(dataImage.rotateRight)
+targetDiv.appendChild(nSvg(dataImage.wave))
+console.log("TO DO: test all shapes on normalizeSvg")
+// console.log(normalizeSvg(dataImage.enterFullscreen))
 
 </script>
 <script>

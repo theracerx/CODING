@@ -1,3 +1,4 @@
+// replica of : https://app.haikei.app
 export{}
 declare global {
     interface Window {
@@ -59,7 +60,7 @@ declare global {
         testAudio:any,
     }
     interface anyObj {
-        [key:string]:any
+        // [key:string]:any
     }
     interface eventsTemplate{
         onOver?:any,
@@ -71,7 +72,7 @@ declare global {
         custom?: object,
     }
     interface elemTemplate{
-        [key:string]:any,
+        // [key:string]:any,
         type: string,
 
         identity?:string,
@@ -116,25 +117,19 @@ declare global {
         rnd:boolean
     }
     interface svgShape { 
-        type?:string,
-        d?:string,
-        points?:string,
-        x1?:number,
-        x2?:number,
-        y1?:number,
-        y2?:number,
-        rx?:number,
-        ry?:number,
-        cx?:number,
-        cy?:number,
-        r?:number,
-        x?:number,
-        y?:number,
-        width?:number,
-        height?:number,
+        // circ?:{r:number,cx:number,cy:number}
+        circle?:{r:number,cx:number,cy:number}
+        rect?:{width:number,height:number,x?:number,y?:number,rx?:number,ry?:number}
+        // rectangle?:{width:number,height:number,x?:number,y?:number,rx?:number,ry?:number}
+        // ellip?:{cx?:number,cy?:number,rx:number,ry:number}
+        ellipse?:{cx?:number,cy?:number,rx:number,ry:number}
+        line?:{x1:number,x2:number,y1:number,y2:number}
+        // polyl?:{points:string}
+        polyline?:{points:string}
+        // polyg?:{points:string}
+        polygon?:{points:string}
+        path?:{d:string}
         blob?:svgBlob,
-        fill?:string,
-        stroke?:string,
         styles?:object
         props?:object
         attributes?:object
@@ -142,11 +137,10 @@ declare global {
     }
 }
 
-
 let addPEAS = (elem:any, obj:svgShape)=>{
     if (obj.styles) { //set svg styles
         Object.entries(obj.styles).forEach(([key,val])=>{
-            elem.setAttribute(key,val)
+            elem.style.setProperty(key,val)
         })
     }
     if (obj.props){
@@ -169,13 +163,69 @@ let blobGen =(obj:{
     x:number //centerX
     y:number //centerY
     r:number //radius
-    c:number //complexity 1-4
-    rnd:boolean
+    complexity:number //complexity 0-9
+    contrast:number //contrast 0-8
+    keepVol?:boolean
 })=>{
-    let isRNG = ()=>{
-        if(obj.rnd){
-            return Math.random() * (1 - 0.25) + .25
-        } else return 1
+    let configRNG = {
+        run: 0,
+        min: 1,
+        max: 1,
+        maxRuns:999,
+        totalRND:0,
+    }
+    let addContrast = ()=>{
+        switch(obj.contrast){
+            case 0:
+                configRNG.min = 1;break
+            case 1: 
+                configRNG.min = .86;break
+            case 2:
+                configRNG.min = .8;break
+            case 3: 
+                configRNG.min = .75;break
+            case 4: 
+                configRNG.min = .6;break
+            case 5: 
+                configRNG.min = .5;break
+            case 6: 
+                configRNG.min = .4;break
+            case 7: 
+                configRNG.min = .3;break
+            case 8: 
+                configRNG.min = .25;break
+        }
+        // console.log("FIX CONTRAST")
+        //reports remaningRND to keep Volume
+        if(configRNG.run + 1 == configRNG.maxRuns){ 
+            let rem = configRNG.maxRuns - configRNG.totalRND
+            // console.log("remaining RND is:" + rem)
+            return rem > 1 ? 1 : rem
+        }
+
+        let cdiff = configRNG.run - configRNG.totalRND
+        if(cdiff > 0 && cdiff < 1.25){
+            let trnd = cdiff
+        }
+
+        let rnd = Math.random() * (configRNG.max-configRNG.min) + configRNG.min
+        configRNG.run += 1
+        configRNG.totalRND += rnd
+        return rnd
+    }
+    let getTotalPoints =()=>{
+        switch(obj.complexity){
+            case 0: return 3
+            case 2: return 5
+            case 1: return 4
+            case 3: return 6
+            case 4: return 7
+            case 5: return 8
+            case 6: return 9
+            case 7: return 10
+            case 8: return 11
+            case 9: return 12
+        }
     }
     let getXYCoord =(obj:{
         r:number
@@ -183,25 +233,26 @@ let blobGen =(obj:{
         x:number
         y:number
     })=>{
-        let rng = obj.r * isRNG()!
-        // let rng2 = obj.deg * (Math.random() * (1 - 0.9875) + 0.975)
-        // let x = Math.round((obj.x + ((rng) *Math.sin((rng2 * Math.PI)/180)))*100)/100
-        // let y = Math.round((obj.y - ((rng) *Math.cos((rng2 * Math.PI)/180)))*100)/100
+        let rng = obj.r! * addContrast()!
         let x = Math.round((obj.x + ((rng) *Math.sin((obj.deg * Math.PI)/180)))*100)/100
         let y = Math.round((obj.y - ((rng) *Math.cos((obj.deg * Math.PI)/180)))*100)/100
         
-        // console.log(rng1,rng2,"total:",(rng1+rng2).toFixed(2))
         return {x,y,deg:obj.deg,rng}
     }
-    let getR = (obj:{ //get proper radius for proper Circle
+    let getAnchorR = (obj:{ //get proper radius for proper Circle
         c:number
         r:number
     })=>{
         switch(obj.c){
-            case 1: return obj.r *.77
-            case 2: return obj.r *.55
-            case 3: return obj.r *.4
-            case 4: return obj.r *.33
+            case 0: return obj.r *.77
+            case 1: return obj.r *.55
+            case 2: return obj.r *.4
+            case 3: return obj.r *.33
+            case 4: return obj.r *.315
+            case 5: return obj.r *.29
+            case 6: return obj.r *.27
+            case 7: return obj.r *.24
+            case 8: return obj.r *.2
         }
     }
     let getA1CoordDeg =(obj:{ //get proper degree for anchor coordinate to create a circle
@@ -209,11 +260,18 @@ let blobGen =(obj:{
         prevDeg:number
         deg:number
     })=>{
+        // console.log("Chk params")
+        // console.log(obj)
         switch(obj.c){
-            case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*.75
-            case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*1
-            case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.2
-            case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.475
+            case 0: return obj.prevDeg + (obj.deg - obj.prevDeg)*.75
+            case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*1
+            case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.2
+            case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.45
+            case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.75 //sus
+            case 5: return obj.prevDeg + (obj.deg - obj.prevDeg)*2.025 //sus
+            case 6: return obj.prevDeg + (obj.deg - obj.prevDeg)*2.31 //sus
+            case 7: return obj.prevDeg + (obj.deg - obj.prevDeg)*2.55 //sus
+            case 8: return obj.prevDeg + (obj.deg - obj.prevDeg)*2.75 //sus
         }
     }
     let getA2CoordDeg =(obj:{ //get proper degree for anchor coordinate to create a circle
@@ -222,26 +280,44 @@ let blobGen =(obj:{
         deg:number
     })=>{
         switch(obj.c){
-            case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*.25
-            case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*0
-            case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.2
-            case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.475
+            case 0: return obj.prevDeg + (obj.deg - obj.prevDeg)*.25
+            case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*0
+            case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.2
+            case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.45
+            case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.75
+            case 5: return obj.prevDeg + (obj.deg - obj.prevDeg)*-1.025
+            case 6: return obj.prevDeg + (obj.deg - obj.prevDeg)*-1.31
+            case 7: return obj.prevDeg + (obj.deg - obj.prevDeg)*-1.55
+            case 8: return obj.prevDeg + (obj.deg - obj.prevDeg)*-1.75
         }
     }
+    
 
-    let startPoint = {x:obj.x, y:Math.round((obj.y - (obj.r*isRNG()))*100)/100}
+    // let startPoint2 = {x:obj.x, y:Math.round((obj.y - (obj.r*addContrast()))*100)/100}
+    let rndDeg = Math.random() * 45
+    let startPoint = getXYCoord({ //anchor for cPoint
+        r:obj.r,
+        x:obj.x,
+        y:obj.y,
+        deg:rndDeg
+        // deg:0
+    })
+    
     // console.log(startPoint)
     let d= "M " + startPoint.x + "," + startPoint.y + " "
-    if([1,2,3,4].includes(obj.c)){
-        //get number of circle points depending on complexity (min:3 max:6)
-        let points = obj.c == 1 ? 3 : obj.c == 2 ? 4 : obj.c == 3 ? 5 : 6
-        let space = 360/points
+    if([0,1,2,3,4,5,6,7,8,9].includes(obj.complexity)){
+        //get number of circle points depending on complexity (min:3 max:27)
+        let points = getTotalPoints()
+        let space = 360/points!
         let pos = 0
         let prevPoint = startPoint
-        let prevDeg = 0
+        let prevDeg = rndDeg
+        configRNG.maxRuns = points! + (points! * 2) //maxRuns = max radius percentage to retain shape volume
 
         while(pos != points){
-            let deg = space * (pos + 1)
+            
+            // let deg = space * (pos + 1)
+            let deg = rndDeg + (space * (pos + 1))
             let cPoint = getXYCoord({ //accurate next point on the perfect circle
                 r:obj.r,
                 x:obj.x,
@@ -253,10 +329,9 @@ let blobGen =(obj:{
                 cPoint.y = startPoint.y
             }
             
-            let anchorRadius = getR({c:obj.c,r:obj.r})
-            let a1Deg = getA1CoordDeg({c:obj.c,deg:deg,prevDeg:prevDeg})!
-            let a2Deg = getA2CoordDeg({c:obj.c,deg:deg,prevDeg:prevDeg})!
-
+            let anchorRadius = getAnchorR({c:obj.complexity,r:obj.r})
+            let a1Deg = getA1CoordDeg({c:obj.complexity,deg:deg,prevDeg:prevDeg})!
+            let a2Deg = getA2CoordDeg({c:obj.complexity,deg:deg,prevDeg:prevDeg})!
             let a1 = getXYCoord({ //anchor for prevPoint
                 r:anchorRadius!,
                 x:prevPoint.x,
@@ -275,6 +350,8 @@ let blobGen =(obj:{
 
             // guidePath = guidePath + "M" + prevPoint.x + "," + prevPoint.y + " L" + a1.x + "," + a1.y + " M" + cPoint.x + "," + cPoint.y + " L" + a2.x + "," + a2.y + " "
             let c = "C " + a1.x + "," + a1.y + " " + a2.x + "," + a2.y + " " + cPoint.x + "," + cPoint.y
+            //guide line
+            // let c = "L " + a1.x + "," + a1.y + " " + a2.x + "," + a2.y + " " + cPoint.x + "," + cPoint.y
             if(points == (pos + 1)){c = c + "z"}
             d = d + c + " "
             
@@ -287,12 +364,209 @@ let blobGen =(obj:{
         
         // console.log(d)
         return d
-    } else throw Error ("Blob complexity can only be 1-4")
+    } else throw Error ("Blob complexity can only be 0-9")
 }
+let waveGen = (obj:{
+    w:number,
+    h:number,
+    bal:number, // 0-9 
+    complexity:number, // 0-30
+    contrast:number, // 0-10
+})=>{
+    let getBalance = ()=>{ //flat line starts at % of Y-axis
+        switch(obj.bal!){
+            case 0: return .95;
+            case 1: return .90;
+            case 2: return .85;
+            case 3: return .80;
+            case 4: return .75;
+            case 5: return .70;
+            case 6: return .65;
+            case 7: return .60;
+            case 8: return .55;
+            case 9: return .50;
+        }
+    }
+    let getContrast = (cbal:number)=>{ //min max Y-coords based on % of unused Y-axis 
+        let avail = obj.h-cbal //1-.95 = .05 avail
+        console.log(cbal)
+        switch(obj.contrast!){ //min:
+            case 0: return {min:cbal-(avail*0),max:cbal+(avail*0)};
+            case 1: return {min:cbal-(avail*.1),max:cbal+(avail*.1)};
+            case 2: return {min:cbal-(avail*.2),max:cbal+(avail*.2)};
+            case 3: return {min:cbal-(avail*.3),max:cbal+(avail*.3)};
+            case 4: return {min:cbal-(avail*.4),max:cbal+(avail*.4)};
+            case 5: return {min:cbal-(avail*.5),max:cbal+(avail*.5)};
+            case 6: return {min:cbal-(avail*.6),max:cbal+(avail*.6)};
+            case 7: return {min:cbal-(avail*.7),max:cbal+(avail*.7)};
+            case 8: return {min:cbal-(avail*.8),max:cbal+(avail*.8)};
+            case 9: return {min:cbal-(avail*.9),max:cbal+(avail*.9)};
+            case 10: return {min:cbal-(avail*1),max:cbal+(avail*1)};
+        }
+    }
+    let getComplexity = ()=>{
+        switch(obj.complexity!){
+            case 0: return 0;
+            case 1: return 2;
+            case 2: return 3;
+            case 3: return 4;
+            case 4: return 5;
+            case 5: return 6;
+            case 6: return 7;
+            case 7: return 8;
+            case 8: return 9;
+            case 9: return 10;
+            case 10: return 11;
+            case 11: return 12;
+            case 12: return 13;
+            case 13: return 14;
+            case 14: return 15;
+            case 15: return 16;
+            case 16: return 17;
+            case 17: return 18;
+            case 18: return 19;
+            case 19: return 20;
+            case 20: return 21;
+            case 21: return 22;
+            case 22: return 23;
+            case 23: return 24;
+            case 24: return 25;
+            case 25: return 26;
+            case 26: return 27;
+            case 27: return 28;
+            case 28: return 29;
+            case 29: return 30;
+            case 30: return 31;
+        }
+    }
+    let getFirstPoint = (min:number,max:number,origin:number)=>{
+        let yPoint = Math.round(Math.random() * (max - min) + min*100)/100
+        /* 
+                45 prevYisAbove = true
+        50 ------------------------
+                55 prevYisAbove = false
+        */
+        if(origin > yPoint){//states if point is above or below
+            prevYisAbove = true
+        } else prevYisAbove= false
+
+        return {x:0,y:yPoint}
+    }
+    let getLastPoint = (min:number,max:number)=>{
+        let yPoint = Math.random() * (max - min) + min
+
+        return {x:obj.w,y:yPoint}
+    }
+    let getAnchorPoint=()=>{}
+    let getRndYCoord = (prevY:number,limit:{
+        min:number,
+        max:number
+    })=>{
+        /* 
+                45 prevYisAbove = true
+        50 ----------------------------------
+                55 prevYisAbove = false
+        */
+       let yPoint
+        if(prevYisAbove){
+            prevYisAbove = !prevYisAbove
+            yPoint = Math.round(Math.random() * (limit.max - prevY) + prevY*100)/100
+        } else {
+            prevYisAbove = !prevYisAbove
+            yPoint = Math.round(Math.random() * (limit.min - prevY) + prevY*100)/100
+        }
+
+        return yPoint
+    }
+
+    console.log("FIX CONTRAST")
+    console.log("FIX first point must not be stuck at one point")
+    console.log(obj)
+    let d = ""
+    let prevYisAbove = false
+    let yOrigin = getBalance()! * obj.h
+    let yLimits = getContrast(yOrigin)!
+    let complexity = getComplexity()
+    console.log(yLimits)
+
+    let startPoint = getFirstPoint(yLimits.min,yLimits.max,yOrigin)
+    let lastPoint = getLastPoint(yLimits.min,yLimits.max)
+    d+= "M" + startPoint.x + " " + startPoint.y + " "
+    
+    if(complexity == 0){
+        d+= "L" + lastPoint.x + " " + lastPoint.y
+        return d
+    } else {
+        
+        // c1 M C C
+        let totalPoints = complexity!//how many C cmnds to make
+        let cPoint = 1
+        let space = obj.w / totalPoints
+        while (cPoint < totalPoints + 1){
+            let x = Math.round(cPoint++ * space *100)/100//next xCoord
+
+            console.log("point created")
+            d+= "L" + x + " " + getRndYCoord(startPoint.y,yLimits) + " "
+            
+
+            if(cPoint == totalPoints + 1){
+                d+= "z"
+            }
+            //C50 82 52 45 63 84
+            //how to make these C cmnds
+            //first get next X point
+        }
+        
+        return d
+    }
+    
+    console.log("TO DO: GET x-axis of 1st L COMMAND")
+    console.log({
+        yOrigin:yOrigin,
+        yLimits:yLimits,
+    })
+/* 
+
+complexity 0-30
+
+M0 464
+L75 448
+C150 432 300 400 450 339.5
+C600 279 750 190 825 145.5
+L900 101
+
+M0 296L50 262.8
+C100 229.7 200 163.3 300 196.7
+C400 230 500 363 600 416.7
+C700 470.3 800 444.7 850 431.8
+L900 419
+
+*/
+}
+
+/* 
+M65 37.5
+C43.3 75 -43.3 75 -65 37.5
+C-86.6 0 -43.3 -75 0 -75
+C43.3 -75 86.6 0 65 37.5
+
+M65 37.5
+C43.3 75 -43.3 75 -65 37.5
+C-86.6 0 -43.3 -75 0 -75
+C43.3 -75 86.6 0 65 37.5
+
+M100 0
+C100 50 50 100 0 100
+C-50 100 -100 50 -100 0
+C-100 -50 -50 -100 0 -100
+C50 -100 100 -50 100 0
+
+
+*/
 export function nSvg(request:svgTemplate){ 
     // ---------------------- SETUP SVG --------------
     let xmlns = "http://www.w3.org/2000/svg"
-    let svg = document.createElementNS(xmlns, "svg");
+    let svg = document.createElementNS(xmlns, "svg")
     
     if(typeof request.viewBox == "string"){
         let length = request.viewBox.split(" ").length
@@ -305,7 +579,6 @@ export function nSvg(request:svgTemplate){
             }
         }
     }
-
     svg.setAttributeNS(null, "viewBox", request.viewBox || "0 0 100 100");
     svg.setAttribute("xmlns", xmlns);
     // preserveAspectRatio?
@@ -317,71 +590,70 @@ export function nSvg(request:svgTemplate){
 
         addPEAS(cGroup,group)
         group.shapes.forEach((shape) => { //set shapes
-            let nShape:any;
+            // console.log(shape)
+            let nShape:any = document.createElementNS(xmlns, "path")
 
             Object.entries(shape).forEach(([key,val])=>{
                 // console.log(shape) //obj
                 // console.log(key) //shape["key"] = "value"
-                if(key == "type"){
-                    if (val.includes("circ")) {
-                        nShape = document.createElementNS(xmlns, "circle");
-                        nShape.setAttributeNS(null, "r", shape.r!);
-                        nShape.setAttributeNS(null, "cx", shape.cx!);
-                        nShape.setAttributeNS(null, "cy", shape.cy!);
-                    } else if (val.includes("rect")) {
-                        nShape = document.createElementNS(xmlns, "rect");
-                        nShape.setAttributeNS(null, "width", shape.width || "");
-                        nShape.setAttributeNS(null, "height", shape.height || "");
+               
+                if (key.includes("circ")) {
+                    nShape = document.createElementNS(xmlns, "circle");
+                    nShape.setAttributeNS(null, "r", val.r);
+                    nShape.setAttributeNS(null, "cx", val.cx || 0 );
+                    nShape.setAttributeNS(null, "cy", val.cy || 0);
+                } else if (key.includes("rect")) {
+                    nShape = document.createElementNS(xmlns, "rect");
+                    nShape.setAttributeNS(null, "width", val.width);
+                    nShape.setAttributeNS(null, "height", val.height);
 
-                        if (shape.rx) {
-                            nShape.setAttributeNS(null, "rx", shape.rx || "");
-                        }
-                        if (shape.ry) {
-                            nShape.setAttributeNS(null, "ry", shape.ry || "");
-                        }
-                        if (shape.x) {
-                            nShape.setAttributeNS(null, "x", shape.x || "");
-                        }
-                        if (shape.y) {
-                            nShape.setAttributeNS(null, "y", shape.y || "");
-                        }
+                    nShape.setAttributeNS(null, "rx", val.rx || 0);
+                    nShape.setAttributeNS(null, "ry", val.ry || 0);
+                    nShape.setAttributeNS(null, "x", val.x || 0);
+                    nShape.setAttributeNS(null, "y", val.y || 0);
 
-                    } else if (val.includes("ellip")) {
-                        nShape = document.createElementNS(xmlns, "ellipse");
-                        nShape.setAttributeNS(null, "cx", shape.cx!);
-                        nShape.setAttributeNS(null, "cy", shape.cy!);
-                        nShape.setAttributeNS(null, "rx", shape.rx!);
-                        nShape.setAttributeNS(null, "ry", shape.ry!);
-                    } else if (val.includes("line")) {
-                        nShape = document.createElementNS(xmlns, "line");
-                        nShape.setAttributeNS(null, "x1", shape.x1!);
-                        nShape.setAttributeNS(null, "x2", shape.x2!);
-                        nShape.setAttributeNS(null, "y1", shape.y1!);
-                        nShape.setAttributeNS(null, "y2", shape.y2!);
-                    } else if (val.includes("polyl")) {
-                        nShape = document.createElementNS(xmlns, "polyline");
-                        nShape.setAttributeNS(null, "points", shape.points!);
-                    } else if (val.includes("polyg")) {
-                        nShape = document.createElementNS(xmlns, "polygon");
-                        nShape.setAttributeNS(null, "points", shape.points!);
-                    } else if (val.includes("blob")) {
-                        nShape = document.createElementNS(xmlns, "path");
-                        nShape.setAttribute("type", val);
-                        nShape.setAttributeNS(null, "d", blobGen(shape.blob!));
-                        Object.assign(nShape,{ //store blob request parameters
-                            config:shape.blob!,
-                            update:function(){
-                                nShape.setAttribute("d",blobGen(this.config!) )
-                            }
-                        })
-                    }
-                } else if (key == "d"){
+                } else if (key.includes("ellip")) {
+                    nShape = document.createElementNS(xmlns, "ellipse");
+                    nShape.setAttributeNS(null, "cx", val.cx || 0);
+                    nShape.setAttributeNS(null, "cy", val.cy || 0);
+                    nShape.setAttributeNS(null, "rx", val.rx);
+                    nShape.setAttributeNS(null, "ry", val.ry);
+                } else if (key.includes("line")) {
+                    nShape = document.createElementNS(xmlns, "line");
+                    nShape.setAttributeNS(null, "x1", val.x1);
+                    nShape.setAttributeNS(null, "x2", val.x2);
+                    nShape.setAttributeNS(null, "y1", val.y1);
+                    nShape.setAttributeNS(null, "y2", val.y2);
+                } else if (key.includes("polyl")) {
+                    nShape = document.createElementNS(xmlns, "polyline");
+                    nShape.setAttributeNS(null, "points", val.points);
+                } else if (key.includes("polyg")) {
+                    nShape = document.createElementNS(xmlns, "polygon");
+                    nShape.setAttributeNS(null, "points", val.points);
+                } else if (key.includes("path")) {
                     nShape = document.createElementNS(xmlns, "path");
-                } else if (key == "fill"){
-                    nShape.setAttribute("fill", val);
-                } else if (key == "stroke"){
-                    nShape.setAttribute("stroke", val);
-                } 
+                    nShape.setAttribute("d", val.points);
+
+                } else if (key.includes("blob")) {
+                    nShape = document.createElementNS(xmlns, "path");
+                    nShape.setAttribute("type", key);
+                    nShape.setAttributeNS(null, "d", blobGen(val));
+                    Object.assign(nShape,{ //store blob request parameters
+                        config:val,
+                        update:function(){
+                            nShape.setAttribute("d",blobGen(this.config!) )
+                        }
+                    })
+                } else if (key.includes("wave")) {
+                    nShape = document.createElementNS(xmlns, "path");
+                    let viewBox = svg.getAttribute("viewBox")?.split(" ")
+                    nShape.setAttribute("type", key);
+
+                    let d = waveGen({...val,w:parseFloat(viewBox![2]),h:parseFloat(viewBox![3])})
+                    console.log(d)
+                    nShape.setAttributeNS(null, "d", d);
+                }
+                
             })
             addPEAS(nShape,shape)
 
@@ -389,7 +661,8 @@ export function nSvg(request:svgTemplate){
         });
         svg.appendChild(cGroup);
     });
-
+    
+    console.log(svg)
     return svg;
 }
 export function normalizeSvg(request:svgTemplate){
@@ -417,10 +690,8 @@ export function normalizeSvg(request:svgTemplate){
         [
             {
                 shape:[
-                    {type:"rect",width:"8",height:"8",rx:"2"},
-                    {type:"rect",width:"8",height:"8",x:"10",rx:"2"},
-                    {type:"rect",width:"8",height:"8",x:"10",y:"10",rx:"2"},
-                    {type:"rect",width:"8",height:"8",y:"10",rx:"2"},
+                    {rect:{width:8,height:8,rx:2}},
+                    {rect:{width:8,height:8,rx:2}}
                 ]
             }
         ]
@@ -428,115 +699,192 @@ export function normalizeSvg(request:svgTemplate){
     /* group looks like this: obj
         {
             shape:[
-                {type:"rect",width:"8",height:"8",rx:"2"},
-                {type:"rect",width:"8",height:"8",x:"10",rx:"2"},
-                {type:"rect",width:"8",height:"8",x:"10",y:"10",rx:"2"},
-                {type:"rect",width:"8",height:"8",y:"10",rx:"2"},
+                {rect:{width:8,height:8,rx:2}},
+                {rect:{width:8,height:8,rx:2}}
             ]
         }
     */
     /* shapes look like this: arr
         [
-            {type:"rect",width:"8",height:"8",rx:"2"},
-            {type:"rect",width:"8",height:"8",x:"10",rx:"2"},
-            {type:"rect",width:"8",height:"8",x:"10",y:"10",rx:"2"},
-            {type:"rect",width:"8",height:"8",y:"10",rx:"2"},
+            {rect:{width:8,height:8,rx:2}},
+            {rect:{width:8,height:8,rx:2}},
         ]
      */
     /* shape look like this: obj
-        {type:"rect",width:"8",height:"8",rx:"2"},
+        {rect:{width:8,height:8,rx:2}},
     */
     
     request.groups.forEach((group,groupNum) => {
         group.shapes.forEach((shape,shapeNum) => { //set shapes
 
-            let keyNames = Object.keys(shape)
-            
-            keyNames.forEach((key: string)=>{
-                // {type:"rect",width:"8",height:"8",x:"10",rx:"2"},
-                // 
+            let hasWidthParam = [
+                "x",
+                "x1",
+                "x2",
+                "rx",
+                "cx",
+                "width",
+            ]
+            let hasHeightParam = [
+                "y",
+                "y1",
+                "y2",
+                "ry",
+                "cy",
+                "height"
+            ]
+            let prefersSmallerSideParam = [
+                "r"
+            ]
+            let hasBothParams = [
+                // "r",
+                "d",
+                "points"
+            ]
 
-                let hasWidthParam = [
-                    "x",
-                    "x1",
-                    "x2",
-                    "rx",
-                    "cx",
-                    "width",
-                ]
-                let hasHeightParam = [
-                    "y",
-                    "y1",
-                    "y2",
-                    "ry",
-                    "cy",
-                    "height"
-                ]
-                let prefersSmallerSideParam = [
-                    "r"
-                ]
-                let hasBothParams = [
-                    // "r",
-                    "d",
-                    "points"
-                ]
+            let normalizeWidth = (x:number | string)=>{
+                if(typeof x ==  "number"){
+                    return ((x / prevViewbox.width) * 100).toFixed(2)
+                } else if(typeof x ==  "string"){
+                    return ((parseFloat(x) / prevViewbox.width) * 100).toFixed(2)
+                } else throw new Error("something went wrong")
+            }
+            let normalizeHeight = (y:number | string)=>{
+                if(typeof y ==  "number"){
+                    return ((y / prevViewbox.height) * 100).toFixed(2)
+                } else if(typeof y ==  "string"){
+                    return ((parseFloat(y) / prevViewbox.height) * 100).toFixed(2)
+                } else throw new Error("something went wrong")
+            }
+            // let normalizeHeight = (x:any)=>{return x}
+            // let normalizeWidth = (x:any)=>{return x}
 
-                /* 
-                FIND WAY TO ASSIGN NVAL TO REQUEST(obj)
-                
-                goal
-                get value of shape.prop
-                then modify shape.prop to accomodate the viewbox 0 0 100 100
-                then reassign new shape.prop value back to the request 
-                then return request obj
-                */
-                let nPropVal
-                let prop = key as keyof typeof shape
-                let propVal = shape[prop]
+            let nShape:svgShape = shape
+            // {rect:{width:25,height:20,x:20,y:20}}
 
-                
-                if(typeof propVal == "string"){
+            let nVal:any; // rect:{width:25,height:20,x:20,y:20}
+            Object.entries(shape).forEach(([key,val])=>{
+                //key = rect; val = {width:25,height:20,x:20,y:20}
 
-                    let normalizeWidth = (x:string)=>((parseFloat(x) / prevViewbox.width) * 100).toFixed(2)
-                    let normalizeHeight = (y:string)=>((parseFloat(y) / prevViewbox.height) * 100).toFixed(2)
-                    // let normalizeHeight = (y:string)=>(y)
-                    // let normalizeWidth = (x:string)=>(x)
+                if(["circ","rect","ellip","line"].includes(key)){
+                    let cVal = nVal = val
+                    Object.keys(val).forEach(key1=>{ //width,height,x,y
+                        if(hasWidthParam.includes(key1)){
+                            Object.assign(nVal!,{[key1]:normalizeWidth(val[key1])})
+                        } else if (hasHeightParam.includes(key)){
+                            Object.assign(nVal,{[key1]:normalizeHeight(val[key])})
+                        } else if (prefersSmallerSideParam.includes(key)){
+                            Object.assign(nVal!,{[key1]:prevViewbox.width > prevViewbox.height ?
+                                normalizeHeight(val[key]):normalizeWidth(val[key])})
+                        }
+                    })
+
+                    key.includes("circ")?
+                    Object.assign(nShape.circle!,nVal)
+                    : key.includes("rect") ?
+                    Object.assign(nShape.rect!,nVal)
+                    : key.includes("ellip") ?
+                    Object.assign(nShape.ellipse!,nVal)
+                    : Object.assign(nShape.line!,nVal)
+
+
+
+                } else if (["polyl","polyg"].includes(key)){
+                    //key = rect; val = {width:25,height:20,x:20,y:20}
+                    let cVal:{points:string} = nVal = {...val}
+                    let pointsString = ""
+                    Object.keys(cVal).forEach(key1=>{ //width,height,x,y
+                        if(key1 == "points"){
+                            cVal.points.split(" ").map(i=>i.split(",")).toString().split(",").forEach((i,pos)=>{
+                                if((pos+1)%2){ pointsString += normalizeWidth(i) + ","
+                                } else pointsString += normalizeHeight(i) + " "
+                            })
+                        }
+                    })
+                    // Object.assign(nVal,{["points"]:pointsString})
                     
-                    
-                    if (hasBothParams.includes(prop)){
+                    key.includes("polyl") ? 
+                    Object.assign(nShape.polyline!,{["points"]:pointsString})
+                    : Object.assign(nShape.polygon!,{["points"]:pointsString})
 
-                        if(prop == "d"){
+                } else if (key == "path"){
+                    //key = rect; val = {width:25,height:20,x:20,y:20}
+                    let cVal:{d:string} = nVal = {...val}
+                    Object.keys(cVal).forEach(key1=>{ //width,height,x,y
+                        if(key1 == "d"){
+                            // cVal.d //d
 
                             let isLetter = new RegExp(/[A-Za-z]/)
                             let isNum = new RegExp(/[0-9]/)
-                            let isNum2 = false
-                            let isNega = false
-                            let hasDecimal = false
                             let nArr:string[] = []
-                            propVal.split("").forEach((i)=>{
-                                if(isLetter.test(i)){
-                                    isNega = hasDecimal = isNum2 = false
-                                    nArr.push(i)
-                                } else if (i=="-"){
-                                    if(!isNega){isNega = !isNega}
-                                    nArr.push(i)
-                                } else if (i=="." && !hasDecimal ){
-                                    hasDecimal = !hasDecimal
-                                    if(!isNum2){nArr.push(i)}
-                                    else  nArr[nArr.length-1] = nArr[nArr.length-1] + i
-                                } else if (isNum.test(i)){
-                                    if([hasDecimal,isNum2,isNega].includes(true)){
-                                        nArr[nArr.length-1] = nArr[nArr.length-1] + i
-                                    } else {
-                                        isNum2 = !isNum2
-                                        nArr.push(i)
-                                    }
-                                } else {
-                                    // console.log("this item was discarded: " + i + " !")
-                                    isNega = hasDecimal = isNum2 = false
+                            let dArr = cVal.d.split("")
+                            let cPos = 0
+                            
+                            dArr.forEach((i,pos)=>{
+                                if(i == " "){
+                                    cPos++
+                                    // console.log("SPACE pos" +pos + ", cPos" + cPos)
+                                    return
                                 }
+                                if(pos < cPos)return //skip
+                                if(cPos > pos)throw new Error("WTF")
+                                // console.log(dArr[pos],"pos" + pos)
+
+                                if(isLetter.test(i)){
+                                    nArr.push(i)
+                                    cPos++
+                                    // console.log("LETTER pos" +pos + ", cPos" + cPos)
+                                    // console.log(i)
+                                } else if (i =="-"){
+                                    let val = i
+                                    cPos++
+                                    let hasDecimal = false
+
+                                    while(isNum.test(dArr[cPos]) || dArr[cPos] =="."){
+                                        if(isNum.test(dArr[cPos])){
+                                            // console.log("NEGA++ pos" +pos + ", cPos" + cPos)
+                                            val += dArr[cPos]
+                                            cPos++
+                                        } else if (dArr[cPos] =="." && hasDecimal){
+                                            // console.log("NEGA ENDED pos" +pos + ", cPos" + cPos)
+                                            nArr.push(val)
+                                            return
+                                        } else if(dArr[cPos] =="."){
+                                            hasDecimal = true
+                                            // console.log("NEGA++ pos" +pos + ", cPos" + cPos)
+                                            val += dArr[cPos]
+                                            cPos++
+                                        }
+                                    }
+                                    nArr.push(val)
+                                    // console.log("NEGA pos" +pos + ", cPos" + cPos)
+                                    // console.log(val)
+                                } else if (i =="."){
+                                    let val = i // "."
+                                    cPos++
+                                    while(isNum.test(dArr[cPos])){
+                                        // console.log("DECIMAL++ pos" +pos + ", cPos" + cPos)
+                                        val += dArr[cPos]
+                                        cPos++
+                                    } 
+                                    nArr.push(val)
+                                    // console.log("DECIMAL pos" +pos + ", cPos" + cPos)
+                                    // console.log(val)
+                                } else if (isNum.test(i)){
+                                    let val = i
+                                    cPos++
+                                    while(isNum.test(dArr[cPos]) || dArr[cPos] =="."){
+                                        // console.log("NUMBER++ pos" +pos + ", cPos" + cPos)
+                                        val += dArr[cPos]
+                                        cPos++
+                                    }
+                                    nArr.push(val)
+                                    // console.log("NUMBER pos" +pos + ", cPos" + cPos)
+                                    // console.log(val)
+                                }
+
                             })
-                            // console.log(nArr.join(" "))
+                            console.log(nArr.join(" "))
 
                             let prevLPos = 0
                             let maxPos = 0
@@ -646,298 +994,43 @@ export function normalizeSvg(request:svgTemplate){
                                 // M 12 3 a 9 9 0 0 1 4.1 17 H 18 a 1 1 0 0 1 .1 2 H 18 h -4 a 1 1 0 0 1 -1 -.9 V 21 v -4 a 1 1 0 0 1 2 -.1 v .1 1.3 A 7 7 0 0 0 12 5 a 7 7 0 0 0 -7 7 1 1 0 1 1 -2 0 9 9 0 0 1 9 -9 z m 0 6 a 3 3 0 1 1 0 6 3 3 0 1 1 0 -6 z m 0 2 a 1 1 0 1 0 0 2 1 1 0 1 0 0 -2 z 
 
                             })
-                            nPropVal = d
+                            Object.assign(nShape.path!,{["d"]:d})
+                            // console.log(nShape.path!.d)
+
+
+                            // Object.assign(request.groups[groupNum].shapes[shapeNum],{[key]:nVal})
+                            
                             // console.log(d)
 
-                        }
-                        else if (prop = "points"){
-                            propVal.split(" ").map(i=>i.split(",")).toString().split(",").forEach((i,pos)=>{
-                                if((pos+1)%2){ nPropVal = normalizeWidth(i) + ","
-                                } else nPropVal = normalizeHeight(i) + " "
-                            })
-                        }
+                            /* 
+M 3 15 h .1 a 1 1 0 0 1 .9 9 v .1 v 4 h 4 h .1 a 1 1 0 0 1 0 2 H 8 H 3 h -.1 a 1 1 0 0 1 -.9 - 9 V 21 v -5 - .1 a 1 1 0 0 1 .9 - 9 H 3 z m 18 0 a 1 1 0 0 1 1 .9 v .1 5 a 1 1 0 0 1 -.9 1 H 21 h -5 a 1 1 0 0 1 -.1 -2 h .1 4 v -4 a 1 1 0 0 1 .9 -1 h .1 z M 8 2 a 1 1 0 0 1 .1 2 H 8 4 v 4 a 1 1 0 0 1 -.9 1 H 3 a 1 1 0 0 1 -1 -.9 V 8 3 a 1 1 0 0 1 .9 -1 H 3 h 5 z m 13 0 h .1 a 1 1 0 0 1 .9 9 V 3 v 5 .1 a 1 1 0 0 1 -.9 9 H 21 h - .1 a 1 1 0 0 1 -.9 - 9 V 8 4 h -4 - .1 a 1 1 0 0 1 0 -2 h .1 5 z
+M 3 15 5 h .1 1 a 1 1 0 0 1 .9 9.9 9 v .1 1 4 h 4 .1 1 a 1 1 0 0 1 0 2 H 8 3 h -. .1 1 a 1 1 0 0 1 -. .9 9 -. .9 9 V 21 1 v -5 5 -. .1 1 a 1 1 0 0 1 .9 9 -. .9 9 H 3 z m 18 8 0 a 1 1 0 0 1 1 .9 9 v .1 1 5 a 1 1 0 0 1 -. .9 9 1 H 21 1 h -5 5 a 1 1 0 0 1 -. .1 1 -2 2 h .1 1 4 v -4 4 a 1 1 0 0 1 .9 9 -1 1 h .1 1 z M 8 2 a 1 1 0 0 1 .1 1 2 H 8 4 v 4 a 1 1 0 0 1 -. .9 9 1 H 3 a 1 1 0 0 1 -1 1 -. .9 9 V 8 3 a 1 1 0 0 1 .9 9 -1 1 H 3 h 5 z m 13 3 0 h .1 1 a 1 1 0 0 1 .9 9.9 9 V 3 v 5 .1 1 a 1 1 0 0 1 -. .9 9.9 9 H 21 1 h -. .1 1 a 1 1 0 0 1 -. .9 9 -. .9 9 V 8 4 h -4 4 -. .1 1 a 1 1 0 0 1 0 -2 2 h .1 1 5 z
 
-                    }
-                } else if (typeof propVal == "number"){
-                    let normalizeWidth = (x:number)=>((x / prevViewbox.width) * 100).toFixed(2)
-                    let normalizeHeight = (y:number)=>((y / prevViewbox.height) * 100).toFixed(2)
-                    // let normalizeHeight = (y:string)=>(y)
-                    // let normalizeWidth = (x:string)=>(x)
 
-                    if(hasWidthParam.includes(prop)){ nPropVal = normalizeWidth(propVal)
-                    } else if (hasHeightParam.includes(prop)){nPropVal = normalizeHeight(propVal)
-                    } else if (prefersSmallerSideParam.includes(prop)){
-                        nPropVal = prevViewbox.width > prevViewbox.height ?
-                            normalizeHeight(propVal):normalizeWidth(propVal)
-                    }
+*/
+                        }
+                    })
                 }
-           
-                // console.log(nPropVal)
-                Object.assign(request.groups[groupNum].shapes[shapeNum],{[prop]:nPropVal})
-
-                /* 
-                d?:string,
-                points?:string,
-                x1?:string,
-                x2?:string,
-                y1?:string,
-                y2?:string,
-                rx?:string,
-                ry?:string,
-                cx?:string,
-                cy?:string,
-                r?:string,
-                x?:string,
-                y?:string,
-                width?:string,
-                height?:string,
-                */
             })
-        
+            
+            Object.assign(request.groups[groupNum].shapes[shapeNum],nShape)
         })
     })
-
-    // console.log(request)
-}
-export function genBlob234(obj:{
-    x:number //centerX
-    y:number //centerY
-    r:number //radius
-    c:number //complexity 1-4
-    rnd:boolean
-}){
-    console.log("TO DO: TRY isPointInStroke for collision detection")
-    console.log("TO DO: TRY isPointInStroke if stroke is none")
-    console.log("TO DO: do viewbox as numbers []1,2,...]")
-    /* 
-    sampleSVG:{
-        viewBox: "24 24", // max 4 num, missing nums will be replaced by 0s
-        groups:[
-            {
-                blobs:[
-                    {
-                        x: number
-                        y: number
-                        r: number
-                        c: number
-                        rnd: boolean
-                        styles:[{name:"",val:""}],
-                        props:[{name:"",val:""}],
-                        attributes:[{ name:"",val:""}]    
-                        event:[{ name:"",val:""}]   
-                    }
-                ]
-                shapes:[
-                    {
-                        d:"",
-                        styles:[{name:"",val:""}],
-                        props:[{name:"",val:""}],
-                        attributes:[{ name:"",val:""}]    
-                        event:[{ name:"",val:""}]  
-                    }   
-                ],
-                styles:[{name:"",val:""}],
-                props:[{name:"",val:""}],
-                attributes:[{ name:"",val:""}]  
-                event:[{ name:"",val:""}]    
-            }
-        ],
-        styles:[{name:"",val:""}],
-        props:[{name:"",val:""}],
-        attributes:[{ name:"",val:""}]  
-        event:[{ name:"",val:""}]    
-    },
-    
-    */
-    
-    let xmlns = "http://www.w3.org/2000/svg"
-    let svg = document.createElementNS(xmlns, "svg");
-
-    svg.setAttributeNS(null, "viewBox", "0 0 100 100");
-    svg.setAttribute("xmlns", xmlns);
-    svg.setAttribute("stroke", "black");
-    svg.setAttribute("fill", "none");
-
-    //gen path
-    let nShape = document.createElementNS(xmlns, "path");
-    nShape.setAttribute("stroke","white")
-    nShape.setAttribute("fill","white")
-    Object.assign(nShape,{
-        config:obj,
-        update:function(){
-            nShape.setAttribute("d",blobGen(this.config!) )
-        }
-    })
-
-
-    //for troubleshooting
-    /* let guide2 = document.createElementNS(xmlns, "path");
-    let guidePath = ""
-    guide2.setAttribute("stroke","rgba(144,144,144,.5)")
-    guide2.setAttribute("stroke","none")
-
-    let guide = document.createElementNS(xmlns, "circle");
-    guide.setAttribute("r","25")
-    guide.setAttribute("cx","50")
-    guide.setAttribute("cy","50") */
-
-    /* GUIDE
-        start first point between center and shortest side
-        to check if it is a vertex of a circ do x^2 + y^2 = r^2
-        to check if vertex complies its circ do (x-h)^2 + (y-k)^2 = r^2 (if origin is not 0,0)
-        x = rSin(deg) , y = rCos(deg)
-        get coordinates by using origin, angle and radius
-        x= r*Math.sin((deg * Math.PI)/180) 
-        y= r*Math.cos((deg * Math.PI)/180)
-
-        let start = "M 50,50 L 50,25z"
-        let p1 = "M 50,50 L 71.65,62.50z"
-        let p2 = "M 50,50 L 28.35,62.50z"
-        let p3 = "";
-    */
-    let blobGen =(obj:{
-        x:number //centerX
-        y:number //centerY
-        r:number //radius
-        c:number //complexity 1-4
-        rnd:boolean
-    })=>{
-        let isRNG = ()=>{
-            if(obj.rnd){
-                return Math.random() * (1 - 0.25) + .25
-            } else return 1
-        }
-        let getXYCoord =(obj:{
-            r:number
-            deg:number
-            x:number
-            y:number
-        })=>{
-            let rng = obj.r * isRNG()!
-            // let rng2 = obj.deg * (Math.random() * (1 - 0.9875) + 0.975)
-            // let x = Math.round((obj.x + ((rng) *Math.sin((rng2 * Math.PI)/180)))*100)/100
-            // let y = Math.round((obj.y - ((rng) *Math.cos((rng2 * Math.PI)/180)))*100)/100
-            let x = Math.round((obj.x + ((rng) *Math.sin((obj.deg * Math.PI)/180)))*100)/100
-            let y = Math.round((obj.y - ((rng) *Math.cos((obj.deg * Math.PI)/180)))*100)/100
-            
-            // console.log(rng1,rng2,"total:",(rng1+rng2).toFixed(2))
-            return {x,y,deg:obj.deg,rng}
-        }
-        let getR = (obj:{ //get proper radius for proper Circle
-            c:number
-            r:number
-        })=>{
-            switch(obj.c){
-                case 1: return obj.r *.77
-                case 2: return obj.r *.55
-                case 3: return obj.r *.4
-                case 4: return obj.r *.33
-            }
-        }
-        let getA1CoordDeg =(obj:{ //get proper degree for anchor coordinate to create a circle
-            c:number
-            prevDeg:number
-            deg:number
-        })=>{
-            switch(obj.c){
-                case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*.75
-                case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*1
-                case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.2
-                case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*1.475
-            }
-        }
-        let getA2CoordDeg =(obj:{ //get proper degree for anchor coordinate to create a circle
-            c:number
-            prevDeg:number
-            deg:number
-        })=>{
-            switch(obj.c){
-                case 1: return obj.prevDeg + (obj.deg - obj.prevDeg)*.25
-                case 2: return obj.prevDeg + (obj.deg - obj.prevDeg)*0
-                case 3: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.2
-                case 4: return obj.prevDeg + (obj.deg - obj.prevDeg)*-.475
-            }
-        }
-
-        let startPoint = {x:obj.x, y:obj.y - (obj.r*isRNG())}
-        // console.log(startPoint)
-        let d= "M " + startPoint.x + "," + startPoint.y + " "
-        if([1,2,3,4].includes(obj.c)){
-            //get number of circle points depending on complexity (min:3 max:6)
-            let points = obj.c == 1 ? 3 : obj.c == 2 ? 4 : obj.c == 3 ? 5 : 6
-            let space = 360/points
-            let pos = 0
-            let prevPoint = startPoint
-            let prevDeg = 0
-
-            while(pos != points){
-                let deg = space * (pos + 1)
-                let cPoint = getXYCoord({ //accurate next point on the perfect circle
-                    r:obj.r,
-                    x:obj.x,
-                    y:obj.y,
-                    deg:deg
-                })
-                if(points == (pos + 1)){
-                    cPoint.x = startPoint.x
-                    cPoint.y = startPoint.y
-                }
-                
-                let anchorRadius = getR({c:obj.c,r:obj.r})
-                let a1Deg = getA1CoordDeg({c:obj.c,deg:deg,prevDeg:prevDeg})!
-                let a2Deg = getA2CoordDeg({c:obj.c,deg:deg,prevDeg:prevDeg})!
-
-                let a1 = getXYCoord({ //anchor for prevPoint
-                    r:anchorRadius!,
-                    x:prevPoint.x,
-                    y:prevPoint.y,
-                    deg:a1Deg
-                })
-                let a2 = getXYCoord({ //anchor for cPoint
-                    r:anchorRadius!,
-                    x:cPoint.x,
-                    y:cPoint.y,
-                    deg:a2Deg
-                })
-                // console.log("newPoint",cPoint)
-                // console.log("a1",a1)
-                // console.log("a2",a2)
-
-                // guidePath = guidePath + "M" + prevPoint.x + "," + prevPoint.y + " L" + a1.x + "," + a1.y + " M" + cPoint.x + "," + cPoint.y + " L" + a2.x + "," + a2.y + " "
-                let c = "C " + a1.x + "," + a1.y + " " + a2.x + "," + a2.y + " " + cPoint.x + "," + cPoint.y
-                if(points == (pos + 1)){c = c + "z"}
-                d = d + c + " "
-                
-                // console.log(c)
-
-                prevPoint = cPoint //transfer coords of currentPoint
-                prevDeg = deg //transfer deg of currentPoint
-                pos++
-            }
-            
-            // console.log(d)
-            return d
-        } else throw Error ("Blob complexity can only be 1-4")
-    }
-    // let d = blobGen({r:25,x:50,y:50,c:1,rnd:true})
-    // let d = blobGen({r:25,x:50,y:50,c:1,rnd:false})
-    // let d = blobGen({r:25,x:50,y:50,c:2,rnd:true})
-    // let d = blobGen({r:25,x:50,y:50,c:2,rnd:false})
-    // let d = blobGen({r:25,x:50,y:50,c:3,rnd:false})
-    // let d = blobGen({r:25,x:50,y:50,c:4,rnd:true})
-    // let d = blobGen({r:25,x:50,y:50,c:4,rnd:false})
-    
-
-    nShape.setAttributeNS(null, "d", blobGen(obj));
-    svg.appendChild(nShape)
-
-    //for troubleshooting
-    // guide2.setAttributeNS(null, "d", guidePath);
-    // svg.appendChild(guide)
-    // svg.appendChild(guide2)
-    return svg
+    console.log(request)
+    return request
 }
 
+/* 
+17
+60
+10
+60
+1070
+
+2000
+
+
+*/
 /* 
 use case
 for pragrammatical adding of SVG

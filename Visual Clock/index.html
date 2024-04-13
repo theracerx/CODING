@@ -109,6 +109,10 @@
     let synth = window.speechSynthesis
     let voices = synth.getVoices()
     const update = new SpeechSynthesisUtterance()
+    /* how to use speech synthesis
+    update.text = "It's now " + HH + "o'clock in the " + partOfTheDay
+    window.speechSynthesis.speak(update)
+    */
     let isOclock = false
     let isHalfOclock = false
 

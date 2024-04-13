@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <radio-player id="rad">
+    </radio-player>
+    <button id="tstBtn" class="radioStartBtn">TEST22</button>
+</body>
+
+<script type="module">
+    import data from "./stations.json" assert {type:"json"}
+    import {AudioRadio} from "./radio.js"
+    import {addNormalizePlayer} from "../Normalizer module/normalizeplayer.js"
+    addNormalizePlayer()
+
+    /* 
+    music - musicArr
+    commercial - commercialArr
+    commercialSeq - commercial then music
+    musicSeq - music then commercial
+    
+    stations = [
+        {
+            name:"Station1",
+            music:[audArray],
+            commercial:[audArray],
+            commercialSeq:[audArray],
+            musicSeq:[audArray],
+            commercialFreq:{min:1,max:2}
+        }
+    ]
+
+    */
+    let stations = [
+        {   name: "Classical",
+            music: [...data.classicalMusic,...data.skylineChristmas],
+            commercial: [...data.commercial, ...data.classicalBlurbs, ...data.classicalTalks],
+            commercialFreq:{min:1,max:3}
+        },
+        {   name: "Country",
+            music: [...data.countryMusic,...data.skylineChristmas],
+            commercial: [...data.commercial, ...data.countryBlurbs, ...data.countryTalks],
+        },
+        {   name: "GoldFM",
+            music: [...data.goldFMMusic,...data.skylineChristmas],
+            commercial: [...data.commercial, ...data.goldFMBlurbs, ...data.goldFMTalks],
+            commercialFreq:{min:1,max:3}
+        },
+        {   name: "New Vegas",
+            music:[...data.rnvMusic],
+            commercial:[...data.rnvHello, ...data.rnvIntroG],
+            commercialSeq: data.rnvIntroS,
+            commercialFreq:{min:1,max:3}
+        },  
+        {
+            name: "Diamond City",
+            music:[...data.dcrMusic],
+            commercial:[...data.dcrIntroG],
+            commercialSeq:[
+                ...data.dcrIntroGS,
+                ...data.dcrIntroBettyHutton,
+                ...data.dcrIntroBigMaybelle,
+                ...data.dcrIntroBillieHoliday,
+                ...data.dcrIntroBillyWardAndHisDominoes,
+                ...data.dcrIntroBingCrosby,
+                ...data.dcrIntroBobCrosby,
+                ...data.dcrIntroColePorter,
+                ...data.dcrIntroConnieAllen,
+                ...data.dcrIntroDannyKaye,
+                ...data.dcrIntroEllaFritzgerald,
+                ...data.dcrIntroEltonBritt,
+                ...data.dcrIntroFrankieCarl,
+                ...data.dcrIntroJohnnyMercer,
+                ...data.dcrIntroLouisJordan,
+                ...data.dcrIntroNatKingCole,
+                ...data.dcrIntroRaySmith,
+                ...data.dcrIntroRoyBrown,
+                ...data.dcrIntroSheldonAllman,
+                ...data.dcrIntroSkeeterDavis,
+                ...data.dcrIntroTexBeneke,
+                ...data.dcrIntroTheFiveStars,
+                ...data.dcrIntroTheInkSpots,
+                ...data.dcrIntroTheThreeSuns,
+                ...data.dcrIntroWarrenSmith,
+                ...data.dcrIntroWynonieHarris
+            ],
+            musicSeq:[
+                ...data.dcrOutroBigMaybelle,
+                ...data.dcrOutroBillieHoliday,
+                ...data.dcrOutroBingCrosby,
+                ...data.dcrOutroBobCrosby,
+                ...data.dcrOutroColePorter,
+                ...data.dcrOutroDannyKaye,
+                ...data.dcrOutroEltonBritt,
+                ...data.dcrOutroFrankieCarl,
+                ...data.dcrOutroTheFiveStars,
+                ...data.dcrOutroJohnnyMercer,
+                ...data.dcrOutroRoyBrown,
+                ...data.dcrOutroTheInkSpots,
+                ...data.dcrOutroTexBeneke,
+            ],
+            commercialFreq:{min:1,max:3}
+        }
+    ];
+
+    let radio = document.getElementById("rad")
+    radio.stations = stations
+    window.timeChkStatus = {
+        hour: new Date().getHours(),
+        firstQtr:false,
+        secondQtr:false,
+        thirdQtr:false
+    }
+    radio.onRadioReady = ()=>{ //enables audioElem to play balanced audio
+        console.log("RADIO READY")
+        let stations = radio.getElementsByTagName("audio")
+        for(let i=0;i<stations.length;i++){
+            stations[i].setupNormalizedPlayer()
+        }
+    }
+    radio.onRadioWait = ()=>{
+        // console.log("WAITING")
+    }
+    radio.onRadioPause = ()=>{
+        // console.log("PAUSED")
+    }
+    radio.onRadioEnd = ()=>{
+        // console.log("ENDED")
+
+        if(Math.floor(Math.random() * 6))return       
+        radio.interrupt()
+
+        let synth = window.speechSynthesis
+        let voices = synth.getVoices()
+        const update = new SpeechSynthesisUtterance()
+        
+        let d = new Date()
+        let HH = d.getHours() > 12 ? d.getHours() - 12 : d.getHours() == 0 ? 12 : d.getHours()
+        let MM = d.getMinutes()
+        
+        let chkTime = ()=>{
+            let partOfTheDay
+            if(d.getHours() >= 5 && d.getHours() < 12){ //morning
+                partOfTheDay = " in the morning"
+            } else if (d.getHours() >= 12 && d.getHours() < 18){ //afternoon
+                partOfTheDay = " in the afternoon"
+            } else if (d.getHours() >= 18 && d.getHours() < 20){ //evening
+                partOfTheDay = " in the evening"
+            } else { //night
+                partOfTheDay = " at night"
+            }
+
+            update.text = "It is now, " + HH + ", " + MM + partOfTheDay
+            update.onend = ()=>{
+                // console.log("SYNTH DONE")
+                radio.resume()
+                update.onend = ()=>{}
+            }
+            synth.speak(update)
+        }
+        if(MM <= 15 && !window.timeChkStatus.firstQtr){ //ex 5:03 3 minutes past 5 oclock
+            window.timeChkStatus.firstQtr = true
+            chkTime()
+        } else if (MM >= 45 && !window.timeChkStatus.thirdQtr){ //ex 5:53 7 minutes before 6 oclock
+            window.timeChkStatus.thirdQtr = true
+            chkTime()
+        } else if (MM > 15 && MM < 45 && !window.timeChkStatus.secondQtr){ // for time mostly between 16-44 minutes
+            window.timeChkStatus.secondQtr = true
+            chkTime()
+        } else {
+            
+            if(HH <= window.timeChkStatus.hour){
+                // console.log("duplicate Timechk prevented")
+                radio.resume()
+                update.onend = ()=>{}
+                return null
+            } else {
+                // console.log("reseting")
+                window.timeChkStatus = {
+                    firstQtr:false,
+                    secondQtr:false,
+                    thirdQtr:false
+                }
+                if(MM <= 15){ //ex 5:03 3 minutes past 5 oclock
+                    window.timeChkStatus.firstQtr = true
+                    chkTime()
+                } else if (MM >= 45){ //ex 5:53 7 minutes before 6 oclock
+                    window.timeChkStatus.thirdQtr = true
+                    chkTime()
+                } else { // for time mostly between 16-44 minutes
+                    window.timeChkStatus.secondQtr = true
+                    chkTime()
+                }
+            }
+
+        }
+    
+    }
+    radio.onRadioPlay = ()=>{
+        // console.log("PLAYED")
+    }
+
+</script>
+
+</html>
+
+<!-- 
+
+1280
+
+
+
+
+ -->
