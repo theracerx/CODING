@@ -194,59 +194,67 @@
         "audio/RNV_IntroGeneral/9.mp3?gain=0.4059"
     ],
     "rnvMusic":[
-        "audio/RNV_Music/MUS_Aint_That_A_Kick_In_the_Head.mp3?gain=2.618",
-        "audio/RNV_Music/MUS_Aint_That_A_Kick_In_the_Head.mp3?gain=2.618",
-        "audio/RNV_Music/MUS_American_Swing.mp3?gain=2.385",
-        "audio/RNV_Music/MUS_Blue_Moon.mp3?gain=3.522",
-        "audio/RNV_Music/MUS_EddyArnold_Rca_ItsASin.mp3?gain=2.376",
-        "audio/RNV_Music/MUS_Goin_Under.mp3?gain=2.755",
-        "audio/RNV_Music/MUS_Hallo_Mister_X.mp3?gain=2.654",
-        "audio/RNV_Music/MUS_Happy_Times.mp3?gain=2.658",
-        "audio/RNV_Music/MUS_Heartaches_by_the_Number.mp3?gain=2.794",
-        "audio/RNV_Music/MUS_In_The_Shadow_Of_The_Valley.mp3?gain=2.462",
-        "audio/RNV_Music/MUS_Its_A_Sin_To_Tell_A_Lie.mp3?gain=3.561",
-        "audio/RNV_Music/MUS_I_m_Movin_Out.mp3?gain=2.190",
-        "audio/RNV_Music/MUS_I_m_So_Blue.mp3?gain=2.767",
-        "audio/RNV_Music/MUS_I_m_So_Blue.mp3?gain=2.767",
-        "audio/RNV_Music/MUS_Jazz_Blues_GT.mp3?gain=4.257",
-        "audio/RNV_Music/MUS_Jingle_Jangle_Jingle.mp3?gain=2.372",
-        "audio/RNV_Music/MUS_Joe_Cool_CAS.mp3?gain=2.180",
-        "audio/RNV_Music/MUS_Johnny_Guitar.mp3?gain=2.008",
-        "audio/RNV_Music/MUS_Lazy_Day_Blues.mp3?gain=2.094",
-        "audio/RNV_Music/MUS_Let_s_Ride_Into_The_Sunset_Together.mp3?gain=2.316",
-        "audio/RNV_Music/MUS_Lone_Star.mp3?gain=2.374",
-        "audio/RNV_Music/MUS_Love_Me_As_Though_No_Tomorrow.mp3?gain=2.678",
-        "audio/RNV_Music/MUS_Mad_About_The_Boy.mp3?gain=2.002",
-        "audio/RNV_Music/MUS_Manhattan.mp3?gain=1.698",
-        "audio/RNV_Music/MUS_Roundhouse_Rock.mp3?gain=3.020",
-        "audio/RNV_Music/MUS_Sit_And_Dream.mp3?gain=2.366",
-        "audio/RNV_Music/MUS_Slow_Bounce.mp3?gain=2.353",
-        "audio/RNV_Music/MUS_Somethings_Gotta_Give.mp3?gain=2.102",
-        "audio/RNV_Music/MUS_Stars_Of_The_Midnight_Range.mp3?gain=1.842",
-        "audio/RNV_Music/MUS_Strahlende_Trompete.mp3?gain=2.290",
-        "audio/RNV_Music/MUS_Von_Spanien_Nach_S_damerika.mp3?gain=2.516",
-        "audio/RNV_Music/MUS_Where_Have_You_Been_All_My_Life.mp3?gain=2.473",
-        "audio/RNV_Music/MUS_Why_Dont_You_Do_Right.mp3?gain=2.079"
+        "audio/RNV_Music/MUS_Aint_That_A_Kick_In_the_Head.mp3?gain=0.6853",
+        "audio/RNV_Music/MUS_American_Swing.mp3?gain=0.6289",
+        "audio/RNV_Music/MUS_Big_Iron.mp3?gain=0.6436",
+        "audio/RNV_Music/MUS_Blue_Moon.mp3?gain=0.9243",
+        "audio/RNV_Music/MUS_EddyArnold_Rca_ItsASin.mp3?gain=0.6252",
+        "audio/RNV_Music/MUS_Goin_Under.mp3?gain=0.7236",
+        "audio/RNV_Music/MUS_Hallo_Mister_X.mp3?gain=0.6993",
+        "audio/RNV_Music/MUS_Happy_Times.mp3?gain=0.7002",
+        "audio/RNV_Music/MUS_Heartaches_by_the_Number.mp3?gain=0.7391",
+        "audio/RNV_Music/MUS_In_The_Shadow_Of_The_Valley.mp3?gain=0.6469",
+        "audio/RNV_Music/MUS_Its_A_Sin_To_Tell_A_Lie.mp3?gain=0.9390",
+        "audio/RNV_Music/MUS_I_m_Movin_Out.mp3?gain=0.5757",
+        "audio/RNV_Music/MUS_I_m_So_Blue.mp3?gain=0.7277",
+        "audio/RNV_Music/MUS_Jazz_Blues_GT.mp3?gain=1.122",
+        "audio/RNV_Music/MUS_Jazz_Club_Blues_CAS.mp3?gain=0.5118",
+        "audio/RNV_Music/MUS_Jingle_Jangle_Jingle.mp3?gain=0.6240",
+        "audio/RNV_Music/MUS_Joe_Cool_CAS.mp3?gain=0.5732",
+        "audio/RNV_Music/MUS_Johnny_Guitar.mp3?gain=0.5284",
+        "audio/RNV_Music/MUS_Lazy_Day_Blues.mp3?gain=0.5504",
+        "audio/RNV_Music/MUS_Let_s_Ride_Into_The_Sunset_Together.mp3?gain=0.6083",
+        "audio/RNV_Music/MUS_Lone_Star.mp3?gain=0.6254",
+        "audio/RNV_Music/MUS_Love_Me_As_Though_No_Tomorrow.mp3?gain=0.7051",
+        "audio/RNV_Music/MUS_Mad_About_The_Boy.mp3?gain=0.5270",
+        "audio/RNV_Music/MUS_Manhattan.mp3?gain=0.4488",
+        "audio/RNV_Music/MUS_Roundhouse_Rock.mp3?gain=0.7949",
+        "audio/RNV_Music/MUS_Sit_And_Dream.mp3?gain=0.6238",
+        "audio/RNV_Music/MUS_Slow_Bounce.mp3?gain=0.6196",
+        "audio/RNV_Music/MUS_Somethings_Gotta_Give.mp3?gain=0.5530",
+        "audio/RNV_Music/MUS_Stars_Of_The_Midnight_Range.mp3?gain=0.4845",
+        "audio/RNV_Music/MUS_Strahlende_Trompete.mp3?gain=0.6030",
+        "audio/RNV_Music/MUS_Von_Spanien_Nach_S_damerika.mp3?gain=0.6623",
+        "audio/RNV_Music/MUS_Where_Have_You_Been_All_My_Life.mp3?gain=0.6513",
+        "audio/RNV_Music/MUS_Why_Dont_You_Do_Right.mp3?gain=0.5471"
     ],
     "rnvIntroS":[
         {"intro": "audio/RNV_IntroSpecific/Ain't that a kick in the head.mp3?gain=0.4395",
-        "music": "audio/RNV_Music/MUS_Aint_That_A_Kick_In_the_Head.mp3?gain=2.618"},
+        "music": "audio/RNV_Music/MUS_Aint_That_A_Kick_In_the_Head.mp3?gain=0.6853"},
+
         {"intro": "audio/RNV_IntroSpecific/Heartaches by the number.mp3?gain=0.5132",
-        "music": "audio/RNV_Music/MUS_Heartaches_by_the_Number.mp3?gain=2.794"},
+        "music": "audio/RNV_Music/MUS_Heartaches_by_the_Number.mp3?gain=0.7391"},
+
         {"intro": "audio/RNV_IntroSpecific/Jingle Jangle Jingle.mp3?gain=0.4206",
-        "music": "audio/RNV_Music/MUS_Jingle_Jangle_Jingle.mp3?gain=2.372"},
+        "music": "audio/RNV_Music/MUS_Jingle_Jangle_Jingle.mp3?gain=0.6240"},
+
         {"intro": "audio/RNV_IntroSpecific/Johnny Guitar.mp3?gain=0.4730",
-        "music": "audio/RNV_Music/MUS_Johnny_Guitar.mp3?gain=2.008"},
+        "music": "audio/RNV_Music/MUS_Johnny_Guitar.mp3?gain=0.5284"},
+
         {"intro": "audio/RNV_IntroSpecific/Love as there were no tomorrow.mp3?gain=0.5042",
-        "music": "audio/RNV_Music/MUS_Love_Me_As_Though_No_Tomorrow.mp3?gain=2.678"},
+        "music": "audio/RNV_Music/MUS_Love_Me_As_Though_No_Tomorrow.mp3?gain=0.7051"},
+
         {"intro": "audio/RNV_IntroSpecific/Mad about the boy.mp3?gain=0.5506",
-        "music": "audio/RNV_Music/MUS_Mad_About_The_Boy.mp3?gain=2.002"},
+        "music": "audio/RNV_Music/MUS_Mad_About_The_Boy.mp3?gain=0.5270"},
+        
         {"intro": "audio/RNV_IntroSpecific/Once in a blue moon.mp3?gain=0.4706",
-        "music": "audio/RNV_Music/MUS_Blue_Moon.mp3?gain=3.522"},
+        "music": "audio/RNV_Music/MUS_Blue_Moon.mp3?gain=0.9243"},
+
         {"intro": "audio/RNV_IntroSpecific/Sin to tell a lie.mp3?gain=0.5138",
-        "music": "audio/RNV_Music/MUS_Its_A_Sin_To_Tell_A_Lie.mp3?gain=3.561"},
+        "music": "audio/RNV_Music/MUS_Its_A_Sin_To_Tell_A_Lie.mp3?gain=0.9390"},
+
         {"intro": "audio/RNV_IntroSpecific/Something's gotta give.mp3?gain=0.4907",
-        "music": "audio/RNV_Music/MUS_Somethings_Gotta_Give.mp3?gain=2.102"}
+        "music": "audio/RNV_Music/MUS_Somethings_Gotta_Give.mp3?gain=0.5530"}
     ],
     "dcrIntroG":[
        "audio/DCR_All/General/Intro1.wav?gain=0.5963", 
@@ -303,7 +311,12 @@
         "audio/DCR_All/Wynonie Harris/Grandma Plays The Numbers.mp3?gain=0.4303"
     ],
     "dcrIntroGS":[
-        {"intro": "audio/DCR_All/General/IntroSponsor1.wav?gain=0.6111","music": [
+        {"intro": [
+            "audio/DCR_All/General/IntroSponsor1.wav?gain=0.6111",
+            "audio/DCR_All/General/IntroSponsor2.wav?gain=0.5628",
+            "audio/DCR_All/General/IntroSponsor3.wav?gain=0.5349"
+        ],
+         "sponsor": [
             "audio/DCR_All/General/Sponsor1.wav?gain=0.5935",
             "audio/DCR_All/General/Sponsor2.wav?gain=0.6721",
             "audio/DCR_All/General/Sponsor3.wav?gain=0.5762",
@@ -320,56 +333,21 @@
             "audio/DCR_All/General/OutroSponsor2.wav?gain=0.5680",
             "audio/DCR_All/General/OutroSponsor3.wav?gain=0.6160",
             "audio/DCR_All/General/OutroSponsor4.wav?gain=0.5750"
-        ],"repeat":false, "random":true, "max":8},
-        {"intro": "audio/DCR_All/General/IntroSponsor2.wav?gain=0.5628","music": [
-            "audio/DCR_All/General/Sponsor1.wav?gain=0.5935",
-            "audio/DCR_All/General/Sponsor2.wav?gain=0.6721",
-            "audio/DCR_All/General/Sponsor3.wav?gain=0.5762",
-            "audio/DCR_All/General/Sponsor4.wav?gain=0.5667",
-            "audio/DCR_All/General/Sponsor5.wav?gain=0.6106",
-            "audio/DCR_All/General/Sponsor6.wav?gain=0.5614",
-            "audio/DCR_All/General/Sponsor7.wav?gain=0.5584",
-            "audio/DCR_All/General/Sponsor8.wav?gain=0.5991",
-            "audio/DCR_All/General/Sponsor9.wav?gain=0.6184",
-            "audio/DCR_All/General/Sponsor10.wav?gain=0.5029",
-            "audio/DCR_All/General/Sponsor11.wav?gain=0.5849"
-        ],"end":[
-            "audio/DCR_All/General/OutroSponsor1.wav?gain=0.4701",
-            "audio/DCR_All/General/OutroSponsor2.wav?gain=0.5680",
-            "audio/DCR_All/General/OutroSponsor3.wav?gain=0.6160",
-            "audio/DCR_All/General/OutroSponsor4.wav?gain=0.5750"
-        ],"repeat":false, "random":true, "max":8},
-        {"intro": "audio/DCR_All/General/IntroSponsor3.wav?gain=0.5349","music": [
-            "audio/DCR_All/General/Sponsor1.wav?gain=0.5935",
-            "audio/DCR_All/General/Sponsor2.wav?gain=0.6721",
-            "audio/DCR_All/General/Sponsor3.wav?gain=0.5762",
-            "audio/DCR_All/General/Sponsor4.wav?gain=0.5667",
-            "audio/DCR_All/General/Sponsor5.wav?gain=0.6106",
-            "audio/DCR_All/General/Sponsor6.wav?gain=0.5614",
-            "audio/DCR_All/General/Sponsor7.wav?gain=0.5584",
-            "audio/DCR_All/General/Sponsor8.wav?gain=0.5991",
-            "audio/DCR_All/General/Sponsor9.wav?gain=0.6184",
-            "audio/DCR_All/General/Sponsor10.wav?gain=0.5029",
-            "audio/DCR_All/General/Sponsor11.wav?gain=0.5849"
-        ],"end":[
-            "audio/DCR_All/General/OutroSponsor1.wav?gain=0.4701",
-            "audio/DCR_All/General/OutroSponsor2.wav?gain=0.5680",
-            "audio/DCR_All/General/OutroSponsor3.wav?gain=0.6160",
-            "audio/DCR_All/General/OutroSponsor4.wav?gain=0.5750"
-        ],"repeat":false, "random":true, "max":8}
+        ], "max":3}
     ],
     "dcrIntroBettyHutton":[
-        {"intro": "audio/DCR_All/Betty Hutton/Intro1.wav?gain=0.6633","music": "audio/DCR_All/Betty Hutton/He's A Devil, He's A Demon, He's A Dog.mp3?gain=0.4872"},
-        {"intro": "audio/DCR_All/Betty Hutton/Intro1.wav?gain=0.6633","music": "audio/DCR_All/Betty Hutton/It's A Man.mp3?gain=0.3784"},
-        {"intro": "audio/DCR_All/Betty Hutton/Intro2.wav?gain=0.6425","music": "audio/DCR_All/Betty Hutton/He's A Devil, He's A Demon, He's A Dog.mp3?gain=0.4872"},
-        {"intro": "audio/DCR_All/Betty Hutton/Intro2.wav?gain=0.6425","music": "audio/DCR_All/Betty Hutton/It's A Man.mp3?gain=0.3784"},
-        {"intro": "audio/DCR_All/Betty Hutton/Intro3.wav?gain=0.6170","music": "audio/DCR_All/Betty Hutton/He's A Devil, He's A Demon, He's A Dog.mp3?gain=0.4872"},
-        {"intro": "audio/DCR_All/Betty Hutton/Intro3.wav?gain=0.6170","music": "audio/DCR_All/Betty Hutton/It's A Man.mp3?gain=0.3784"},
-        {"intro": "audio/DCR_All/Betty Hutton/Intro4.wav?gain=0.6059","music": "audio/DCR_All/Betty Hutton/He's A Devil, He's A Demon, He's A Dog.mp3?gain=0.4872"},
-        {"intro": "audio/DCR_All/Betty Hutton/Intro4.wav?gain=0.6059","music": "audio/DCR_All/Betty Hutton/It's A Man.mp3?gain=0.3784"},
-        
-        {"intro": "audio/DCR_All/Betty Hutton/It's A Man/Intro1.wav?gain=0.7266","music": "audio/DCR_All/Betty Hutton/It's A Man.mp3?gain=0.3784"},
-        {"intro": "audio/DCR_All/Betty Hutton/It's A Man/Intro1.wav?gain=0.7266","music": "audio/DCR_All/Betty Hutton/It's A Man.mp3?gain=0.3784"}
+        {"intro": [
+            "audio/DCR_All/Betty Hutton/Intro1.wav?gain=0.6633",
+            "audio/DCR_All/Betty Hutton/Intro2.wav?gain=0.6425",
+            "audio/DCR_All/Betty Hutton/Intro3.wav?gain=0.6170",
+            "audio/DCR_All/Betty Hutton/Intro4.wav?gain=0.6059"
+        ],
+        "music":[
+            "audio/DCR_All/Betty Hutton/He's A Devil, He's A Demon, He's A Dog.mp3?gain=0.4872",
+            "audio/DCR_All/Betty Hutton/It's A Man.mp3?gain=0.3784"
+        ]
+        },
+        {"intro":"audio/DCR_All/Betty Hutton/It's A Man/Intro1.wav?gain=0.7266","music": "audio/DCR_All/Betty Hutton/It's A Man.mp3?gain=0.3784"}
     ],
     "dcrIntroBigMaybelle":[
         {"intro": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On/Intro1.wav?gain=0.6566","music": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On.mp3?gain=0.4551"},
@@ -377,10 +355,9 @@
         {"intro": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On/Intro3.wav?gain=0.6037","music": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On.mp3?gain=0.4551"}
     ],
     "dcrOutroBigMaybelle":[
-        {"commercial": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On/Outro1.wav?gain=0.7287",
-        "intro": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On.mp3?gain=0.4551"},
-        {"commercial": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On/Outro2.wav?gain=0.5988",
-        "intro": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On.mp3?gain=0.4551"}
+        {"outro": ["audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On/Outro1.wav?gain=0.7287",
+        "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On/Outro2.wav?gain=0.5988"],
+        "music": "audio/DCR_All/Big Maybelle/Whole Lotta Shakin' Goin' On.mp3?gain=0.4551"}
     ],
     "dcrIntroBillieHoliday":[
         {"intro": "audio/DCR_All/Billie holiday/Intro1.wav?gain=0.6489","music": "audio/DCR_All/Billie holiday/Crazy He Calls me.mp3?gain=0.3892"},
@@ -397,10 +374,10 @@
         {"intro": "audio/DCR_All/Billie holiday/Easy Living/Intro3.wav?gain=0.7385","music": "audio/DCR_All/Billie holiday/Easy Living.mp3?gain=0.5305"}
     ],
     "dcrOutroBillieHoliday":[
-        {"commercial": "audio/DCR_All/Billie holiday/Outro1.wav?gain=0.7367","intro": "audio/DCR_All/Billie holiday/Crazy He Calls me.mp3?gain=0.3892"},
-        {"commercial": "audio/DCR_All/Billie holiday/Outro1.wav?gain=0.7367","intro": "audio/DCR_All/Billie holiday/Easy Living.mp3?gain=0.5305"},
-        {"commercial": "audio/DCR_All/Billie holiday/Outro2.wav?gain=0.6791","intro": "audio/DCR_All/Billie holiday/Crazy He Calls me.mp3?gain=0.3892"},
-        {"commercial": "audio/DCR_All/Billie holiday/Outro2.wav?gain=0.6791","intro": "audio/DCR_All/Billie holiday/Easy Living.mp3?gain=0.5305"}
+        {"outro": ["audio/DCR_All/Billie holiday/Outro1.wav?gain=0.7367",
+        "audio/DCR_All/Billie holiday/Outro2.wav?gain=0.6791"],
+        "music": ["audio/DCR_All/Billie holiday/Crazy He Calls me.mp3?gain=0.3892",
+        "audio/DCR_All/Billie holiday/Easy Living.mp3?gain=0.5305"]}
     ],
     "dcrIntroBillyWardAndHisDominoes":[
         {"intro": "audio/DCR_All/Billy Ward and his Dominoes/Intro1.wav?gain=0.4496","music": "audio/DCR_All/Billy Ward and his Dominoes/Sixty Minute Man.mp3?gain=0.5631"},
@@ -416,12 +393,20 @@
         {"intro": "audio/DCR_All/Bing Crosby/Pistol Packin' Mama/Intro1.wav?gain=0.8926","music": "audio/DCR_All/Bing Crosby/Pistol Packin' Mama.mp3?gain=0.6406"}
     ],
     "dcrOutroBingCrosby":[
-        {"commercial": "audio/DCR_All/Bing Crosby/Outro1.wav?gain=0.8240","intro": "audio/DCR_All/Bing Crosby/Accentuate The Positive.mp3?gain=0.4975"},
-        {"commercial": "audio/DCR_All/Bing Crosby/Outro1.wav?gain=0.8240","intro": "audio/DCR_All/Bing Crosby/Pistol Packin' Mama.mp3?gain=0.6406"},
-        {"commercial": "audio/DCR_All/Bing Crosby/Outro2.wav?gain=0.6113","intro": "audio/DCR_All/Bing Crosby/Accentuate The Positive.mp3?gain=0.4975"},
-        {"commercial": "audio/DCR_All/Bing Crosby/Outro2.wav?gain=0.6113","intro": "audio/DCR_All/Bing Crosby/Pistol Packin' Mama.mp3?gain=0.6406"},
-        
-        {"commercial": "audio/DCR_All/Bing Crosby/Accentuate The Positive/Outro1.wav?gain=0.8753","intro": "audio/DCR_All/Bing Crosby/Accentuate The Positive.mp3?gain=0.4975"}
+        {   
+            "outro": [
+                "audio/DCR_All/Bing Crosby/Outro1.wav?gain=0.8240",
+                "audio/DCR_All/Bing Crosby/Outro2.wav?gain=0.6113"
+            ],
+            "music": [
+                "audio/DCR_All/Bing Crosby/Pistol Packin' Mama.mp3?gain=0.6406",
+                "audio/DCR_All/Bing Crosby/Accentuate The Positive.mp3?gain=0.4975"
+            ]
+        },
+        {   
+            "outro": "audio/DCR_All/Bing Crosby/Accentuate The Positive/Outro1.wav?gain=0.8753",
+            "music":"audio/DCR_All/Bing Crosby/Accentuate The Positive.mp3?gain=0.4975"
+        }
     ],
     "dcrIntroBobCrosby":[
         {"intro": "audio/DCR_All/Bob Crosby/Intro1.wav?gain=0.7477","music": "audio/DCR_All/Bob Crosby/Dear Hearts and Gentle People.mp3?gain=0.4339"},
@@ -452,12 +437,17 @@
         {"intro": "audio/DCR_All/Bob Crosby/Way Back Home/Intro2.wav?gain=0.7535","music": "audio/DCR_All/Bob Crosby/Way Back Home.mp3?gain=0.4510"}
     ],
     "dcrOutroBobCrosby":[
-        {"commercial": "audio/DCR_All/Bob Crosby/Outro1.wav?gain=0.6784","intro": "audio/DCR_All/Bob Crosby/Dear Hearts and Gentle People.mp3?gain=0.4339"},
-        {"commercial": "audio/DCR_All/Bob Crosby/Outro1.wav?gain=0.6784","intro": "audio/DCR_All/Bob Crosby/Happy Times.mp3?gain=0.4572"},
-        {"commercial": "audio/DCR_All/Bob Crosby/Outro1.wav?gain=0.6784","intro": "audio/DCR_All/Bob Crosby/Way Back Home.mp3?gain=0.4510"},
-        {"commercial": "audio/DCR_All/Bob Crosby/Outro2.wav?gain=0.6528","intro": "audio/DCR_All/Bob Crosby/Dear Hearts and Gentle People.mp3?gain=0.4339"},
-        {"commercial": "audio/DCR_All/Bob Crosby/Outro2.wav?gain=0.6528","intro": "audio/DCR_All/Bob Crosby/Happy Times.mp3?gain=0.4572"},
-        {"commercial": "audio/DCR_All/Bob Crosby/Outro2.wav?gain=0.6528","intro": "audio/DCR_All/Bob Crosby/Way Back Home.mp3?gain=0.4510"}
+        {
+            "outro": [
+                "audio/DCR_All/Bob Crosby/Outro1.wav?gain=0.6784",
+                "audio/DCR_All/Bob Crosby/Outro2.wav?gain=0.6528"
+            ],
+            "music": [
+                "audio/DCR_All/Bob Crosby/Dear Hearts and Gentle People.mp3?gain=0.4339",
+                "audio/DCR_All/Bob Crosby/Happy Times.mp3?gain=0.4572",
+                "audio/DCR_All/Bob Crosby/Way Back Home.mp3?gain=0.4510"
+            ]
+        }
     ],
     "dcrIntroColePorter":[
         {"intro": "audio/DCR_All/Cole Porter/Intro1.wav?gain=0.5740","music": "audio/DCR_All/Cole Porter/Anything Goes.mp3?gain=0.4928"},
@@ -467,7 +457,7 @@
         {"intro": "audio/DCR_All/Cole Porter/Anything Goes/Intro2.wav?gain=0.7241","music": "audio/DCR_All/Cole Porter/Anything Goes.mp3?gain=0.4928"}
     ],
     "dcrOutroColePorter":[
-        {"commercial": "audio/DCR_All/Cole Porter/Anything Goes/Outro1.wav?gain=0.6617","intro": "audio/DCR_All/Cole Porter/Anything Goes.mp3?gain=0.4928"}
+        {"outro": "audio/DCR_All/Cole Porter/Anything Goes/Outro1.wav?gain=0.6617","music": "audio/DCR_All/Cole Porter/Anything Goes.mp3?gain=0.4928"}
     ],
     "dcrIntroConnieAllen":[
         {"intro": "audio/DCR_All/Connie Allen/Rocket 69/Intro1.wav?gain=0.7047","music": "audio/DCR_All/Connie Allen/Rocket 69.mp3?gain=0.3660"},
@@ -483,7 +473,7 @@
         {"intro": "audio/DCR_All/Danny Kaye/Civilization/Intro1.wav?gain=0.7034","music": "audio/DCR_All/Danny Kaye/Civilization.mp3?gain=0.5344"}
     ],
     "dcrOutroDannyKaye":[
-        {"commercial": "audio/DCR_All/Danny Kaye/Civilization/Outro1.wav?gain=0.6737","intro": "audio/DCR_All/Danny Kaye/Civilization.mp3?gain=0.5344"}
+        {"outro": "audio/DCR_All/Danny Kaye/Civilization/Outro1.wav?gain=0.6737","music": "audio/DCR_All/Danny Kaye/Civilization.mp3?gain=0.5344"}
     ],
     "dcrIntroEllaFritzgerald":[
         {"intro": "audio/DCR_All/Ella Fritzgerald/Intro1.wav?gain=0.6675","music": "audio/DCR_All/Ella Fritzgerald/Into Each Life Some Rain Must Fall.mp3?gain=0.2813"},
@@ -505,8 +495,8 @@
         {"intro": "audio/DCR_All/Elton Britt/Uranium Fever/Intro2.wav?gain=0.5349","music": "audio/DCR_All/Elton Britt/Uranium Fever.mp3?gain=0.2857"}
     ],
     "dcrOutroEltonBritt":[
-        {"commercial": "audio/DCR_All/Elton Britt/Uranium Fever/Outro1.wav?gain=0.5437","intro": "audio/DCR_All/Elton Britt/Uranium Fever.mp3?gain=0.2857"},
-        {"commercial": "audio/DCR_All/Elton Britt/Uranium Fever/Uranium Fever/Outro 1.wav?gain=0.6980","intro": "audio/DCR_All/Elton Britt/Uranium Fever.mp3?gain=0.2857"}
+        {"outro": "audio/DCR_All/Elton Britt/Uranium Fever/Outro1.wav?gain=0.5437","music": "audio/DCR_All/Elton Britt/Uranium Fever.mp3?gain=0.2857"},
+        {"outro": "audio/DCR_All/Elton Britt/Uranium Fever/Uranium Fever/Outro 1.wav?gain=0.6980","music": "audio/DCR_All/Elton Britt/Uranium Fever.mp3?gain=0.2857"}
     ],
     "dcrIntroFrankieCarl":[
         {"intro": "audio/DCR_All/Frankie Carl/One More Tomorrow/Intro1.wav?gain=0.6751","music": "audio/DCR_All/Frankie Carl/One More Tommorrow.mp3?gain=0.5329"},
@@ -514,14 +504,14 @@
         {"intro": "audio/DCR_All/Frankie Carl/One More Tomorrow/Intro3.wav?gain=0.6425","music": "audio/DCR_All/Frankie Carl/One More Tommorrow.mp3?gain=0.5329"}
     ],
     "dcrOutroFrankieCarl":[
-        {"commercial": "audio/DCR_All/Frankie Carl/One More Tomorrow/Outro1.wav?gain=0.6616","intro": "audio/DCR_All/Frankie Carl/One More Tommorrow.mp3?gain=0.5329"}
+        {"outro": "audio/DCR_All/Frankie Carl/One More Tomorrow/Outro1.wav?gain=0.6616","music": "audio/DCR_All/Frankie Carl/One More Tommorrow.mp3?gain=0.5329"}
     ],
     "dcrIntroJohnnyMercer":[
         {"intro": "audio/DCR_All/Johnny Mercer/Intro1.wav?gain=0.6802","music": "audio/DCR_All/Johnny Mercer/Personality.mp3?gain=0.5267"},
         {"intro": "audio/DCR_All/Johnny Mercer/Personality/Intro1.wav?gain=0.7320","music": "audio/DCR_All/Johnny Mercer/Personality.mp3?gain=0.5267"}
     ],
     "dcrOutroJohnnyMercer":[
-        {"commercial": "audio/DCR_All/Johnny Mercer/Personality/Outro1.wav?gain=0.5119","intro": "audio/DCR_All/Johnny Mercer/Personality.mp3?gain=0.5267"}
+        {"outro": "audio/DCR_All/Johnny Mercer/Personality/Outro1.wav?gain=0.5119","music": "audio/DCR_All/Johnny Mercer/Personality.mp3?gain=0.5267"}
     ],
     "dcrIntroLouisJordan":[
         {"intro": "audio/DCR_All/Louis Jordan/Keep A Knockin/Intro1.wav?gain=0.6764","music": "audio/DCR_All/Louis Jordan/Keep A Knockin.mp3?gain=0.3897"},
@@ -568,10 +558,16 @@
         {"intro": "audio/DCR_All/Roy Brown/Mighty Mighty Man/Intro6.wav?gain=0.9045","music": "audio/DCR_All/Roy Brown/Mighty Mighty Man.mp3?gain=0.5260"}
     ],
     "dcrOutroRoyBrown":[
-        {"commercial": "audio/DCR_All/Roy Brown/Butcher Pete/Outro1.wav?gain=0.5207","intro": "audio/DCR_All/Roy Brown/Butcher Pete I.mp3?gain=0.4201"},
-        {"commercial": "audio/DCR_All/Roy Brown/Butcher Pete/Outro1.wav?gain=0.5207","intro": "audio/DCR_All/Roy Brown/Butcher Pete II.mp3?gain=0.4340"},
-        {"commercial": "audio/DCR_All/Roy Brown/Butcher Pete/Outro2.wav?gain=0.7143","intro": "audio/DCR_All/Roy Brown/Butcher Pete I.mp3?gain=0.4201"},
-        {"commercial": "audio/DCR_All/Roy Brown/Butcher Pete/Outro2.wav?gain=0.7143","intro": "audio/DCR_All/Roy Brown/Butcher Pete II.mp3?gain=0.4340"}
+        {
+            "outro":[
+                "audio/DCR_All/Roy Brown/Butcher Pete/Outro1.wav?gain=0.5207",
+                "audio/DCR_All/Roy Brown/Butcher Pete/Outro2.wav?gain=0.7143"
+            ],
+            "music":[
+                "audio/DCR_All/Roy Brown/Butcher Pete I.mp3?gain=0.4201",
+                "audio/DCR_All/Roy Brown/Butcher Pete II.mp3?gain=0.4340"
+            ]
+        }
     ],
     "dcrIntroSheldonAllman":[
         {"intro": "audio/DCR_All/Sheldon Allman/Crawl Out Through the Fallout/Intro1.wav?gain=0.4708","music": "audio/DCR_All/Sheldon Allman/Crawl Out Through The Fallout.mp3?gain=0.3648"},
@@ -587,7 +583,7 @@
         {"intro": "audio/DCR_All/Tex Beneke/Intro1.wav?gain=0.4383","music": "audio/DCR_All/Tex Beneke/A Wonderful Guy.mp3?gain=0.3797"}
     ],
     "dcrOutroTexBeneke":[
-        {"commercial": "audio/DCR_All/Tex Beneke/Outro1.wav?gain=0.6983","intro": "audio/DCR_All/Tex Beneke/A Wonderful Guy.mp3?gain=0.3797"}
+        {"outro": "audio/DCR_All/Tex Beneke/Outro1.wav?gain=0.6983","music": "audio/DCR_All/Tex Beneke/A Wonderful Guy.mp3?gain=0.3797"}
     ],
     "dcrIntroTheFiveStars":[
         {"intro": "audio/DCR_All/The Five Stars/Atom Bomb Baby/Intro1.wav?gain=0.6336","music": "audio/DCR_All/The Five Stars/Atom Bomb Baby.mp3?gain=0.2564"},
@@ -595,7 +591,7 @@
         {"intro": "audio/DCR_All/The Five Stars/Atom Bomb Baby/Intro3.wav?gain=0.6355","music": "audio/DCR_All/The Five Stars/Atom Bomb Baby.mp3?gain=0.2564"}
     ],
     "dcrOutroTheFiveStars":[
-        {"commercial": "audio/DCR_All/The Five Stars/Outro1.wav?gain=0.5293","intro": "audio/DCR_All/The Five Stars/Atom Bomb Baby.mp3?gain=0.2564"}
+        {"outro": "audio/DCR_All/The Five Stars/Outro1.wav?gain=0.5293","music": "audio/DCR_All/The Five Stars/Atom Bomb Baby.mp3?gain=0.2564"}
     ],
     "dcrIntroTheInkSpots":[
         {"intro": "audio/DCR_All/The Ink Spots/Intro1.wav?gain=0.7150","music": "audio/DCR_All/The Ink Spots/I Don't Want To Set The World On Fire.mp3?gain=0.4646"},
@@ -622,8 +618,13 @@
         {"intro": "audio/DCR_All/The Ink Spots/Maybe/Intro4.wav?gain=0.6312","music": "audio/DCR_All/The Ink Spots/Maybe.mp3?gain=0.4002"}
     ],
     "dcrOutroTheInkSpots":[
-        {"commercial": "audio/DCR_All/The Ink Spots/It's all over but the crying/Outro1.wav?gain=0.6584","intro": "audio/DCR_All/The Ink Spots/It's All Over But The Crying.mp3?gain=0.3873"},
-        {"commercial": "audio/DCR_All/The Ink Spots/It's all over but the crying/Outro2.wav?gain=0.6788","intro": "audio/DCR_All/The Ink Spots/It's All Over But The Crying.mp3?gain=0.3873"}
+        {
+            "outro":[
+                "audio/DCR_All/The Ink Spots/It's all over but the crying/Outro1.wav?gain=0.6584",
+                "audio/DCR_All/The Ink Spots/It's all over but the crying/Outro2.wav?gain=0.6788"
+            ],
+            "music": "audio/DCR_All/The Ink Spots/It's All Over But The Crying.mp3?gain=0.3873"
+        }
     ],
     "dcrIntroTheThreeSuns":[
         {"intro": "audio/DCR_All/The Three Suns/Intro1.wav?gain=0.5477","music": "audio/DCR_All/The Three Suns/Worry Worry Worry.mp3?gain=0.4625"},
@@ -637,5 +638,41 @@
     "dcrIntroWynonieHarris":[
         {"intro": "audio/DCR_All/Wynonie Harris/Intro1.wav?gain=0.6108","music": "audio/DCR_All/Wynonie Harris/Grandma Plays The Numbers.mp3?gain=0.4303"},
         {"intro": "audio/DCR_All/Wynonie Harris/Grandma plays the numbers/Intro1.wav?gain=0.5323","music": "audio/DCR_All/Wynonie Harris/Grandma Plays The Numbers.mp3?gain=0.4303"}
+    ],
+    "NITW":[
+        "audio/NITW/Angus Story.mp3?gain=0.3880",
+        "audio/NITW/Back to the Holler.mp3?gain=0.3059",
+        "audio/NITW/Church of the First Coalescence.mp3?gain=0.3378",
+        "audio/NITW/Gregg's Woods.mp3?gain=0.3980",
+        "audio/NITW/Home Again.mp3?gain=0.3504",
+        "audio/NITW/Mae's House II.mp3?gain=0.3208",
+        "audio/NITW/Mae's House.mp3?gain=0.4008",
+        "audio/NITW/MaeBea.mp3?gain=0.3807",
+        "audio/NITW/Mallard's Tomb.mp3?gain=0.3454",
+        "audio/NITW/Ol' Pickaxe.mp3?gain=0.5188",
+        "audio/NITW/Outskirts.mp3?gain=0.4443",
+        "audio/NITW/Pierogies in the Dark.mp3?gain=0.3794",
+        "audio/NITW/Possum Springs.mp3?gain=0.3985",
+        "audio/NITW/Rainy Day.mp3?gain=0.5117",
+        "audio/NITW/Snow.mp3?gain=0.4152",
+        "audio/NITW/The Bridge.mp3?gain=0.3776",
+        "audio/NITW/The Long Fall.mp3?gain=0.3554"
+    ],
+    "Hatkid_SpaceHub":[
+        "audio/AHIT_SpaceHub/Hub Main Mastered.mp3?gain=0.6221",
+        "audio/AHIT_SpaceHub/Hubworld ActSelect Conductor Loop.mp3?gain=0.4860",
+        "audio/AHIT_SpaceHub/Hubworld ActSelect DJ Grooves Loop.mp3?gain=0.3996",
+        "audio/AHIT_SpaceHub/HubWorld CiorgiGame Variation.mp3?gain=0.3732",
+        "audio/AHIT_SpaceHub/HubWorld SecretPillowHideoutRoom Variation.mp3?gain=0.7449",
+        "audio/AHIT_SpaceHub/spaceship decorationmode loop.mp3?gain=0.4249",
+        "audio/AHIT_SpaceHub/Spaceship Hub Gallery Loop.mp3?gain=0.5416",
+        "audio/AHIT_SpaceHub/spaceship hub marching loop.mp3?gain=0.369",
+        "audio/AHIT_SpaceHub/spaceship mafiaboss close loop.mp3?gain=0.3789",
+        "audio/AHIT_SpaceHub/spaceship mafiaboss loop.mp3?gain=0.2906",
+        "audio/AHIT_SpaceHub/spaceship mailroom close.mp3?gain=0.3964",
+        "audio/AHIT_SpaceHub/spaceship mailroom loop.mp3?gain=0.2235",
+        "audio/AHIT_SpaceHub/spaceship near telescope.mp3?gain=0.4001"
     ]
 }
+
+

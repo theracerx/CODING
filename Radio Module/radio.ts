@@ -1,16 +1,28 @@
 export{}
+
+interface musicOutroSeq{ //prev MusicSeq
+    music:string | string[]//
+    outro:string | string[]//
+}
+interface musicIntroSeq{ //prev CommercialSeq
+    intro:string | string[]//
+    music:string | string[]//
+}
+interface sponsorhip{ 
+    intro:string | string[]
+    sponsor:string | string[]
+    end?:string | string[]
+    max?:any //restricts amount of sponsors
+}
+
 interface station{
+    [index:string]:any
     name:string,
     music:string[],
     commercial?:string[],
-    commercialSeq?: {
-        intro:string
-        music:string
-    }[],
-    musicSeq?: {
-        music:string
-        outro:string
-    }[],
+    musicIntroSeq?:musicIntroSeq[]
+    musicOutroSeq?: musicOutroSeq[],
+    sponsorship?: sponsorhip[],
 }
 interface station2 extends station {
     queue:string[],
@@ -22,25 +34,34 @@ interface stationPlayer extends HTMLAudioElement{
     chk:{
         music:boolean
         commercial:boolean
-        commercialSeq:boolean
-        musicSeq:boolean
+        musicIntroSeq:boolean
+        musicOutroSeq:boolean
+        sponsorship:boolean
     }
     stats:{
+        [index:string]:any
         musicIDMax: number | undefined, 
         commercialIDMax: number | undefined,
-        commercialSeqIDMax: number | undefined, 
-        musicSeqIDMax: number | undefined, 
+        musicIntroSeqIDMax: number | undefined, 
+        musicOutroSeqIDMax: number | undefined, 
         nextCommercialIn: number | undefined, //for initial display
     }
+    //---------Index Methods
+    updateStats:any
     //---------Play Methods
     randomizePlay:any //decides what to play
     removeDuplicates?:any
-    addQueue?:any
+    queueAudio?:any
     
     //---------Reset Methods
-    shuffleStations?:any
-    shuffleStation?:any
-    shuffleArray?:any
+    selectRandomFromArr(arr:any[]):any
+    selectRandomsFromArr(arr:any[],num:number):void
+    shuffleStationType(type:string):void
+    shuffleAllStationTypes:any
+    shuffleArray:any
+    verifyArray:any
+    preventRepeatAfterShuffle:any
+    // shuffleArray(arr:any[]):void
     
     //---------Event Methods
     // playRadioStation?:any
@@ -50,6 +71,7 @@ interface stationPlayer extends HTMLAudioElement{
     pauseStation:any, //dflt pause
     endStation:any, //dflt end
     waitStation:any, //dflt wait
+    timeUpdateStation:any // dflt time update
     nextStationAudio:any
     
     //---------MISC
@@ -83,109 +105,141 @@ declare global{
     interface HTMLElementTagNameMap{
         "radio-player" : AudioRadio
     }
+    interface Window{
+        a:any,
+        b:any
+    }
 }
 
 interface AudioRadioInterface extends HTMLElement {
     cStation: number //index of current active Station
     stations: any | station[]
     stationPlayers:stationPlayer[]
-    onRadioReady:any //fires when all audio tags are generated
-    radioReady:any //event for onRadioReady
-    onRadioPlay:any //fires when audio is playing
-    radioPlay:any //event for onRadioPlay
-    onRadioPause:any //fires when audio is paused
-    radioPause:any //event for onRadioPause
-    onRadioWait:any //fires when audio is waiting
-    radioWait:any //event for onRadioWait
-    onRadioEnd:any //fires when audio is waiting
-    radioEnd:any //event for onRadioEnd
+    radioReady:any // same audio event but fired to radio
+    radioPlay:any
+    radioPause:any 
+    radioWait:any 
+    radioEnd:any 
+    radioDurationChange:any 
+    radioRateChange:any
+    radioLoadStart:any 
+    radioVolumeChange:any 
     isInterupted:boolean
-    setupRadio():void
-    setupStation(station:station):void
-    setupRadioControls():void
-    interrupt():void
-    resume():void
 }
 
 export class AudioRadio extends HTMLElement implements AudioRadioInterface{
-
     
-    cStation = 0
+    cStation = 0 //index of current active Station
     stations: any | station[] //no value because will be added later
     stationPlayers:stationPlayer[] //no value because will be added later
     radioReady = new Event("radioReady")
-    onRadioReady = ()=>{}
+    onready = ()=>{}
     radioPlay = new Event("radioPlay")
-    onRadioPlay = ()=>{}
+    onplay = ()=>{}
     radioPause = new Event("radioPause")
-    onRadioPause = ()=>{}
+    onpause = ()=>{}
     radioWait = new Event("radioWait")
-    onRadioWait = ()=>{}
+    onwait = ()=>{}
+    radioTimeUpdate = new Event("radioTimeUpdate")
+    ontimeupdate = ()=>{}
     radioEnd = new Event("radioEnd")
-    onRadioEnd = ()=>{}
+    onend = ()=>{}
     isInterupted = false
+    radioDurationChange = new Event("radioDurationChange")
+    ondurationchange = ()=>{}
+    radioRateChange = new Event("radioRateChange")
+    onratechange = ()=>{}
+    radioLoadStart = new Event("radioLoadStart")
+    onloadstart = ()=>{}
+    radioVolumeChange = new Event("radioVolumeChange")
+    onvolumechange = ()=>{}
 
 
     constructor(){
         super()
-        // this.cStation = 0
         this.stations = []
         this.stationPlayers = []
-        // this.radioReady = new Event("radioReady")
-        // this.onRadioReady = ()=>{}
-        // this.radioPlay = new Event("radioPlay")
-        // this.onRadioPlay = ()=>{}
-        // this.radioPause = new Event("radioPause")
-        // this.onRadioPause = ()=>{}
-        // this.radioWait = new Event("radioWait")
-        // this.onRadioWait = ()=>{}
-        // this.radioEnd = new Event("radioEnd")
-        // this.onRadioEnd = ()=>{}
-        // this.isInterupted = false
     }
 
     connectedCallback(){}
     disconnectedCallback(){}
     static get observedAttributes() {
-        return [/* array of attribute names to monitor for changes */];
+        return ["station","autostart"];
     }
-    attributeChangedCallback(name:string, oldValue:any, newValue:any) {
+    attributeChangedCallback(attr:string, oldValue:any, newValue:any) { //CLEAR
     // called when one of attributes listed above is modified
+        if(attr == "station"){
+            // console.log("------------------STATION CHANGE DETECTED------------------")
+            let stations = this.stations.length - 1
+            if(oldValue != newValue && oldValue != null){
+                if(oldValue > stations || oldValue < 0){
+                    // console.log("station change ignored")
+                    return
+                } else if (newValue <= stations && newValue >= 0){
+                    // console.log("station change applied")
+                    this.cStation = newValue
+                    this.stationPlayers[oldValue].pause()
+                    this.stationPlayers[newValue].play()
+                } else {
+                    this.setAttribute("station",oldValue)
+                    console.warn("Please select the correct stationID index. Total stations: " + this.stations.length)
+                }
+            } else {
+                // console.log("station change ignored")
+            }
+            // console.log("------------------STATION CHANGE END------------------")
+
+        } else if (attr == "autostart"){}
+        
     }
     adoptedCallback(){}
-
+    // setupRadio > setupStation > shuffleAllStationTypes
 
     /*  stations = [
             {
                 name:"Station1",
                 music:[audArray],
                 commercial:[audArray],
-                commercialSeq:[audArray],
-                musicSeq:[audArray],
+                musicIntroSeq:[audArray],
+                musicOutroSeq:[audArray],
                 commercialFreq:{min:1,max:2}
             }
         ]
     */
-    setupRadio(obj?:radioControls){ //targets an element
+    async setupRadio(obj?:radioControls){ //targets an element
     // setupRadio(stations:station[],obj?:radioControls){ //targets an element
         // this.stations = stations
-        document.addEventListener("radioReady",this.onRadioReady)
+        document.addEventListener("radioReady",this.onready)
         
         //wait for each audioElem generation
-        this.stations.forEach(async (station:station)=>{await this.setupStation(station)})
+        await (()=>{
+            return new Promise(async(resolve:any,reject)=>{
+                for (let i=0;i<this.stations.length;i++){
+                    let station = this.stations[i]
+                    await this.setupStation(station)
+                }
+                resolve()
+            })
+        })()
+
+        console.log("TODO: add download radio station??")
+        console.log("TODO: onended and then switch station... prev Station still plays")
+
 
         //check total audioElem generated
         if(this.getElementsByTagName("audio").length == this.stations.length){
-            console.log("audio files ready")
-            this.cStation = Math.round(Math.random() * (this.stations.length - 1))
+            // console.log("audio files ready")
+            let initialStation:any = this.getAttribute("station")
+            this.cStation = initialStation | Math.round(Math.random() * (this.stations.length - 1))
+            this.setAttribute("station",this.cStation.toString())
             this.setupRadioControls(obj)
-            this.resume()
+            this.resume() //plays active Radio
             document.dispatchEvent(this.radioReady)
         } else throw new Error("audio elements doesn't match number of")
         
     }
-    setupStation(station:station){
-        return new Promise((resolve:any,reject:any)=>{
+    async setupStation(station:station){
+        return new Promise(async(resolve:any)=>{
             let audio:stationPlayer = Object.assign(document.createElement("audio"),{
                 
                 //------------------------ INITIAL PROPS------------------------------
@@ -200,282 +254,741 @@ export class AudioRadio extends HTMLElement implements AudioRadioInterface{
                 chk:{
                     music: station.music ? true : false,
                     commercial: station.commercial ? true : false,
-                    commercialSeq: station.commercialSeq ? true : false,
-                    musicSeq: station.musicSeq ? true : false,
+                    musicIntroSeq: station.musicIntroSeq ? true : false,
+                    musicOutroSeq: station.musicOutroSeq ? true : false,
+                    sponsorship: station.sponsorship ? true : false,
                 },
                 stats:{
                     musicIDMax: station.music ? station.music.length - 1 : undefined, 
                     commercialIDMax: station.commercial ? station.commercial.length - 1 : undefined, 
-                    commercialSeqIDMax: station.commercialSeq ? station.commercialSeq.length: undefined, 
-                    musicSeqIDMax: station.musicSeq ? station.musicSeq.length - 1 : undefined, 
-                    nextCommercialIn: (station.music|| station.commercialSeq) ?  //for initial display
+                    musicIntroSeqIDMax: station.musicIntroSeq ? station.musicIntroSeq.length: undefined, 
+                    musicOutroSeqIDMax: station.musicOutroSeq ? station.musicOutroSeq.length - 1 : undefined, 
+                    sponsorshipIDMax: station.sponsorship ? station.sponsorship.length - 1 : undefined, 
+                    nextCommercialIn: station.commercial || station.sponsorship ?  //for initial display
                         Math.round(Math.random()) ? 1 : 0 
                         : undefined
+                },
+                updateStats:(src:string,type?:string)=>{
+                    /* 
+                        document the src
+                        update stats
+                    */
+                    audio.station.played.unshift(src)
+                    audio.removeDuplicates(src)
+                    if(type){
+                        audio.station[type].shift()
+                        if(type != "queue") audio.stats[type +"IDMax"]-- //since "queue doesn't have stats"
+                        if(["music","musicIntroSeq","musicOutroSeq"].includes(type)) audio.stats.nextCommercialIn!--
+                    }
                 },
                 //------------------------- PLAY SYSTEM -----------------------------
                 // randomizePlay is used to decide when to play each category and reset/shuffle if max reached
                 // console.log("TO DO: fix rate of commercial played vs music")
-                randomizePlay:(standby?:boolean)=>{ //decides what to play
-                    let forceRoute = ()=>{
-                        audio.src = audio.station.queue[0]
-                        audio.removeDuplicates(audio.station.queue[0])
-                        audio.station.queue.shift()
-                        // console.log("force Route")
-                    }
-                    let musicRoute = ()=>{
-                        // console.log("music Route")
-    
-                        if(audio.stats.musicIDMax! <= 0){
-                            audio.shuffleStation("music")
+                randomizePlay:async(standby?:boolean)=>{ //decides what to play
+                    return new Promise(async(resolve:any)=>{
+                        let forceRoute = ()=>{
+                            console.log("-----------------Force Route-----------------")
+                            audio.src = audio.station.queue[0]
+                            audio.updateStats(audio.station.queue[0],"queue")
                         }
-    
-                        audio.src = audio.station.music[0]
-                        audio.removeDuplicates(audio.station.music[0])
-    
-                        audio.stats.nextCommercialIn!--
-                    }
-                    let commercialRoute = ()=>{
-                        // console.log("commercial Route")
-                        if(audio.stats.commercialIDMax! <= 0){
-                            audio.shuffleStation("commercial")
-                        }
-                        audio.src = audio.station.commercial![0]
-                        audio.removeDuplicates(audio.station.commercial![0])
-    
-                    }
-                    let commercialSeqRoute = ()=>{ //ads then music
-                        // console.log("commercialSeq Route")
-                        /* 
-                            play obj.intro //ads
-                            then match obj.music //music
-                        */
-    
-                        if(audio.stats.commercialSeqIDMax! <= 0){
-                            audio.shuffleStation("commercialSeq")
-                        }
-    
-                        //play ad
-                        audio.src = audio.station.commercialSeq![0].intro
-                        //set music on queue
-                        audio.addQueue(audio.station.commercialSeq![0],"music")
-                        //remove similar ad
-                        audio.removeDuplicates(audio.station.commercialSeq![0].intro)
-                    }
-                    let musicSeqRoute = ()=>{ //music then ads
-                        // console.log("musicSeq Route")
-                        /* 
-                            play obj.intro //music
-                            then match obj.commercial //ads
-                        */
-    
-                        if(audio.stats.musicSeqIDMax! <= 0){
-                            audio.shuffleStation("musicSeq")
-                        }
-    
-                        //play music
-                        audio.src = audio.station.musicSeq![0].music
-                        //set ads on queue
-                        audio.addQueue(audio.station.musicSeq![0],"outro")
-                        //remove similar music
-                        audio.removeDuplicates(audio.station.musicSeq![0].music)
-                    }
-    
-                    //chk if station has commercial then select commercial
-                    if (audio.station.queue.length > 0){ forceRoute()}
-                    else if(audio.stats.nextCommercialIn == 0){
-                        if(audio.chk.commercial && audio.chk.commercialSeq){ Math.round(Math.random()) ? commercialRoute() : commercialSeqRoute()
-                        } else if(audio.chk.commercial){commercialRoute()
-                        } else if(audio.chk.commercialSeq){commercialSeqRoute()
-                        } else throw new Error("something went wrong playing commercial")
-            
-                        audio.stats.nextCommercialIn = (()=>{
-                            let min,max
-                            if(!audio.stationBackup.commercialFreq){
-                                max = 2
-                                min = 1
-                            } else {
-                                max = audio.stationBackup.commercialFreq.max || 2
-                                min = audio.stationBackup.commercialFreq.min || 1
-                                if(max <= min){ max = min + 1}
+                        let musicRoute = async()=>{
+                            console.log("-----------------Music Route-----------------")
+        
+                            if(audio.stats.musicIDMax! <= 0){
+                                console.log(">>>>>>>>>>>>>>>>>Music Reset<<<<<<<<<<<<<<<<<")
+                                await audio.shuffleStationType("music")
                             }
-                            return  Math.round(Math.random() * (max-min)) + min
-                        })()
-                    } else {
-                        if(audio.chk.musicSeq){
-                            Math.round(Math.random()) ? musicRoute() : musicSeqRoute()
-                        } else musicRoute()
-                    }
+                            let src = audio.station.music[0]
+                            audio.src = audio.station.music[0]
     
-                    audio.nowPlaying = {
-                        currentTime: new Date().getTime() /1000,
-                    }
-                    
-                    if(!standby){
-                        audio.load()
-                        audio.play()
-                    }
+                            audio.updateStats(src,"music")
+                        }
+                        let commercialRoute = async()=>{
+                            console.log("-----------------Commercial Route-----------------")
+                            if(audio.stats.commercialIDMax! <= 0){
+                                console.log(">>>>>>>>>>>>>>>>>Commercial Reset<<<<<<<<<<<<<<<<<")
+                                await audio.shuffleStationType("commercial")
+                            }
+                            let src = audio.station.commercial![0]
+                            audio.src = src
+                            audio.updateStats(src,"commercial")
+                        }
+                        let musicIntroSeqRoute = async()=>{ // intro then music
+                            console.log("-----------------musicIntroSeq Route-----------------")
+        
+                            if(audio.stats.musicIntroSeqIDMax! <= 0){
+                                console.log(">>>>>>>>>>>>>>>>>musicIntroSeq Reset<<<<<<<<<<<<<<<<<")
+                                await audio.shuffleStationType("musicIntroSeq")
+                            }
+    
+                            let src = audio.station.musicIntroSeq![0]
+                            audio.src = src.intro.toString()
+                            audio.queueAudio(src.music)
+                            audio.updateStats(src.intro,"musicIntroSeq")
+                        }
+                        let musicOutroSeqRoute = ()=>{ //music then outro
+                            return new Promise(async(resolve:any)=>{
+                                console.log("-----------------musicOutroSeq Route-----------------")
+            
+                                if(audio.stats.musicOutroSeqIDMax! == 0){
+                                    console.log(">>>>>>>>>>>>>>>>>musicOutroSeq Reset<<<<<<<<<<<<<<<<<")
+                                    await audio.shuffleStationType("musicOutroSeq")
+                                }
+                                
+                                //play music
+                                let src = audio.station.musicOutroSeq![0]
+                                audio.src = src.music.toString()
+                                audio.queueAudio(src.outro)
+                                audio.updateStats(src.music,"musicOutroSeq")
+                                resolve()
+                            })
+                            
+                        }
+                        let sponsorshipRoute = async()=>{
+                            console.log("-----------------sponsorship Route-----------------")
+        
+                            if(audio.stats.musicIntroSeqIDMax! <= 0){
+                                console.log(">>>>>>>>>>>>>>>>>sponsorship Reset<<<<<<<<<<<<<<<<<")
+                                await audio.shuffleStationType("sponsorship")
+                            }
+    
+                            let src = audio.station.sponsorship![0]
+                            // console.log("SPONSOR TIME")
+                            // console.log(src)
+                            audio.src = src.intro.toString()
+                            audio.queueAudio(src.sponsor)
+    
+                            if(src.end){
+                                audio.queueAudio(src.end)
+                            }
+    
+                            audio.updateStats(src.intro,"sponsorship")
+                        }
+                        
+                        audio.nowPlaying = {
+                            currentTime: new Date().getTime() /1000,
+                        }
+    
+                        //chk if station has commercial then select commercial
+                        if (audio.station.queue.length > 0){ forceRoute()}
+                        else if(audio.stats.nextCommercialIn == 0){
+                            let cond1 = audio.chk.commercial
+                            let cond2 = audio.chk.sponsorship
+                            let cond3 = Math.round(Math.random())
+    
+                            if(cond1 && cond2 && cond3){
+                                await (audio.selectRandomFromArr([commercialRoute,sponsorshipRoute]))()
+                            } else if (cond1 && cond2) {
+                                await commercialRoute()
+                            } else {
+                                cond1 ? await commercialRoute() : await sponsorshipRoute()
+                            }
+    
+                            audio.stats.nextCommercialIn = (()=>{
+                                let min,max
+                                if(!audio.stationBackup.commercialFreq){
+                                    max = 2
+                                    min = 1
+                                } else {
+                                    max = audio.stationBackup.commercialFreq.max || 2
+                                    min = audio.stationBackup.commercialFreq.min || 1
+                                    if(max <= min){ max = min + 1}
+                                }
+                                return  Math.round(Math.random() * (max-min)) + min
+                            })()
+                        } else {
+                            let cond1 = audio.chk.music
+                            let cond2 = audio.chk.musicIntroSeq
+                            let cond3 = audio.chk.musicOutroSeq
+    
+                            if(cond1 && cond2 && cond3){
+                                await (audio.selectRandomFromArr([musicRoute,musicIntroSeqRoute,musicOutroSeqRoute]))()
+                            } else if (cond1 && cond2){
+                                await (audio.selectRandomFromArr([musicRoute,musicIntroSeqRoute]))()
+                            } else if (cond1 && cond3){
+                                await (audio.selectRandomFromArr([musicRoute,musicOutroSeqRoute]))()
+                            } else if (cond2 && cond3){
+                                await (audio.selectRandomFromArr([musicIntroSeqRoute,musicOutroSeqRoute]))()
+                            } else {
+                                cond1 ?
+                                    await musicRoute():
+                                    cond2 ? 
+                                        await musicIntroSeqRoute() : await musicOutroSeqRoute()
+                            }
+                        }
+        
+                        if(!standby){
+                            audio.load()
+                            audio.play()
+                        }
+                    })
     
                 },
-                removeDuplicates:(src:string)=>{
-                    audio.station.played.unshift(src)
-    
-                    let musicArr = audio.station.music
-                    for(let i=0;i<musicArr.length;i++){
-                        if(musicArr[i] == src){
-                            audio.station.music.splice(i,1)
-                            audio.stats.musicIDMax!--
-                            // console.log("match found")
-                            break
-                        }
-                    }
-    
-                    if(audio.chk.commercial){
-                        let commercialArr = audio.station.commercial
-    
-                        for(let i=0;i<commercialArr!.length;i++){
-                            if(commercialArr![i] == src){
-                                audio.station.commercial!.splice(i,1)
-                                audio.stats.commercialIDMax!--
+                removeDuplicates:(src:string)=>{// fired by updateStats
+                    //Note: Only removes music type
+                    if(audio.chk.music){
+                        let musicArr = audio.station.music
+                        for(let i=0;i<musicArr.length;i++){
+                            if(musicArr[i] == src){
+                                audio.station.music.splice(i,1)
+                                audio.stats.musicIDMax!--
+                                // console.log("match found")
                                 break
                             }
                         }
                     }
     
-                    if (audio.chk.musicSeq){ //music then ads || intro, commercial
-                        let musicSeqArr = audio.station.musicSeq
-                        for(let i=musicSeqArr!.length - 1; i >= 0 ;i--){
-                            if(musicSeqArr![i].music == src || musicSeqArr![i].outro == src){
-                                audio.station.musicSeq!.splice(i,1)
-                                audio.stats.musicSeqIDMax!--
+                    if (audio.chk.musicOutroSeq){ //music then ads || intro, commercial
+                        let musicOutroSeqArr = audio.station.musicOutroSeq
+                        for(let i=musicOutroSeqArr!.length - 1; i >= 0 ;i--){
+                            if(musicOutroSeqArr![i].music == src){
+                                audio.station.musicOutroSeq!.splice(i,1)
+                                audio.stats.musicOutroSeqIDMax!--
                             }
                         }
                     }
     
-                    if (audio.chk.commercialSeq){ //ads then music || intro, music
-                        let commercialSeqArr = audio.station.commercialSeq
-                        for(let i=commercialSeqArr!.length - 1;i>=0;i--){
-                            if(commercialSeqArr![i].music == src || commercialSeqArr![i].intro == src){
-                                audio.station.commercialSeq!.splice(i,1)
-                                audio.stats.commercialSeqIDMax!--
+                    if (audio.chk.musicIntroSeq){ //ads then music || intro, music
+                        let musicIntroSeqArr = audio.station.musicIntroSeq
+                        for(let i=musicIntroSeqArr!.length - 1;i>=0;i--){
+                            if(musicIntroSeqArr![i].music == src){
+                                audio.station.musicIntroSeq!.splice(i,1)
+                                audio.stats.musicIntroSeqIDMax!--
                             }
                         }
                     }
     
                     // console.log(audio.stats)
                 },
-                addQueue:(list:any,type:string)=>{ //used by CommercialSeq & MusicSeq for ForceRoute
-                    console.log("fix data types of addQueue {intro,audio,outro}")
-                    let req
-                    if(type){
-                        req = list[type]
-                    } else req = list
-    
-                    audio.station.played.length = 10 //preserves record of played audio
-    
-                    if(typeof req == "string"){
-                        audio.station.queue.push(req)
-                    } else if (Array.isArray(req)){
-                        console.log(req)
-                        let backupAud
-    
-                        if(list.max && list.max > 1){ //get number between 1 and req.max
-                            console.log("length now LIMITED")
-                            backupAud = req[Math.floor(Math.random() * list.max) + 1]
-                            req.length = Math.floor(Math.random() * list.max) + 1
-                        }
-    
-                        if(!list.repeat && list.length != 1){ //remove dupes
-                            console.log("REMOVED DUPLICATES")
-                            for(let i=req.length - 1;i >= 0;i--){
-                                if(audio.station.played.includes(req[i])){
-                                    req.splice(i,1)
-                                }
-                            }
-                            if(req.length == 0){ //add backupAud incase of no aud remaining
-                                alert("LIST IS EMPTY!!!")
-                                console.log("backup ADDED")
-                                req.push(backupAud)
-                            }
-                        }
-    
-                        if(list.random){ //shuffle array
-                            console.log("randomized")
-                            audio.shuffleArray(req)
-                        }
-                        
-                        if(list.end){// add outro 
-                            console.log("end added")
-                            if(Array.isArray(list.end)){
-                                req.push(list.end[Math.floor(Math.random() * list.end.length)])
-                            } else if (typeof list.end == "string"){
-                                req.push(list.end)
-                            }
-                        }
-    
-                        for(let i=req.length - 1;i >= 0;i--){ //remove undefined items
-                            if(req[i] == undefined){
-                                console.log("undefined removed!")
-                                req.splice(i,1)
-                            }
-                        }
-                        console.log(req)
-    
-                        audio.station.queue = [...req,...audio.station.queue]
-                    }
+                queueAudio:(req:string | string[])=>{
+                    if(Array.isArray(req)){
+                        req.forEach((item)=>{
+                            audio.station.queue.push(item)
+                        })
+                    } else audio.station.queue.push(req)
                 },
                 //------------------------- RESET SYSTEM -----------------------------
                 // for all or specific reshuffle
                 // overwrites audio.station by using new array from audio.stationBackup
-                shuffleStation:(type:string)=>{ //creates randomize array
-                    let times = Math.floor(Math.random() * 1 * 3) + 1
-                    
-                    // let list2 =  type == "music" ? audio.stationBackup["music"] :
-                    //             type == "commercial" ? audio.stationBackup["commercial"] :
-                    //             type == "commercialSeq" ? audio.stationBackup["commercialSeq"] :
-                    //             type == "musicSeq" ? audio.stationBackup["musicSeq"] : undefined
-
-                    let list = Object.values(audio.stationBackup[type])
-                    if(list){
-                        for (let a = times; a > 0 ;a--){
-                            // console.log("shuffled station")
-    
-                            for (let i = list.length - 1; i >= 0; i--) { 
-                                const j = Math.floor(Math.random() * (i + 1)); 
-                                [list[i], list[j]] = [list[j], list[i]]; 
-                            } 
-                        }
-                        Object.assign(audio.stats,{[type+"IDMax"]:list.length})
-                        Object.assign(audio.station,{[type]:[...list]})
-                    } else throw new Error("select appropriate station type to shuffle")
-
+                selectRandomFromArr:(arr:any[])=>{
+                    return arr[Math.round(Math.random() * (arr.length - 1))]
                 },
-                shuffleStations:()=>{
-                    let times = Math.floor(Math.random() * 1 * 3) + 1
-                    let keys = Object.keys(audio.station)
-                    // let values = Object.values(audio.station)
-                    for(let i=0;i<keys.length;i++){
-                        let list = audio.stationBackup[keys[i]]
-                        if(Array.isArray(list)){ //only shuffles MUSIC, COMMERCIAL, COMMERCIALSEQ, MUSICSEQ
+                selectRandomsFromArr:(arr:any[],num:number)=>{
+                    let nArr = []
+                    let tempArr = [...arr]
+                    if(num && num < arr.length){
+                        for(let i=0;i<num;i++){
+                            let item = audio.selectRandomFromArr(tempArr)
+
+                            tempArr.splice(tempArr.indexOf(item), 1)
+                            nArr.push(item)
+                        }
+
+                        return nArr
+                    } else {
+                        console.error({
+                            targetArr:tempArr,
+                            numOfRandoms: num
+                        })
+                        throw new Error("cannot get more randoms than what is available")
+                    }
+                },
+                shuffleStationType:(type:string)=>{ //creates randomize array
+                    return new Promise( async (resolve:any)=>{
+                        let times = Math.floor(Math.random() * 1 * 3) + 1
+                        // let list2 =  type == "music" ? audio.stationBackup["music"] :
+                        //             type == "commercial" ? audio.stationBackup["commercial"] :
+                        //             type == "musicIntroSeq" ? audio.stationBackup["musicIntroSeq"] :
+                        //             type == "musicOutroSeq" ? audio.stationBackup["musicOutroSeq"] : undefined
     
+                        // console.log(type)
+                        // console.log(audio.station.name)
+                        // console.log(audio.stationBackup)
+                        // console.log(audio.stationBackup.musicIntroSeq)
+                        let list:any[] = Object.values(audio.stationBackup[type])
+                        // let list:any[] = [...audio.stationBackup[type]]
+                        // console.log(list)
+                        if(list){
                             for (let a = times; a > 0 ;a--){
-                                // console.log("shuffled stations")
-    
+                                // console.log("shuffled station")
+        
                                 for (let i = list.length - 1; i >= 0; i--) { 
                                     const j = Math.floor(Math.random() * (i + 1)); 
                                     [list[i], list[j]] = [list[j], list[i]]; 
                                 } 
-                            }   
+                            }
+    
+                            // console.log(list)
+                            if(type=="musicOutroSeq"){
+                                /* goal make sure each music has its own outro
+    
+                                    [outro1,outro2] : music1
+                                    outro1 : [music1,music2]
+    
+                                    [outro1,outro2,outro3] : [music1,music2]
+                                    [outro1,outro2] : [music1,music2,music3]
+                                    [outro1,outro2] : [music1,music2]
+                                */
+                                let musicOutroSeqArr = [...list]
+                                list.length = 0
 
-                            Object.assign(audio.stats,{[keys[i]+"IDMax"]:audio.stationBackup[keys[i]].length - 1})
-                            Object.assign(audio.station,{[keys[i]]:[...list]})
-                        }
-                    }
+                                let methods = {
+                                    outroStrMusicStr:(obj:musicOutroSeq)=>{
+                                        list.push({
+                                            music:obj.music,
+                                            outro:obj.outro
+                                        })
+                                    },
+                                    outroStrMusicArr:(obj:musicOutroSeq)=>{
+                                        let musicArr = [...obj.music]
+
+                                        musicArr.forEach((music)=>{
+                                            list.push({
+                                                music: music,
+                                                outro: obj.outro
+                                            })
+                                        })
+                                    },
+                                    outroArrMusicStr:(obj:musicOutroSeq)=>{
+                                        let outroArr = [...obj.outro]
+                                        list.push({
+                                            music:obj.music,
+                                            outro: audio.selectRandomFromArr(outroArr)
+                                        })
+                                    },
+                                    outroArrMusicArrOpt1:(obj:musicOutroSeq)=>{
+                                        let musicArr = [...obj.music]
+                                        let outroArr = [...obj.outro]
+
+                                        musicArr.forEach((music)=>{
+                                            list.push({
+                                                music: music,
+                                                outro:audio.selectRandomFromArr(outroArr)
+                                            })
+                                        })
+                                    },
+                                    outroArrMusicArrOpt2:(obj:musicOutroSeq)=>{
+                                        let musicArr = [...obj.music]
+                                        let outroArr = [...obj.outro]
+
+                                        musicArr.forEach((music)=>{
+                                            let nObj = {
+                                                music:music,
+                                                outro:audio.selectRandomFromArr(outroArr)
+                                            }
+                                            list.push(nObj)
+                                            outroArr.splice(outroArr.indexOf(nObj.outro!), 1)
+                                        })
+                                    }
+                                }
+    
+                                musicOutroSeqArr.forEach((obj:musicOutroSeq)=>{
+                                    if(!Array.isArray(obj.music)){ 
+                                        if(Array.isArray(obj.outro)){ methods.outroArrMusicStr(obj) //[outro1,outro2] : music1
+                                        } else methods.outroStrMusicStr(obj) // outro1 : music1
+                                    } else {
+                                        if(!Array.isArray(obj.outro)){ //outro1 : [music1,music2]
+                                            methods.outroStrMusicArr(obj)
+                                        } else {
+                                            let mL = obj.music.length
+                                            let oL = obj.outro.length
+    
+                                            if (oL < mL){ // [outro1,outro2] : [music1,music2,music3]
+                                                methods.outroArrMusicArrOpt1(obj)
+                                            } else if (oL > mL || oL == mL){ // [outro1,outro2,outro3] : [music1,music2] OR [outro1,outro2] : [music1,music2]
+                                                methods.outroArrMusicArrOpt2(obj)
+                                            }
+                                        }
+                                    }
+                                })
+                                await audio.shuffleArray(list)
+                                await audio.preventRepeatAfterShuffle(list,type)
+                                await audio.verifyArray(list,type)
+                            } else if(type=="musicIntroSeq"){
+                                /* goal make sure each intro has its own music
+
+                                    intro[],music[],end?[],repeat?,random?,max?
+    
+                                    [intro1,intro2] : music1
+                                    intro1 : [music1,music2]
+    
+                                    [intro1,intro2,intro3] : [music1,music2]
+                                    [intro1,intro2] : [music1,music2,music3]
+                                    [intro1,intro2] : [music1,music2]
+                                */
+                                let musicIntroSeqArr = [...list]
+                                list.length = 0
+
+                                let methods = {
+                                    introStrMusicStr:(obj:musicIntroSeq)=>{
+                                        list.push({
+                                            music:obj.music,
+                                            intro:obj.intro
+                                        })
+                                    },
+                                    introStrMusicArr:(obj:musicIntroSeq)=>{
+                                        let musicArr = [...obj.music]
+
+                                        musicArr.forEach((music)=>{
+                                            list.push({
+                                                music: music,
+                                                intro: obj.intro
+                                            })
+                                        })
+                                    },
+                                    introArrMusicStr:(obj:musicIntroSeq)=>{
+                                        let introArr = [...obj.intro]
+                                        list.push({
+                                            music:obj.music,
+                                            intro: audio.selectRandomFromArr(introArr)
+                                        })
+                                    },
+                                    introArrMusicArrOpt1:(obj:musicIntroSeq)=>{
+                                        let musicArr = [...obj.music]
+                                        let introArr = [...obj.intro]
+
+                                        musicArr.forEach((music)=>{
+                                            list.push({
+                                                music: music,
+                                                intro:audio.selectRandomFromArr(introArr)
+                                            })
+                                        })
+                                    },
+                                    introArrMusicArrOpt2:(obj:musicIntroSeq)=>{
+                                        let musicArr = [...obj.music]
+                                        let introArr = [...obj.intro]
+
+                                        musicArr.forEach((music)=>{
+                                            let nObj = {
+                                                music:music,
+                                                intro:audio.selectRandomFromArr(introArr)
+                                            }
+                                            list.push(nObj)
+                                            introArr.splice(introArr.indexOf(nObj.intro!), 1)
+                                        })
+                                    }
+                                }
+
+                                musicIntroSeqArr.forEach((obj:any)=>{
+                                    if(!Array.isArray(obj.music)){ 
+                                        if(Array.isArray(obj.intro)){ methods.introArrMusicStr(obj) //[intro1,intro2] : music1
+                                        } else methods.introStrMusicStr(obj) //intro1 : music1
+                                    } else {
+                                        //normal intro:music assignment
+                                        if(!Array.isArray(obj.intro)){ // intro1 : [music1,music2]
+                                            methods.introStrMusicArr(obj)
+                                        } else {
+                                            let mL = obj.music.length
+                                            let iL = obj.intro.length
+    
+                                            if (iL < mL){ // [intro1,intro2] : [music1,music2,music3]
+                                                methods.introArrMusicArrOpt1(obj)
+                                            } else if (iL > mL || iL == mL){ // [intro1,intro2,intro3] : [music1,music2] OR [intro1,intro2] : [music1,music2]
+                                                methods.introArrMusicArrOpt2(obj) 
+                                            }
+                                        }
+                                    }
+                                })
+                                
+                                await audio.shuffleArray(list)
+                                await audio.preventRepeatAfterShuffle(list,type)
+                                await audio.verifyArray(list,type)
+                            } else if (type =="sponsorship"){
+                                let sponsorhipArr = [...list]
+                                list.length = 0
+
+                                let methods = {
+                                    introStrSponsorStr:(obj:sponsorhip)=>{
+                                        list.push({
+                                            sponsor:obj.sponsor,
+                                            intro:obj.intro,
+                                            end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                        })
+                                    },
+                                    introArrSponsorStr:(obj:sponsorhip)=>{
+                                        let introArr = [...obj.intro]
+                                        list.push({
+                                            sponsor:obj.sponsor,
+                                            intro: audio.selectRandomFromArr(introArr),
+                                            end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                        })
+                                    },
+                                    introStrSponsorArr:(obj:sponsorhip)=>{ //obj.max opt
+                                        let sponsorArr = [...obj.sponsor]
+                                        let sL = obj.sponsor.length
+
+                                        if(obj.max){
+                                            if(obj.max <= sL){
+                                                let limit = Math.floor(Math.random() * obj.max) + 1
+                                                let limitedSponsorArr:string[] = audio.selectRandomsFromArr(sponsorArr,limit)!
+    
+                                                let nObj:any = {
+                                                    sponsor: limitedSponsorArr,
+                                                    intro:obj.intro,
+                                                    end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                                }
+                                                list.push(nObj)
+                                            } else { //ignores obj.max
+                                                console.log("obj.max ignored")
+                                                let limit = Math.floor(Math.random() * sL) + 1
+                                                let limitedSponsorArr:string[] = audio.selectRandomsFromArr(sponsorArr,limit)!
+    
+                                                let nObj:any = {
+                                                    sponsor: limitedSponsorArr,
+                                                    intro:obj.intro,
+                                                    end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                                }
+                                                list.push(nObj)
+                                            }
+                                        } else {
+                                            list.push({
+                                                sponsor: obj.sponsor,
+                                                intro: obj.intro,
+                                                end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                            })
+                                        }
+                                    },
+                                    introArrSponsorArrOpt1:(obj:sponsorhip)=>{ //intro.length <= sponsor.length
+                                        let sponsorArr = [...obj.sponsor]
+                                        let introArr = [...obj.intro]
+                                        let iL = introArr.length
+                                        let sL = sponsorArr.length
+                                        let defaultFunc = ()=>{
+                                            introArr.forEach((intro)=>{
+                                                let nObj:any = {
+                                                    sponsor: audio.selectRandomsFromArr(sponsorArr,Math.floor(sL/iL))!,
+                                                    intro:intro,
+                                                    end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                                }
+                                                list.push(nObj)
+                                                nObj.sponsor.forEach((sponsor:string)=>{
+                                                    sponsorArr.splice(sponsorArr.indexOf(sponsor), 1)
+                                                })
+                                            })
+                                        }
+
+                                        // [intro1,intro2]:[music1,music2,music3]
+                                        // if obj.max > SL && (max * iL) <= sL GOOD
+                                        // if obj.max < SL BAD
+
+                                        if(obj.max){
+
+                                            if(obj.max <= sL && (obj.max * iL) <= sL){
+
+                                                introArr.forEach((intro)=>{
+                                                    let nObj:any = {
+                                                        sponsor: audio.selectRandomsFromArr(sponsorArr,obj.max)!,
+                                                        intro:intro,
+                                                        end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                                    }
+                                                    list.push(nObj)
+                                                    nObj.sponsor.forEach((sponsor:string)=>{
+                                                        sponsorArr.splice(sponsorArr.indexOf(sponsor), 1)
+                                                    })
+                                                })
+                                            } else {
+                                                console.log("obj.max ignored")
+                                                console.error({
+                                                    obj:obj,
+                                                    issue: "obj.max must be less than or equal obj.sponsor.length",
+                                                    issue2: "obj.max must be distribute to each intro to have equal sponsors",
+                                                    issue3: "obj.max times intro must be less than or equal to sponsorArr"
+                                                })
+                                                defaultFunc()
+                                            }
+                                        } else defaultFunc()
+                                    },
+                                    introArrSponsorArrOpt2:(obj:sponsorhip)=>{ //intro.length > sponsor.length; max is required to limit intro
+                                        // [intro1,intro2,intro3] : [music1,music2]
+                                        let sponsorArr = [...obj.sponsor]
+                                        let introArr = [...obj.intro]
+                                        let sL = obj.sponsor.length
+                                        let defaultFunc = ()=>{
+                                            let limit = Math.floor(Math.random() * sL) + 1
+                                            let limitedIntroArr:string[] = audio.selectRandomsFromArr(introArr,Math.floor(Math.random() * sL) + 1)!
+
+                                            limitedIntroArr.forEach((intro)=>{
+                                                let nObj:any = {
+                                                    sponsor: audio.selectRandomsFromArr(sponsorArr,Math.floor(sL/limit))!,
+                                                    intro:intro,
+                                                    end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                                }
+                                                list.push(nObj)
+                                                nObj.sponsor.forEach((sponsor:string)=>{
+                                                    sponsorArr.splice(sponsorArr.indexOf(sponsor), 1)
+                                                })
+                                            })
+                                        }
+
+                                        defaultFunc()
+                                    },
+                                    introArrSponsorArrOpt3:(obj:sponsorhip)=>{
+                                        let introArr = [...obj.intro]
+                                        let sponsorArr = [...obj.sponsor]
+
+                                        introArr.forEach((intro)=>{
+                                            let nObj:any = {
+                                                sponsor: audio.selectRandomFromArr(sponsorArr),
+                                                intro:intro,
+                                                end: Array.isArray(obj.end) ? audio.selectRandomFromArr(obj.end)! : obj.end
+                                            }
+                                            list.push(nObj)
+                                            nObj.sponsor.forEach((sponsor:string)=>{
+                                                sponsorArr.splice(sponsorArr.indexOf(sponsor), 1)
+                                            })
+                                        })
+                                    },
+                                }
+                                
+                                sponsorhipArr.forEach((obj:sponsorhip)=>{
+                                    /* 
+                                        intro:string | string[]
+                                        music:string | string[]
+                                        end?:string | string[]
+                                        repeat?:any
+                                        random?:any
+                                        max?:any
+                                    */
+                                    
+
+                                    if(!Array.isArray(obj.sponsor!)){ 
+                                        if(Array.isArray(obj.intro!)){
+                                            methods.introArrSponsorStr(obj) //[intro1,intro2] : music1
+                                        } else methods.introStrSponsorStr(obj) //intro1 : music1
+                                    } else {
+                                        // intro, sponsor[], end || end[]
+                                        if(!Array.isArray(obj.intro!)){ methods.introStrSponsorArr(obj)
+                                        } else { //intro[], sponsor[], end || end[]
+                                            let sL = obj.sponsor.length
+                                            let iL = obj.intro.length
+    
+                                            if (iL < sL){ // [intro1,intro2]:[music1,music2,music3]
+                                                methods.introArrSponsorArrOpt1(obj)
+                                            } else if (iL > sL ){ // [intro1,intro2,intro3] : [music1,music2]
+                                                methods.introArrSponsorArrOpt2(obj)
+                                            } else if (iL == sL){ // [intro1,intro2] : [music1,music2]
+                                                methods.introArrSponsorArrOpt3(obj)
+                                            }
+                                        }
+                                    }
+                                })
+
+                                await audio.shuffleArray(list)
+                                await audio.preventRepeatAfterShuffle(list,type)
+                                await audio.verifyArray(list,type)
+                            }
+    
+                            Object.assign(audio.stats,{[type+"IDMax"]:list.length})
+                            Object.assign(audio.station,{[type]:[...list]})
+                            // console.log(list)
+                        } else throw new Error("select appropriate station type to shuffle")
+                        
+                        resolve()
+                    })
                 },
-                shuffleArray:(array:[])=>{
-                    for (let i = array.length - 1; i >= 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [array[i], array[j]] = [array[j], array[i]];
-                    }
+                shuffleAllStationTypes:()=>{
+                    return new Promise(async (resolve:any)=>{
+                        // console.log("SHUFFLING START:")
+                        if(audio.chk.music){
+                            // console.log("music")
+                            await audio.shuffleStationType("music")
+                        }
+                        if(audio.chk.commercial){
+                            // console.log("commercial")
+                            await audio.shuffleStationType("commercial")
+                        }
+                        if(audio.chk.musicOutroSeq){
+                            // console.log("musicOutroSeq")
+                            await audio.shuffleStationType("musicOutroSeq")
+                        }
+                        if(audio.chk.musicIntroSeq){
+                            // console.log("musicIntroSeq")
+                            await audio.shuffleStationType("musicIntroSeq")
+                        }
+                        if(audio.chk.sponsorship){
+                            // console.log("sponsorhip")
+                            await audio.shuffleStationType("sponsorship")
+                        }
+                        // console.log("SHUFFLING END:")
+                        resolve()
+                    })
+                },
+                shuffleArray:(array:any[])=>{
+                    return new Promise ((resolve:any,reject)=>{
+                        for (let i = array.length - 1; i >= 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [array[i], array[j]] = [array[j], array[i]];
+                        }
+                        resolve(array)
+                    })
+                },
+                verifyArray:(array:any[],type:string)=>{
+                    return new Promise((resolve:any)=>{
+                        if(type == "musicOutroSeq"){
+                            array.forEach((item:musicOutroSeq)=>{
+                                if(!item.music){
+                                    alert("Incomplete obj detected")
+                                    console.log(item)
+                                } else if (!item.outro){
+                                    alert("Incomplete obj detected")
+                                    console.log(item)
+                                }
+                            })
+                        } else if (type == "musicIntroSeq"){
+                            array.forEach((item:musicIntroSeq)=>{
+                                if(!item.music){
+                                    alert("Incomplete obj detected")
+                                    console.log(item)
+                                } else if (!item.intro){
+                                    alert("Incomplete obj detected")
+                                    console.log(item)
+                                }
+                            })
+                        } else if (type == "sponsorship"){
+                            array.forEach((item:sponsorhip)=>{
+                                if(!item.sponsor){
+                                    alert("Incomplete obj detected")
+                                    console.log(item)
+                                } else if (!item.intro){
+                                    alert("Incomplete obj detected")
+                                    console.log(item)
+                                }
+                            })
+                        }
+                        resolve()
+                    })
+                },
+                removeDuplicatesTEST4dcrOutroBingCrosby:(array: any, type:string)=>{
+                    let indexs = []
+                    array.forEach((item:any,i:number)=>{
+                        // let trgt = item[type]
+                        array.forEach((item2:any,i2:number)=>{
+                            if(item2[type] == item[type]){
+
+                            }
+                        })
+                    })
+                },
+                preventRepeatAfterShuffle:(array:any[],type:string)=>{ //prevents playing same aud after shuffle
+                    return new Promise ((resolve:any,reject)=>{
+                        let item1 = audio.station.played![0] || null
+                        let item2 = audio.station.played![1] || null
+                        if(item1){
+                            console.log("item1 active")
+                            if(["music","musicOutroSeq","musicIntroSeq"].includes(type)){
+                                console.log(array[0].music)
+                                if([item1,item2].includes(array[0].music)){
+                                    console.log("matchfound sending to back")
+                                //    return array.push(array.splice(0, 1)[0]);
+                                   resolve(array.push(array.splice(0, 1)[0]));
+                                } else resolve(array)
+                                // } else return array
+                            } 
+                            resolve()
+                            // } else return array;
+                        } else resolve(array);
+                    })
+                    
                 },
                 //------------------------- EVENT SYSTEM -----------------------------
                 // chk current time first and see if audio.nowPlaying has expired
@@ -484,7 +997,7 @@ export class AudioRadio extends HTMLElement implements AudioRadioInterface{
                         e.stopImmediatePropagation()
                     }
                     audio.dispatchEvent(this.radioPlay)
-                    console.log("PLAYING")
+                    // console.log("PLAYING")
                     let cTime = (new Date().getTime()) /1000
                     let timePassed = cTime - audio.nowPlaying.currentTime
                     audio.currentTime = timePassed + audio.currentTime
@@ -493,63 +1006,93 @@ export class AudioRadio extends HTMLElement implements AudioRadioInterface{
                     if(this.isInterupted){
                         e.stopImmediatePropagation()
                     }
-
-
                     audio.dispatchEvent(this.radioPause)
-                    console.log("PAUSING")
-    
+                    // console.log("PAUSING")
                     audio.nowPlaying = {
                         currentTime: new Date().getTime() /1000, //will be used to subtract current Time and added
                     }
                 },
                 endStation:()=>{
-                    console.log("ENDED")
+                    // console.log("ENDED")
                     audio.dispatchEvent(this.radioEnd)
-
                     audio.nowPlaying = {
                         currentTime: new Date().getTime() /1000, //will be used to subtract current Time and added
                     }
-
-                    let delay = (Math.floor(Math.random() * 2) + 1) * 250
-                    console.log("delayed for:" + delay + "ms")
+                    // let delay = (Math.floor(Math.random() * 3) + 1) * 500
+                    let prevStation = this.cStation
+                    let delay = audio.station.gapless ? 0 : (Math.floor(Math.random() * 3) + 1) * 1000
+                    // let delay = audio.station.gapless ? 0 : (Math.floor(Math.random() * 3) + 1) * 500
+                    
+                    // console.log("delayed for:" + delay + "ms")
                     setTimeout(()=>{ //add delay on next audio
+                        if(prevStation != this.cStation) return
                         if(audio.currentTime == audio.duration && !this.isInterupted){
-                            console.log("nextStationAudio fired")
+                            // console.log("nextStationAudio fired")
                             audio.nextStationAudio()
-                        }
+                        } 
                     },delay)
                 },
                 waitStation:()=>{
-                    console.log("WAITING")
+                    // console.log("WAITING")
                     audio.dispatchEvent(this.radioWait)
                 },
-                nextStationAudio:()=>{
+                timeUpdateStation:()=>{
+                    // console.log("TIME UPDATING")
+                    audio.dispatchEvent(this.radioTimeUpdate)
+                },
+                durationChangeStation:()=>{
+                    audio.dispatchEvent(this.radioDurationChange)
+                },
+                rateChangeStation:()=>{
+                    audio.dispatchEvent(this.radioRateChange)
+                },
+                loadStartStation:()=>{
+                    audio.dispatchEvent(this.radioLoadStart)
+                },
+                volumeChangeStation:()=>{
+                    audio.dispatchEvent(this.radioVolumeChange)
+                },
+                nextStationAudio:async()=>{
                     if(!this.isInterupted){
-                        audio.randomizePlay()
+                        await audio.randomizePlay()
                     }
                 },
             })
 
+            //default events for the player
             audio.addEventListener("play",audio.playStation)
             audio.addEventListener("pause",audio.pauseStation)
-            audio.addEventListener("ended",audio.endStation)
             audio.addEventListener("wait",audio.waitStation)
-            audio.addEventListener("radioPlay",this.onRadioPlay)
-            audio.addEventListener("radioPause",this.onRadioPause)
-            audio.addEventListener("radioWait",this.onRadioWait)
-            audio.addEventListener("radioEnd",this.onRadioEnd)
+            audio.addEventListener("timeupdate",audio.timeUpdateStation)
+            audio.addEventListener("ended",audio.endStation)
+            audio.addEventListener("durationchange",audio.endStation)
+            audio.addEventListener("ratechange",audio.endStation)
+            audio.addEventListener("loadstart",audio.endStation)
+            audio.addEventListener("volumechange",audio.endStation)
             
+            //events for the radio
+            audio.addEventListener("radioPlay",this.onplay)
+            audio.addEventListener("radioPause",this.onpause)
+            audio.addEventListener("radioWait",this.onwait)
+            audio.addEventListener("radioTimeUpdate",this.ontimeupdate)
+            audio.addEventListener("radioEnd",this.onend)
+            audio.addEventListener("radioDurationChange",this.ondurationchange)
+            audio.addEventListener("radioRateChange",this.onratechange)
+            audio.addEventListener("radioLoadStart",this.onloadstart)
+            audio.addEventListener("radioVolumeChange",this.onvolumechange)
+
             
             this.appendChild(audio)
             this.stationPlayers.push(audio) //saves to list of player stations in radio-player
 
             // ------------------- INITIAL SETUP FIRED -------------------
-            audio.shuffleStations()
+            await audio.shuffleAllStationTypes()
+            // console.log("INITIAL SETUP COMPLETE, ADDING STANDBY AUDIO")
             audio.randomizePlay(true)
-
-
-            // console.log(station)
             resolve()
+            
+
+            // setTimeout(()=>{resolve()},3000)
         })
     }
     setupRadioControls(obj?:radioControls){
@@ -685,15 +1228,24 @@ export class AudioRadio extends HTMLElement implements AudioRadioInterface{
         }
     }
     resume(){
-        // console.log("RESUME PLEASE")
         this.isInterupted = false
         let station = this.stationPlayers[this.cStation]
-        // console.log("RESUMED RESUMED RESUMED RESUMED RESUMED RESUMED RESUMED RESUMED")
         
         if(station.currentTime >= station.duration){
-            console.log("nextStationAudio fired")
+            console.log("resume nextStationAudio fired")
             station.nextStationAudio()
-        } else station.play()
+        } else {
+            console.log("resume playing")
+            station.play()
+        }
+    }
+    testdelay(txt?:any){
+        return new Promise((resolve:any)=>{
+            setTimeout(()=>{
+                if(txt)console.log("finished delay on: " + txt)
+                resolve()
+            },1500)
+        })
     }
 }
 
@@ -732,30 +1284,65 @@ if(radio.getElementsByTagName("button")[0]){ //if bnt
         btnOptions.addTrigger(btnOptions[3]())
     }
 }
-
 /* 
-HOW TO USE
+WORKFLOW
+create <radio-player> tag
+fire setupRadio()
+    fires setupStation()
+        creates <audio> tag
+            add bind audio files added
+            shuffle
+        appends <audio> tag to <radio-player> tag
+
+*/
+/* HOW TO USE
 
 1.Create a <radio-player></radio-player> tag
 2.Add a property "stations":[Array of Station]
     stations = [
         {
             name:"Station1",
-            music:[URLArray],
-            commercial:[URLArray],
-            commercialSeq:[audArray],
-            musicSeq:[audArray],
+            music:string[],
+            commercial:string[],
+            musicIntroSeq:[
+                intro:string | string[],
+                music:string | string[]
+            ],
+            musicOutroSeq:[
+                music:string | string[]
+                outro:string | string[]
+            ],
+            sponsorship:[
+                intro:string | string[]
+                sponsor:string | string[]
+                end?:string | string[]
+                max?:any //restricts amount of sponsors
+            ],
             commercialFreq:{min:1,max:2}
+            gapless: true
         }
     ]
-
-
-
+    
+    NOTE:player will only play same "music" audio once per shuffle
 */
 /* 
-let synth = window.speechSynthesis
-let voices = synth.getVoices()
-const update = new SpeechSynthesisUtterance()
-update.text = "testing"
-synth.speak(update)
+    let synth = window.speechSynthesis
+    let voices = synth.getVoices()
+    const update = new SpeechSynthesisUtterance()
+    update.text = "testing"
+    synth.speak(update)
+*/
+/* 
+
+
+850
+60
+30
+10
+3
+1153
+
+
+
+
 */

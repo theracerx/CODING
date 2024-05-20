@@ -20,21 +20,23 @@
     /* 
     music - musicArr
     commercial - commercialArr
-    commercialSeq - commercial then music
-    musicSeq - music then commercial
+    sponsorship - {intro[],sponsor[],end[],max?}
+    musicIntroSeq - commercial then music
+    musicOutroSeq - music then commercial
     
     stations = [
         {
             name:"Station1",
             music:[audArray],
             commercial:[audArray],
-            commercialSeq:[audArray],
-            musicSeq:[audArray],
+            musicIntroSeq:[audArray],
+            musicOutroSeq:[audArray],
             commercialFreq:{min:1,max:2}
         }
     ]
 
     */
+   
     let stations = [
         {   name: "Classical",
             music: [...data.classicalMusic,...data.skylineChristmas],
@@ -53,15 +55,16 @@
         {   name: "New Vegas",
             music:[...data.rnvMusic],
             commercial:[...data.rnvHello, ...data.rnvIntroG],
-            commercialSeq: data.rnvIntroS,
+            musicIntroSeq: data.rnvIntroS,
             commercialFreq:{min:1,max:3}
-        },  
-        {
-            name: "Diamond City",
+        },
+        {   name: "Diamond City",
             music:[...data.dcrMusic],
             commercial:[...data.dcrIntroG],
-            commercialSeq:[
+            sponsorship:[
                 ...data.dcrIntroGS,
+            ],
+            musicIntroSeq:[
                 ...data.dcrIntroBettyHutton,
                 ...data.dcrIntroBigMaybelle,
                 ...data.dcrIntroBillieHoliday,
@@ -88,7 +91,7 @@
                 ...data.dcrIntroWarrenSmith,
                 ...data.dcrIntroWynonieHarris
             ],
-            musicSeq:[
+            musicOutroSeq:[
                 ...data.dcrOutroBigMaybelle,
                 ...data.dcrOutroBillieHoliday,
                 ...data.dcrOutroBingCrosby,
@@ -104,8 +107,15 @@
                 ...data.dcrOutroTexBeneke,
             ],
             commercialFreq:{min:1,max:3}
+        },
+        {   name: "Possum Springs",
+            music:[...data.NITW]
+        },
+        {   name: "HatKid SpaceHub",
+            music:[...data.Hatkid_SpaceHub],
+            gapless:true
         }
-    ];
+    ]
 
     let radio = document.getElementById("rad")
     radio.stations = stations
@@ -122,16 +132,16 @@
             stations[i].setupNormalizedPlayer()
         }
     }
-    radio.onRadioWait = ()=>{
+    radio.onwait = ()=>{
         // console.log("WAITING")
     }
-    radio.onRadioPause = ()=>{
+    radio.onpause = ()=>{
         // console.log("PAUSED")
     }
-    radio.onRadioEnd = ()=>{
+    radio.onend = ()=>{
         // console.log("ENDED")
 
-        if(Math.floor(Math.random() * 6))return       
+        if(Math.floor(Math.random() * 600))return       
         radio.interrupt()
 
         let synth = window.speechSynthesis
@@ -200,19 +210,13 @@
         }
     
     }
-    radio.onRadioPlay = ()=>{
+    radio.onplay = ()=>{
         // console.log("PLAYED")
     }
-
+    radio.ontimeupdate = (e)=>{
+        // console.log(24)
+        // console.log(e)
+    }
 </script>
 
 </html>
-
-<!-- 
-
-1280
-
-
-
-
- -->
