@@ -6,6 +6,9 @@
     <title>Document</title>
 </head>
 <style>
+    body{
+        font-family:Arial, Helvetica, sans-serif;
+    }
     #startScreen{
         position: absolute;
         top:0;
@@ -26,70 +29,209 @@
         height: 100px;
         font-size: xxx-large;
     }
+    #uploadBinHead{
+        display: block;
+        text-align: center;
+        font-size: xx-large;
+        margin: 0 auto;
+    }
+    #uploadBin{
+        display: block;
+        margin: 0 auto;
+        background-color: lightgray;
+    }
+    #relativePathCont{
+        display: block;
+        text-align: center;
+        font-size: large;
+        margin: 10px auto;
+    }
+    #relativePath{
+        width: 40vw;
+    }
+    #normalizeBtn{
+        display: block;
+        margin: 0 auto;
+    }
+    #arrCount{
+        display: block;
+        text-align: center;
+        margin: 0 auto;
+        margin-top: 10px;
+    }
+    #cAudHead{
+        display: block;
+        text-align: center;
+        margin: 10px auto;
+    }
+    #cAud{
+        display: block;
+        text-align: center;
+        margin: 0 auto;
+        font-style: italic;
+    }
+    #playerCont{
+        display: flex;
+    }
+    #sideA{
+        width: 50vw;
+    }
+    #sideB{
+        width: 50vw;
+    }
+    audio{
+        width:-webkit-fill-available;
+    }
+    #audioSelectCont{
+        display: block;
+        width: 100vw;
+    }
+    #resetDbBtn, #db1, #db2{
+        float: right;
+    }
+    #db2{
+        visibility: hidden;
+    }
+    .tempHidden{
+        opacity: 65%;
+        pointer-events: none;
+    }
+    /* progress::-webkit-progress-bar {background-color: black; width: 100%;} */
+    /* progress {background-color: black;} */
+    progress::-webkit-progress-bar {
+        background: linear-gradient(to right, #3fffa2 0%, #ffdb3a 50%, #e5405e 100%) !important;
+        width: 100%;}
+    progress {
+        background: linear-gradient(to right, #3fffa2 0%, #ffdb3a 50%, #e5405e 100%) !important;
+    }
+
+    /* value: */
+    progress::-webkit-progress-value {
+        transition: all .1s ease-in;
+        background: linear-gradient(to right, #fcfcfc00 95%, #000000 100%) !important;
+        /* width: 10px !important; */
+    }
+    /* progress::-webkit-progress-value {background: linear-gradient(to right, #e5405e 0%, #ffdb3a 45%, #3fffa2 100%) !important;} */
+    /* progress::-moz-progress-bar {background-color: blue !important;} */
+    /* progress {color: red !important;} */
 </style>
 <body>
-    <div id="startScreen">
-        <button id="startBtn" onpointerup="start()" ><strong>START</strong></button>
-    </div>
-    <label for="src"><strong>SRC:</strong></label>
-    <input id="src" type="text" style="width:50%;"placeholder="sample-a.mp3" value="sample-a.mp3">
     
-    <button onpointerup="convert()">Submit</button>
-    <button onpointerup="checkArray()">Submit Array</button>
+    <label id="uploadBinHead" for="file[]">Select audio to normalize:</label>
+    <input id="uploadBin" name=file[] type="file" multiple accept="audio/*">
+    
+    <div id="relativePathCont">
+        <label for="relativePath">Relative path:</label>
+        <input id="relativePath" type="text" placeholder="../Artist/Album/src">
+    </div>
 
-    <p><strong>NOTE:</strong> when submitting arrays do:  a,b,c,d,e,f,g,h </p>
-    <p><strong>Windows USER:</strong> audios in folder? go in folder and do "<strong>cmd</strong>" in URL and type "<strong>dir /B |clip</strong>" and paste to Notepad </p>
+    <marquee>ඞඞඞ not 100% accurate ඞඞඞ </marquee>
 
-    <h1>Original:</h1>
-        <audio id="pl1" controls></audio>
-    <h1>Normalized:</h1>
-        <audio id="pl2" controls></audio>
-        <br>
+    <button id="normalizeBtn" onclick="checkUploads()"> >>> <strong>Normalize</strong> <<< </button>
+    <span id="arrCount" data-count="0"></span>
+    <h3 id="cAudHead">Current audio:</h3>
+    <p id="cAud">null</p>
+    <div id="playerCont">
+        <div id="sideA">
+            <h1>Original:</h1>
+            <audio id="pl1" class="tempHidden" controls></audio>
+            <br><!-- FOR DECIBEL DISPLAY -->
+            <label for="prog">Decibel meter:</label>
+            <progress id="prog" value="30" max="70"></progress> 
+            <span id="db2"> 100 </span>
+            <span id="db1"> ± 0 </span>
+            <br>
+        </div>
+        <div id="sideB">
+            <h1>Normalized:</h1>
+                <audio id="pl2" class="tempHidden" controls></audio>
 
-        <label for="gain">Gain</label>
-        <input id="gain" type="text" placeholder="1" value="1" onkeyup="onEnter2()" >
-        <button onpointerup="updateGain()">Submit</button>
+                <label for="gain">Gain</label>
+                <input id="gain" class="tempHidden" type="number" placeholder="1" value="1" onkeyup="updateGain()" >
+                <button class="tempHidden" onpointerup="updateGainFinal()">Save</button>
+        </div>
+    </div>
+    <br>
+    <div id="audioSelectCont">
+        <!-- <button></button>  auto add buttons per audio converted-->
+    </div>
 
-    <h1>New link: <i id="nLink" style="color:green;" >null</i></h1>
-        <button id="prevBtn" onpointerup="prevArray()" hidden="true"><< Prev <<</button>
-        <span id="arrCount" data-count="0"></span>
-        <button id="nextBtn" onpointerup="nextArray()" hidden="true">>> Next >></button>
-        <!-- <button id="convertAllBtn" onclick="convertAll()" hidden>Convert All</button> -->
-        <button onpointerup="copyLink()">Copy Link</button>
 
-        
-        <br><!-- FOR DECIBEL DISPLAY -->
-        <label for="prog">Decibel meter:</label>
-         <progress id="prog" value="0" max="1"></progress> <span id="db1"> 0 </span>
-        <input type="button" value="Reset" onpointerup="reset()">
-        <br>
-    <h2>History:</h2>
-    <p id="codeStash"></p>
+    <h2 id="codeStashHead">History:</h2>
     <button onpointerup="sortHistoryUp()">Sort Up</button>
     <button onpointerup="sortHistoryDown()">Sort Down</button>
     <button onpointerup="copyHistory()">Copy History</button>
+    <div id="codeStash"></div>
 </body>
 <script>
-
 var audGainNode
-var audSrcNode
+var audSrcNode0
+var audSrcNode1
 var eventSetup
-window.audHistory = []
-
 
 function start(){
     document.getElementById("startScreen").remove()
     window.audioCtx = new AudioContext()
 }
+async function checkUploads(){
+    window.audioCtx = new AudioContext()
+    let uploads = document.getElementById("uploadBin")
+    let arrCount = document.getElementById("arrCount")
+    if (uploads.files.length !=0){
+        document.getElementById("normalizeBtn").disabled = true
+        document.getElementById("uploadBin").disabled = true
+        let limit = uploads.files.length
 
-function convert(cSrc){
-    let src
-
-    if(cSrc){
-        src = cSrc
-    } else src = document.getElementById("src").value
+        arrCount.textContent = "converting (0/" + (limit) + ")"
+        arrCount.dataset.max = limit
+        arrCount.dataset.count = 0
 
 
+        let i = 0;
+        let test = (i)=>{
+            return new Promise ((resolve)=>{
+                setTimeout(async ()=>{
+                    let arr = document.getElementById("codeStash").innerText.split(",")
+                    if(arr.length != (i+1)){
+                        // console.log("not done")
+                        await test(i)
+                        resolve()
+                    } else {
+                        // console.log("done")
+                        nextArray()
+                        resolve()
+                    }
+                }, 500)
+            })
+        }
+        while (i < limit) {
+            console.log(i)
+            await test(i)
+            i++
+        }
+
+        let arr = document.getElementById("codeStash").innerText.split(",")
+        if(arr.length != limit){
+            alert("ERROR ERROR")
+        } else {
+            arrCount.remove()
+            let list = [...document.getElementsByClassName("tempHidden")]
+            for(let i=0;i<list.length;i++){
+                list[i].className = ""
+            }
+
+            document.getElementById("codeStashHead").textContent = "History (" + limit + ") :"
+            console.log("CONVERSION DONE")
+        }
+    
+    
+    } else {
+        alert("No files uploaded")
+    }
+}
+
+function convert(obj){
+    let src = URL.createObjectURL(obj)
     let player = document.getElementsByTagName("audio")
     let normalGain
 
@@ -123,22 +265,36 @@ function convert(cSrc){
         //setup Normalized player
         player[1].src = src
         document.getElementById("gain").value = normalGain
-        let url = chkURL() + "?gain=" + normalGain
+        let url = obj.name + "?gain=" + normalGain
 
        url = String.raw`${url}`.replaceAll("\\","/")
        console.log(url)
 
-        document.getElementById("nLink").textContent = url
+        // document.getElementById("nLink").textContent = url
         let stash = document.getElementById("codeStash")
+        // let stash2 = document.getElementById("codeStash2")
+        // let dl = document.createElement("dl")
+        
         
         if(!stash.textContent.includes(url)){ //only saves once in history
-            window.audHistory.push(url)
-            stash.textContent = stash.textContent + `"` + url + `",`
+            let path = document.getElementById("relativePath").value
+            path = String.raw`${path}`.replaceAll("\\","/")
+            
+            if(path != "" && path.slice(-1) != "/"){
+                path = path + "/"
+            }
+            stash.textContent = stash.textContent + `"` + path + url + `",`
+            
+            // dl.textContent = `"` + path + url + `",`
+            // stash2.append(dl)
         }
 
         //set AudioSourceNode
-        if(!audSrcNode){
-            audSrcNode = audioCtx.createMediaElementSource(player[1]);
+        if(!audSrcNode0){
+            audSrcNode0 = audioCtx.createMediaElementSource(player[0]);
+        }
+        if(!audSrcNode1){
+            audSrcNode1 = audioCtx.createMediaElementSource(player[1]);
         }
     
         //set GainNode
@@ -146,7 +302,32 @@ function convert(cSrc){
             audGainNode = audioCtx.createGain()
         }
         audGainNode.gain.value = normalGain
-    
+        
+        //generate new Button for audio
+        let nBtn = document.createElement("button")
+        let br = document.createElement("br")
+        nBtn.id = obj.name
+        player[1].dataset.src = obj.name
+        document.getElementById("cAud").textContent = obj.name
+        nBtn.textContent = obj.name
+        nBtn.dataset.gain  = normalGain
+        let btnFunc = ()=>{
+            player[0].src = src
+            player[1].src = src
+            player[1].dataset.src = obj.name
+            document.getElementById("gain").value = nBtn.dataset.gain 
+            document.getElementById("cAud").textContent = obj.name
+            audGainNode.gain.value = nBtn.dataset.gain 
+            player[1].play()
+        }
+        nBtn.onpointerup = btnFunc
+        nBtn.onkeyup = btnFunc
+        let audBtns = document.getElementById("audioSelectCont")
+        audBtns.append(nBtn)
+        audBtns.append(br)
+
+
+
         //set processor //FOR SHOWING DECIBELS
         let processor = audioCtx.createScriptProcessor(2048, 1, 1)
         processor.onaudioprocess = function(evt){
@@ -157,124 +338,116 @@ function convert(cSrc){
             while ( i < len ) total += Math.abs( input[i++] );
             rms = Math.sqrt( total / len );
 
-            let db = Math.round((rms * 100)* 100) / 100
-            // document.getElementById("db0").textContent = db
+            let db = Math.round(rms * 100 * audGainNode.gain.value)
             document.getElementById("prog").value = db
-            
-            if(db >  document.getElementById("prog").max){
-                document.getElementById("prog").max = db
-                document.getElementById("db1").textContent = db
-            }
+            document.getElementById("db1").textContent = "± " + db
 
         };
         //setup connect and disconnect funcs
 
-        let connectNode = ()=>{
+        let connectNode0 = ()=>{
+            audGainNode.gain.value = 1
             console.log("connecting node")
-            audSrcNode.connect(audGainNode)
-            audSrcNode.connect(processor)
+            audSrcNode0.connect(audGainNode)
             audGainNode.connect(audioCtx.destination)
+            audSrcNode0.connect(processor)
             processor.connect(audioCtx.destination);
         }
-
-        let disconnectNode = ()=>{
+        let disconnectNode0 = ()=>{
             console.log("disconnecting node")
-            audSrcNode.disconnect(audGainNode)
-            audSrcNode.disconnect(processor)
+            audSrcNode0.disconnect(audGainNode)
             audGainNode.disconnect(audioCtx.destination)
+            audSrcNode0.disconnect(processor)
             processor.disconnect(audioCtx.destination);
         }
         
+        let connectNode1 = ()=>{
+            audGainNode.gain.value = document.getElementById("gain").value
+            console.log("connecting node")
+            audSrcNode1.connect(audGainNode)
+            audSrcNode1.connect(processor)
+            audGainNode.connect(audioCtx.destination)
+            processor.connect(audioCtx.destination);
+        }
+        let disconnectNode1 = ()=>{
+            console.log("disconnecting node")
+            audSrcNode1.disconnect(audGainNode)
+            audSrcNode1.disconnect(processor)
+            audGainNode.disconnect(audioCtx.destination)
+            processor.disconnect(audioCtx.destination);
+        }
+
+       
         //set Events
         if(!eventSetup){
             eventSetup = true
+
+            player[0].addEventListener("play",async(e)=>{  // isSrcReady???
+                // player[1].pause()
+                connectNode0()
+            })
+            player[0].addEventListener("pause",async(e)=>{
+                disconnectNode0()
+            })
+        
             player[1].addEventListener("play",async(e)=>{  // isSrcReady???
-                connectNode()
+                // player[0].pause()
+                connectNode1()
             })
             player[1].addEventListener("pause",async(e)=>{
-                disconnectNode()
+                disconnectNode1()
             })
+        
         }
 
     })
 }
-function checkArray(){
-    document.getElementById("prevBtn").hidden = false
-    document.getElementById("nextBtn").hidden = false
-    // document.getElementById("convertAllBtn").hidden = false
-
-
-    let arr = document.getElementById("src").value
-    let arr1 = arr.split(",")
-    window.arr2 = []
-    for(let i=0;i<arr1.length;i++){
-        // console.log(arr1[i].replace(/^[ \t]+|[ \t]+$/,""))
-        let temp = arr1[i].replace(/^[ \t]+|[ \t]+$/,"")
-        if(temp.includes(`"`)){
-            arr2.push(temp.substring(1,temp.length-1))
-        } else arr2.push(temp)
-    }
-    document.getElementById("arrCount").textContent = "0/" + (arr2.length)
-    document.getElementById("arrCount").dataset.count = 0
-    document.getElementById("arrCount").dataset.max = arr2.length
-    convertAll()
-}
 function nextArray(){
     let count = document.getElementById("arrCount")
+    let uploads = document.getElementById("uploadBin")
+
     count.dataset.count++
     let i = count.dataset.count - 1
-    convert(arr2[i])
-    count.textContent = count.dataset.count + "/" + (arr2.length)
+    convert(uploads.files[i])
+    count.textContent = "converting (" + count.dataset.count + "/" + (uploads.files.length) + ")"
 }
-function prevArray(){
-    let count = document.getElementById("arrCount")
-    count.dataset.count--
-    let i = count.dataset.count - 1
-    console.log(arr2[i])
-    convert(arr2[i])
-    count.textContent = count.dataset.count + "/" + (arr2.length)
-}
-async function convertAll(){
-    let limit = document.getElementById("arrCount").dataset.max
-    let i = 0;
-    let test = ()=>{
-        return new Promise ((resolve)=>{
-            setTimeout(()=>{
-                nextArray()
-                resolve()
-            },(Math.floor(Math.random() * 3) + 1) * 1000)
-        })
-    }
-    while (i < limit) {
-        await test()
-        i++
-    }
-}
+
 function updateGain(){
-    audGainNode.gain.value = document.getElementById("gain").value
-    let url = chkURL()
-    document.getElementById("nLink").textContent = url + "?gain=" + document.getElementById("gain").value
+    let val = document.getElementById("gain").value
+    if(isNaN(val)) return
+    audGainNode.gain.value = val
+}
+function updateGainFinal(){
+    let nGain = document.getElementById("gain").value
+    let id = document.getElementById("pl2").dataset.src
+
+    if(id){
+        let btn = document.getElementById(id)
+        let stash = document.getElementById("codeStash").textContent
+        let target = id + "?gain=" + btn.dataset.gain
+        let replacement = id + "?gain=" + nGain
+        console.log({
+            target:target,
+            replacement:replacement
+        })
+        if(stash.includes(target)){
+            console.log("YESSS")
+            console.log(stash)
+            stash.replaceAll(target, replacement)
+            document.getElementById("codeStash").textContent = stash.replaceAll(target, replacement)
+        }
+        console.log("FINAL:")
+        console.log(document.getElementById("codeStash").textContent)
+        
+        btn.dataset.gain = nGain
+        console.log("gain updated???")
+    } else throw new Error ("no Audio to be updated")
 
 }
-function reset(){
-    document.getElementById("prog").max = 0
-    document.getElementById("db1").textContent = 0
-}
 
-function chkURL(){
-    let url = document.getElementById("src").value
-    if((url.match(/,/g) || []).length > 0){
-        let count = document.getElementById("arrCount")
-        let i = count.dataset.count - 1
-        url = arr2[i]
-    }
-    return url
-}
-function copyLink(){
-    navigator.clipboard.writeText(document.getElementById("nLink").innerText);
-}
 function sortHistoryDown(){
     let arr = document.getElementById("codeStash").innerText.split(",")
+    if(arr.length)
     arr.sort().reverse()
     document.getElementById("codeStash").innerText = arr.join(",")
 }
@@ -290,37 +463,8 @@ function copyHistory(){
     } else navigator.clipboard.writeText(stash)
 
 }
+
+
 </script>
 
 </html>
-
-
-<!-- 
-
-/* 
-sample-a.mp3,sample-b.mp3,sample-c.mp3,sample-d.mp3,sample-e.mp3,sample-f.mp3
-,sample-g.mp3,sample-x.mp3
-
-
-
-..\Radio Module\audio\AHIT_SpaceHub/Hub Main Mastered.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/Hubworld ActSelect Conductor Loop.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/Hubworld ActSelect DJ Grooves Loop.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/HubWorld CiorgiGame Variation.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/HubWorld SecretPillowHideoutRoom Variation.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/spaceship decorationmode loop.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/Spaceship Hub Gallery Loop.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/spaceship hub marching loop.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/spaceship mafiaboss close loop.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/spaceship mafiaboss loop.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/spaceship mailroom close.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/spaceship mailroom loop.mp3
-,..\Radio Module\audio\AHIT_SpaceHub/spaceship near telescope.mp3
-
-
-
-
- */
-
-
- -->
