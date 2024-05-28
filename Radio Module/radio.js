@@ -88,8 +88,15 @@ export class AudioRadio extends HTMLElement {
                 resolve();
             });
         })();
-        console.log("TODO: add download radio station??");
-        console.log("TODO: onended and then switch station... prev Station still plays");
+        console.log("TODO: add download radio station??chk inline comment");
+        /*
+            to get audio name just split on audio format like ".mp3" or ".opus"
+            folder1/sample.mp3?gain=0.23".split(".mp3")
+
+            purpose of download is to give users access to play radio locally since web hosting has limited data
+        */
+        console.log("TODO: seasonal filter like add `?season=christmas` or `?time=9-13`");
+        console.log("TODO: add custom base audio level on start");
         //check total audioElem generated
         if (this.getElementsByTagName("audio").length == this.stations.length) {
             // console.log("audio files ready")
@@ -873,6 +880,11 @@ export class AudioRadio extends HTMLElement {
                 },
                 endStation: () => {
                     // console.log("ENDED")
+                    if (!audio.paused)
+                        return; //prevent current player to trigger on end event onvolumechange
+                    if (audio != radio.stationPlayers[radio.cStation])
+                        return; //prevent inactive players to trigger on end event onvolumechange
+                    // console.log("TRIGGERED")
                     audio.dispatchEvent(this.radioEnd);
                     audio.nowPlaying = {
                         currentTime: new Date().getTime() / 1000, //will be used to subtract current Time and added
@@ -1010,13 +1022,11 @@ export class AudioRadio extends HTMLElement {
                 this.stationPlayers[this.cStation].pause();
                 this.cStation = 0;
                 this.stationPlayers[this.cStation].play();
-                this.stationPlayers[this.cStation].volume = volume.value / 100;
                 stationName.textContent = this.stations[this.cStation].name;
             }
             else {
                 this.stationPlayers[this.cStation].pause();
                 this.stationPlayers[this.cStation + 1].play();
-                this.stationPlayers[this.cStation + 1].volume = volume.value / 100;
                 stationName.textContent = this.stations[this.cStation + 1].name;
                 this.cStation = this.cStation + 1;
             }
@@ -1028,31 +1038,38 @@ export class AudioRadio extends HTMLElement {
             if ((this.cStation - 1) < 0) {
                 this.stationPlayers[this.cStation].pause();
                 this.stationPlayers[limit].play();
-                this.stationPlayers[limit].volume = volume.value / 100;
                 stationName.textContent = this.stations[limit].name;
                 this.cStation = limit;
             }
             else {
                 this.stationPlayers[this.cStation].pause();
                 this.stationPlayers[this.cStation - 1].play();
-                this.stationPlayers[this.cStation - 1].volume = volume.value / 100;
                 stationName.textContent = this.stations[this.cStation - 1].name;
                 this.cStation = this.cStation - 1;
             }
         };
         let onVolumeChange = () => {
-            // console.log(volume.value)
-            this.stationPlayers[this.cStation].volume = volume.value / 100;
+            if (muteBtn.src == muteBtn.off) {
+                muteBtn.src = muteBtn.on;
+            }
+            radio.stationPlayers.forEach((player) => {
+                player.volume = volume.value / 100;
+                player.muted = false;
+            });
         };
         let onMuteBtn = () => {
             if (muteBtn.src == muteBtn.on) {
                 muteBtn.value = this.stationPlayers[this.cStation].volume;
-                this.stationPlayers[this.cStation].volume = 0;
                 muteBtn.src = muteBtn.off;
+                radio.stationPlayers.forEach((player) => {
+                    player.muted = true;
+                });
             }
             else {
-                this.stationPlayers[this.cStation].volume = muteBtn.value;
                 muteBtn.src = muteBtn.on;
+                radio.stationPlayers.forEach((player) => {
+                    player.muted = false;
+                });
             }
         };
         prevBtn.addEventListener("click", onPrevBtn);

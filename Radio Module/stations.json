@@ -1,13 +1,57 @@
 {
+    "citiesMusic":[
+        "audio/Cities Music/War of the Vikings - Drums of Odin.mp3?gain=0.2843",
+        "audio/Cities Music/The Showdown Effect – Big showdown In Neo Tokyo – Jonas Myrström.mp3?gain=0.3256",
+        "audio/Cities Music/Stellaris ft Mia Stegmar - Faster Than Light.mp3?gain=0.4742",
+        "audio/Cities Music/Magicka - Dunka Dunka.mp3?gain=0.2635",
+        "audio/Cities Music/Knights of Pen and Paper_Medley.mp3?gain=0.5850",
+        "audio/Cities Music/Knights of Pen and Paper 2 - Easy Battle.mp3?gain=0.4981",
+        "audio/Cities Music/Kingdom of Jerusalem (Electro Orchestral Mix).mp3?gain=0.3009",
+        "audio/Cities Music/Hearts of Iron IV - Dance Your Troubles Away.mp3?gain=0.4245",
+        "audio/Cities Music/Europa Universalis IV - Ride Forth Victoriously.mp3?gain=0.3396",
+        "audio/Cities Music/Europa Universalis IV - Main Theme.mp3?gain=0.3380",
+        "audio/Cities Music/Europa Universalis IV - Battle of Lepanto.mp3?gain=0.4220",
+        "audio/Cities Music/Europa Universalis III - Music of the World - A city.mp3?gain=0.6401",
+        "audio/Cities Music/Crusader Kinds II - Main Title.mp3?gain=0.4394",
+        "audio/Cities Music/Crusader Kinds II - England Anno 1066.mp3?gain=0.4948",
+        "audio/Cities Music/Cities in Motion - Main Menu.mp3?gain=0.3070",
+        "audio/Cities Music/Alexander Nevsky Rides To Battle (Electro Orchestral Mix).mp3?gain=0.3466",
+        "audio/Cities Music/4. The First Crusade.mp3?gain=0.2609",
+        "audio/Cities Music/3. Crusader Kings II Orchestral House Lords – Journey To Absolution.mp3?gain=0.3422",
+        "audio/Cities Music/2. Crusader Kings II Viking metal – Viking Gods.mp3?gain=0.3360",
+        "audio/Cities Music/1. Europa Universalis IV Guns Drums and Steel – Main Theme.mp3?gain=0.2957",
+        "audio/Cities Music/07 The Stone Masons (Guns Drums and Steel remix).mp3?gain=0.3283",
+        "audio/Cities Music/05 Ride Forth Victoriously (Guns Drums and Steel remix).mp3?gain=0.2967",
+        "audio/Cities Music/05 Our Kingdom Will Fall (Main Mix).mp3?gain=0.3150",
+        "audio/Cities Music/03 King's Court (Guns Drums and Steel remix).mp3?gain=0.2974",
+        "audio/Cities Music/02 Battle Of Lepano (Guns Drums and Steel remix).mp3?gain=0.3051"
+    ],
+    "citiesBlurbs":[
+        "audio/Cities Blurb/cities_radio7.mp3?gain=0.4446",
+        "audio/Cities Blurb/cities_radio6.mp3?gain=0.4124",
+        "audio/Cities Blurb/cities_radio5.mp3?gain=0.5220",
+        "audio/Cities Blurb/cities_radio2.mp3?gain=0.3873",
+        "audio/Cities Blurb/cities_radio13.mp3?gain=0.5441",
+        "audio/Cities Blurb/cities_radio1.mp3?gain=0.5307"
+    ],
+    "citiesTalks":[
+        "audio/Cities Talk/cities_radio9.mp3?gain=0.5066",
+        "audio/Cities Talk/cities_radio8.mp3?gain=0.5641",
+        "audio/Cities Talk/cities_radio4.mp3?gain=0.5955",
+        "audio/Cities Talk/cities_radio3.mp3?gain=0.4590",
+        "audio/Cities Talk/cities_radio12.mp3?gain=0.6054",
+        "audio/Cities Talk/cities_radio11.mp3?gain=0.5568",
+        "audio/Cities Talk/cities_radio10.mp3?gain=0.4845"
+    ],
     "classicalBlurbs":[
-        "audio/Classical Blurbs/TheClassics_Blurb1.mp3?gain=0.5402",
-        "audio/Classical Blurbs/TheClassics_Blurb11.mp3?gain=0.4809",
-        "audio/Classical Blurbs/TheClassics_Blurb12.mp3?gain=0.6262",
-        "audio/Classical Blurbs/TheClassics_Blurb13.mp3?gain=0.5751",
-        "audio/Classical Blurbs/TheClassics_Blurb14.mp3?gain=0.5142",
-        "audio/Classical Blurbs/TheClassics_Blurb7.mp3?gain=0.5965",
+        "audio/Classical Blurbs/TheClassics_Blurb9.mp3?gain=0.4789",
         "audio/Classical Blurbs/TheClassics_Blurb8.mp3?gain=0.4580",
-        "audio/Classical Blurbs/TheClassics_Blurb9.mp3?gain=0.4789"
+        "audio/Classical Blurbs/TheClassics_Blurb7.mp3?gain=0.5965",
+        "audio/Classical Blurbs/TheClassics_Blurb14.mp3?gain=0.5142",
+        "audio/Classical Blurbs/TheClassics_Blurb13.mp3?gain=0.5751",
+        "audio/Classical Blurbs/TheClassics_Blurb12.mp3?gain=0.6262",
+        "audio/Classical Blurbs/TheClassics_Blurb11.mp3?gain=0.4809",
+        "audio/Classical Blurbs/TheClassics_Blurb1.mp3?gain=0.5402"
     ],
     "classicalMusic":[
         "audio/Classical Music/André Dubois - Calming Erawan.mp3?gain=0.3931",
@@ -659,20 +703,19 @@
         "audio/NITW/The Long Fall.mp3?gain=0.3554"
     ],
     "Hatkid_SpaceHub":[
-        "audio/AHIT_SpaceHub/Hub Main Mastered.mp3?gain=0.6221",
-        "audio/AHIT_SpaceHub/Hubworld ActSelect Conductor Loop.mp3?gain=0.4860",
-        "audio/AHIT_SpaceHub/Hubworld ActSelect DJ Grooves Loop.mp3?gain=0.3996",
-        "audio/AHIT_SpaceHub/HubWorld CiorgiGame Variation.mp3?gain=0.3732",
-        "audio/AHIT_SpaceHub/HubWorld SecretPillowHideoutRoom Variation.mp3?gain=0.7449",
+        "audio/AHIT_SpaceHub/spaceship near telescope.mp3?gain=0.4001",
+        "audio/AHIT_SpaceHub/spaceship mailroom loop.mp3?gain=0.2235",
+        "audio/AHIT_SpaceHub/spaceship mailroom close.mp3?gain=0.3964",
+        "audio/AHIT_SpaceHub/spaceship mafiaboss loop.mp3?gain=0.2906",
+        "audio/AHIT_SpaceHub/spaceship mafiaboss close loop.mp3?gain=0.3789",
+        "audio/AHIT_SpaceHub/spaceship hub marching loop.mp3?gain=0.3698",
         "audio/AHIT_SpaceHub/spaceship decorationmode loop.mp3?gain=0.4249",
         "audio/AHIT_SpaceHub/Spaceship Hub Gallery Loop.mp3?gain=0.5416",
-        "audio/AHIT_SpaceHub/spaceship hub marching loop.mp3?gain=0.369",
-        "audio/AHIT_SpaceHub/spaceship mafiaboss close loop.mp3?gain=0.3789",
-        "audio/AHIT_SpaceHub/spaceship mafiaboss loop.mp3?gain=0.2906",
-        "audio/AHIT_SpaceHub/spaceship mailroom close.mp3?gain=0.3964",
-        "audio/AHIT_SpaceHub/spaceship mailroom loop.mp3?gain=0.2235",
-        "audio/AHIT_SpaceHub/spaceship near telescope.mp3?gain=0.4001"
+        "audio/AHIT_SpaceHub/Hubworld ActSelect DJ Grooves Loop.mp3?gain=0.3996",
+        "audio/AHIT_SpaceHub/Hubworld ActSelect Conductor Loop.mp3?gain=0.4860",
+        "audio/AHIT_SpaceHub/HubWorld SecretPillowHideoutRoom Variation.mp3?gain=0.7449",
+        "audio/AHIT_SpaceHub/HubWorld CiorgiGame Variation.mp3?gain=0.3732",
+        "audio/AHIT_SpaceHub/Hub Main Mastered.mp3?gain=0.6221"
     ]
 }
-
 

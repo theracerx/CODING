@@ -52,6 +52,10 @@
             commercial: [...data.commercial, ...data.goldFMBlurbs, ...data.goldFMTalks],
             commercialFreq:{min:1,max:3}
         },
+        {   name:"Cities Radio",
+            music: [...data.citiesMusic],
+            commercial: [...data.commercial, ...data.citiesBlurbs, ...data.citiesTalks]
+        },
         {   name: "New Vegas",
             music:[...data.rnvMusic],
             commercial:[...data.rnvHello, ...data.rnvIntroG],
@@ -116,7 +120,12 @@
             gapless:true
         }
     ]
-
+    let stations2 = [
+        {   name: "HatKid SpaceHub",
+            music:[...data.Hatkid_SpaceHub],
+            gapless:true
+        }
+    ]
     let radio = document.getElementById("rad")
     radio.stations = stations
     window.timeChkStatus = {
@@ -125,21 +134,22 @@
         secondQtr:false,
         thirdQtr:false
     }
-    radio.onRadioReady = ()=>{ //enables audioElem to play balanced audio
+    radio.onready = ()=>{ //enables audioElem to play balanced audio
         console.log("RADIO READY")
         let stations = radio.getElementsByTagName("audio")
         for(let i=0;i<stations.length;i++){
+            console.log(stations[i])
             stations[i].setupNormalizedPlayer()
         }
     }
     radio.onwait = ()=>{
-        // console.log("WAITING")
+        console.log("WAITING")
     }
     radio.onpause = ()=>{
-        // console.log("PAUSED")
+        console.log("PAUSED")
     }
     radio.onend = ()=>{
-        // console.log("ENDED")
+        console.log("ENDED")
 
         if(Math.floor(Math.random() * 600))return       
         radio.interrupt()
@@ -211,7 +221,7 @@
     
     }
     radio.onplay = ()=>{
-        // console.log("PLAYED")
+        console.log("PLAYED")
     }
     radio.ontimeupdate = (e)=>{
         // console.log(24)
