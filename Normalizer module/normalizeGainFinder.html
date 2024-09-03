@@ -126,6 +126,7 @@
     </div>
 
     <marquee>ඞඞඞ not 100% accurate ඞඞඞ </marquee>
+    <marquee direction="right">ඞඞඞ NO SPECIAL CHARACTERS PLS!!!ඞඞඞ </marquee>
 
     <button id="normalizeBtn" onclick="checkUploads()"> >>> <strong>Normalize</strong> <<< </button>
     <span id="arrCount" data-count="0"></span>
@@ -168,6 +169,9 @@ var audGainNode
 var audSrcNode0
 var audSrcNode1
 var eventSetup
+var processAud
+var processedAud
+
 
 function start(){
     document.getElementById("startScreen").remove()
@@ -177,6 +181,7 @@ async function checkUploads(){
     window.audioCtx = new AudioContext()
     let uploads = document.getElementById("uploadBin")
     let arrCount = document.getElementById("arrCount")
+    let codeStash = document.getElementById("codeStash")
     if (uploads.files.length !=0){
         document.getElementById("normalizeBtn").disabled = true
         document.getElementById("uploadBin").disabled = true
@@ -184,36 +189,47 @@ async function checkUploads(){
 
         arrCount.textContent = "converting (0/" + (limit) + ")"
         arrCount.dataset.max = limit
-        arrCount.dataset.count = 0
+        arrCount.dataset.count = processAud = processedAud = 0
 
+        codeStash.array = []
 
         let i = 0;
+        // let errCount = 0
         let test = (i)=>{
             return new Promise ((resolve)=>{
                 setTimeout(async ()=>{
-                    let arr = document.getElementById("codeStash").innerText.split(",")
-                    if(arr.length != (i+1)){
-                        // console.log("not done")
+
+
+                    // let arr = document.getElementById("codeStash").innerText.split(`",`)
+
+
+                    // console.log(processAud,processedAud)
+                    if(processedAud != processAud){
+                        console.log("not done")
                         await test(i)
                         resolve()
                     } else {
-                        // console.log("done")
-                        nextArray()
+                        console.log("done")
                         resolve()
                     }
                 }, 500)
             })
         }
         while (i < limit) {
-            console.log(i)
+            console.log("-------------------")
+            console.log("pos" + i)
+            nextArray()
+            processAud++
             await test(i)
             i++
         }
 
-        let arr = document.getElementById("codeStash").innerText.split(",")
-        if(arr.length != limit){
+        let arr = document.getElementById("codeStash").innerText.split(`",`)
+        if(arr.length != limit + 1){ //1 due to split adding and empty item like "" only
             alert("ERROR ERROR")
         } else {
+            console.log("-------------------")
+            console.log("FINISHED")
             arrCount.remove()
             let list = [...document.getElementsByClassName("tempHidden")]
             for(let i=0;i<list.length;i++){
@@ -221,7 +237,9 @@ async function checkUploads(){
             }
 
             document.getElementById("codeStashHead").textContent = "History (" + limit + ") :"
-            console.log("CONVERSION DONE")
+            let finish = new Audio("finish.mp3")
+            finish.volume = 0.5
+            finish.play()
         }
     
     
@@ -234,7 +252,6 @@ function convert(obj){
     let src = URL.createObjectURL(obj)
     let player = document.getElementsByTagName("audio")
     let normalGain
-
     player[0].src = src
     fetch(player[0].src)
     .then(res => res.blob())
@@ -284,10 +301,11 @@ function convert(obj){
                 path = path + "/"
             }
             stash.textContent = stash.textContent + `"` + path + url + `",`
-            
+            stash.array.push(`"` + path + url + `"`)
             // dl.textContent = `"` + path + url + `",`
             // stash2.append(dl)
         }
+
 
         //set AudioSourceNode
         if(!audSrcNode0){
@@ -325,6 +343,7 @@ function convert(obj){
         let audBtns = document.getElementById("audioSelectCont")
         audBtns.append(nBtn)
         audBtns.append(br)
+
 
 
 
@@ -399,7 +418,8 @@ function convert(obj){
             })
         
         }
-
+        console.log("convert FINISH")
+        processedAud++
     })
 }
 function nextArray(){
@@ -446,15 +466,14 @@ function updateGainFinal(){
 }
 
 function sortHistoryDown(){
-    let arr = document.getElementById("codeStash").innerText.split(",")
-    if(arr.length)
+    let arr = document.getElementById("codeStash").array
     arr.sort().reverse()
-    document.getElementById("codeStash").innerText = arr.join(",")
+    document.getElementById("codeStash").innerText = arr.join(`,`)
 }
 function sortHistoryUp(){
-    let arr = document.getElementById("codeStash").innerText.split(",")
+    let arr = document.getElementById("codeStash").array
     arr.sort()
-    document.getElementById("codeStash").innerText = arr.join(",")
+    document.getElementById("codeStash").innerText = arr.join(`,`)
 }
 function copyHistory(){
     let stash = document.getElementById("codeStash").innerText
