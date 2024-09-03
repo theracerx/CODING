@@ -1,0 +1,323 @@
+accu-weather {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fff;
+  background: #000;
+  width: 100%;
+  height: 100%;
+  display: flex !important;
+  justify-content: flex-start;
+  align-items: center;
+  /*     & > .generalCont{
+          display:block;
+          width:100%;
+          height:50%;
+
+          & > .generalInfo1{
+              float:left;
+              width:40%;
+              height:100%;
+              overflow:hidden;
+              box-sizing:border-box;
+
+              & >.imgCont{
+                  float: left ;
+                  height: 100% ;
+                  width: 50% ;
+                  display: flex ;
+                  align-items : center ;
+                  flex-direction : column; 
+
+                  & > img {
+                      display: flex ;
+                      justify-content : center ;
+                      flex-direction : column ;
+                      height : 100% ;
+                  }
+              }
+              & >.imgDesc{
+                  float: right ;
+                  height: 100% ;
+                  width: 50% ;
+                  display: flex ;
+                  align-items : center ;
+                  flex-direction : column ;
+
+                  & > div {
+                      display: flex ;
+                      justify-content : center ;
+                      flex-direction : column ;
+                      min-height : 100% ;
+
+                      p {
+                          margin: 0 auto;
+
+                          &:first-of-type{
+                              font-size: 6rem;
+                          }
+                          &:last-of-type{
+                              font-size: 1.75rem;
+                          }
+                      }
+                      span{
+                           font-size : 2.5rem;
+                           margin-left : -2rem 
+                      }
+                  }
+              }
+
+          }
+      }
+
+      & > .generalContUpdate{
+          & > .generalInfo1{
+              & > .imgCont{
+                  & > img:first-of-type{
+                      height: 0%;
+                      transition: all 1s cubic-bezier(0.68, -0.6, 0.32, 1.6) ;
+                  }
+              }
+              & > .imgDesc{
+                  & > div:first-of-type{
+                      min-height: 0%;
+                      transition: all 1s cubic-bezier(0.68, -0.6, 0.32, 1.6) ;
+                      p, span{
+                          transition: all 1s cubic-bezier(0.68, -0.6, 0.32, 1.6) ;
+                          font-size: 0rem;
+                      }
+                  }
+              }
+          }
+
+      } */
+}
+accu-weather > .generalInfo1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+  height: 100%;
+}
+accu-weather > .generalInfo1 > img {
+  height: auto;
+  width: 100%;
+  scale: 2;
+}
+accu-weather > .generalInfo2 {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  width: 22.5%;
+  height: 100%;
+  border-right: 1px solid white;
+  -o-border-image: linear-gradient(rgba(0, 0, 0, 0), white, white, rgba(0, 0, 0, 0)) 0 100%;
+     border-image: linear-gradient(rgba(0, 0, 0, 0), white, white, rgba(0, 0, 0, 0)) 0 100%;
+  padding-right: 2.5%;
+}
+accu-weather > .generalInfo2 > .imgIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  margin-top: 30%;
+}
+accu-weather > .generalInfo2 > .imgIcon > img {
+  width: 0%;
+  scale: 0;
+}
+accu-weather > .generalInfo2 > .imgIcon > img:first-of-type {
+  width: 100%;
+  scale: 1;
+  transition: scale 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+accu-weather > .generalInfo2 > .imgDesc {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+}
+accu-weather > .generalInfo2 > .imgDesc div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+accu-weather > .generalInfo2 > .imgDesc div p {
+  margin: 0 auto;
+}
+accu-weather > .generalInfo2 > .imgDesc div p:first-of-type {
+  font-size: 8rem;
+}
+accu-weather > .generalInfo2 > .imgDesc div p:last-of-type {
+  font-size: 3rem;
+}
+accu-weather > .generalInfo2 > .imgDesc div span {
+  font-size: 3rem;
+  margin-left: -2.5rem;
+  color: #686763;
+}
+accu-weather > .generalInfo3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 55%;
+  height: 100%;
+  font-weight: bold;
+}
+accu-weather > .generalInfo3 > .miscCont {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50%;
+  width: 100%;
+  border-width: 0;
+  border-bottom: 2px solid white;
+  -o-border-image: radial-gradient(white, rgba(0, 0, 0, 0)) 70 30;
+     border-image: radial-gradient(white, rgba(0, 0, 0, 0)) 70 30;
+}
+accu-weather > .generalInfo3 > .miscCont > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  width: 50%;
+  text-align: center;
+}
+accu-weather > .generalInfo3 > .miscCont > div:first-of-type {
+  margin-left: 1.25%;
+  margin-right: 1.25%;
+  border-right: 1px solid white;
+  -o-border-image: linear-gradient(rgba(0, 0, 0, 0), white, white, rgba(0, 0, 0, 0)) 0 100%;
+     border-image: linear-gradient(rgba(0, 0, 0, 0), white, white, rgba(0, 0, 0, 0)) 0 100%;
+}
+accu-weather > .generalInfo3 > .miscCont > div > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50%;
+  width: 100%;
+}
+accu-weather > .generalInfo3 > .miscCont > div > div > .imgIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 40%;
+}
+accu-weather > .generalInfo3 > .miscCont > div > div > .imgIcon img {
+  height: auto;
+  width: 100%;
+}
+accu-weather > .generalInfo3 > .miscCont > div > div > .imgDesc {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 60%;
+  font-size: 2rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div > div > .cDateStatus {
+  font-size: 8rem;
+  text-decoration: underline;
+  text-decoration-color: #2077c3;
+}
+accu-weather > .generalInfo3 > .miscCont > div .windSpeed .Calm::before {
+  content: "Calm";
+  font-size: 3rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .windSpeed .Breeze::before {
+  content: "Breeze";
+  font-size: 2.75rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .windSpeed .Strong::before {
+  content: "Strong";
+  font-size: 3.25rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .windSpeed .Gale::before {
+  content: "Gale";
+  font-size: 4rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .windSpeed .Storm::before {
+  content: "Storm";
+  font-size: 3.5rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .windSpeed .Typhoon::before {
+  content: "Typhoon";
+  font-size: 2.5rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .rainChance .High::before {
+  content: "High Chance";
+  font-size: 3rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .rainChance .Likely::before {
+  content: "Likely";
+  font-size: 3.5rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .rainChance .Low::before {
+  content: "Low Chance";
+  font-size: 2.5rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .rainChance .Unlikely::before {
+  content: "Very Low";
+  font-size: 3.5rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .uvIndex .Extreme::before {
+  content: "Extreme";
+  font-size: 3rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .uvIndex .VeryHigh::before {
+  content: "Very High";
+  font-size: 3rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .uvIndex .High::before {
+  content: "High";
+  font-size: 4rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .uvIndex .Moderate::before {
+  content: "Moderate";
+  font-size: 2.5rem;
+}
+accu-weather > .generalInfo3 > .miscCont > div .uvIndex .Low::before {
+  content: "Low";
+  font-size: 4rem;
+}
+accu-weather > .generalInfo3 > .hourlyCont {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50%;
+  width: 100%;
+}
+accu-weather > .generalInfo3 > .hourlyCont > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  width: 33%;
+}
+accu-weather > .generalInfo3 > .hourlyCont .imgDesc1 p {
+  font-size: 4rem;
+  margin: 0;
+}
+accu-weather > .generalInfo3 > .hourlyCont .imgIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+accu-weather > .generalInfo3 > .hourlyCont .imgIcon img {
+  height: auto;
+  width: 70%;
+}
+accu-weather > .generalInfo3 > .hourlyCont .imgDesc2 p {
+  font-size: 3rem;
+  margin: 0;
+}/*# sourceMappingURL=accuWeatherHomeUseStyle.css.map */
