@@ -10,34 +10,17 @@
     </radio-player>
     <button id="tstBtn" class="radioStartBtn">TEST22</button>
 </body>
-
 <script type="module">
-    import data from "./stations.json" assert {type:"json"}
+    // import data from "./stations.json" with {type:"json"}
+    // import data from "./stations.json"
     import {AudioRadio} from "./radio.js"
     import {addNormalizePlayer} from "../Normalizer module/normalizeplayer.js"
     addNormalizePlayer()
 
-    /* 
-    music - musicArr
-    commercial - commercialArr
-    sponsorship - {intro[],sponsor[],end[],max?}
-    musicIntroSeq - commercial then music
-    musicOutroSeq - music then commercial
-    
-    stations = [
-        {
-            name:"Station1",
-            music:[audArray],
-            commercial:[audArray],
-            musicIntroSeq:[audArray],
-            musicOutroSeq:[audArray],
-            commercialFreq:{min:1,max:2}
-        }
-    ]
-
-    */
-   
-    let stations = [
+    fetch("./stations.json")
+    .then(res=>res.json())
+    .then(data=>{
+        let stations2 = [
         {   name: "Classical",
             music: [...data.classicalMusic,...data.skylineChristmas],
             commercial: [...data.commercial, ...data.classicalBlurbs, ...data.classicalTalks],
@@ -57,18 +40,12 @@
             commercial: [...data.commercial, ...data.citiesBlurbs, ...data.citiesTalks]
         },
         {   name: "New Vegas",
-            music:[...data.rnvMusic],
+            music:[...data.rnvMusic,...data.rnvIntroS],
             commercial:[...data.rnvHello, ...data.rnvIntroG],
-            musicIntroSeq: data.rnvIntroS,
             commercialFreq:{min:1,max:3}
         },
         {   name: "Diamond City",
-            music:[...data.dcrMusic],
-            commercial:[...data.dcrIntroG],
-            sponsorship:[
-                ...data.dcrIntroGS,
-            ],
-            musicIntroSeq:[
+            music:[...data.dcrMusic,
                 ...data.dcrIntroBettyHutton,
                 ...data.dcrIntroBigMaybelle,
                 ...data.dcrIntroBillieHoliday,
@@ -93,9 +70,7 @@
                 ...data.dcrIntroTheInkSpots,
                 ...data.dcrIntroTheThreeSuns,
                 ...data.dcrIntroWarrenSmith,
-                ...data.dcrIntroWynonieHarris
-            ],
-            musicOutroSeq:[
+                ...data.dcrIntroWynonieHarris,
                 ...data.dcrOutroBigMaybelle,
                 ...data.dcrOutroBillieHoliday,
                 ...data.dcrOutroBingCrosby,
@@ -110,6 +85,7 @@
                 ...data.dcrOutroTheInkSpots,
                 ...data.dcrOutroTexBeneke,
             ],
+            commercial:[...data.dcrIntroG,...data.dcrIntroGS],
             commercialFreq:{min:1,max:3}
         },
         {   name: "Possum Springs",
@@ -118,115 +94,154 @@
         {   name: "HatKid SpaceHub",
             music:[...data.Hatkid_SpaceHub],
             gapless:true
-        }
-    ]
-    let stations2 = [
-        {   name: "HatKid SpaceHub",
-            music:[...data.Hatkid_SpaceHub],
-            gapless:true
-        }
-    ]
-    let radio = document.getElementById("rad")
-    radio.stations = stations
-    window.timeChkStatus = {
-        hour: new Date().getHours(),
-        firstQtr:false,
-        secondQtr:false,
-        thirdQtr:false
-    }
-    radio.onready = ()=>{ //enables audioElem to play balanced audio
-        console.log("RADIO READY")
-        let stations = radio.getElementsByTagName("audio")
-        for(let i=0;i<stations.length;i++){
-            console.log(stations[i])
-            stations[i].setupNormalizedPlayer()
-        }
-    }
-    radio.onwait = ()=>{
-        console.log("WAITING")
-    }
-    radio.onpause = ()=>{
-        console.log("PAUSED")
-    }
-    radio.onend = ()=>{
-        console.log("ENDED")
-
-        if(Math.floor(Math.random() * 600))return       
-        radio.interrupt()
-
-        let synth = window.speechSynthesis
-        let voices = synth.getVoices()
-        const update = new SpeechSynthesisUtterance()
-        
-        let d = new Date()
-        let HH = d.getHours() > 12 ? d.getHours() - 12 : d.getHours() == 0 ? 12 : d.getHours()
-        let MM = d.getMinutes()
-        
-        let chkTime = ()=>{
-            let partOfTheDay
-            if(d.getHours() >= 5 && d.getHours() < 12){ //morning
-                partOfTheDay = " in the morning"
-            } else if (d.getHours() >= 12 && d.getHours() < 18){ //afternoon
-                partOfTheDay = " in the afternoon"
-            } else if (d.getHours() >= 18 && d.getHours() < 20){ //evening
-                partOfTheDay = " in the evening"
-            } else { //night
-                partOfTheDay = " at night"
-            }
-
-            update.text = "It is now, " + HH + ", " + MM + partOfTheDay
-            update.onend = ()=>{
-                // console.log("SYNTH DONE")
-                radio.resume()
-                update.onend = ()=>{}
-            }
-            synth.speak(update)
-        }
-        if(MM <= 15 && !window.timeChkStatus.firstQtr){ //ex 5:03 3 minutes past 5 oclock
-            window.timeChkStatus.firstQtr = true
-            chkTime()
-        } else if (MM >= 45 && !window.timeChkStatus.thirdQtr){ //ex 5:53 7 minutes before 6 oclock
-            window.timeChkStatus.thirdQtr = true
-            chkTime()
-        } else if (MM > 15 && MM < 45 && !window.timeChkStatus.secondQtr){ // for time mostly between 16-44 minutes
-            window.timeChkStatus.secondQtr = true
-            chkTime()
-        } else {
-            
-            if(HH <= window.timeChkStatus.hour){
-                // console.log("duplicate Timechk prevented")
-                radio.resume()
-                update.onend = ()=>{}
-                return null
-            } else {
-                // console.log("reseting")
-                window.timeChkStatus = {
-                    firstQtr:false,
-                    secondQtr:false,
-                    thirdQtr:false
-                }
-                if(MM <= 15){ //ex 5:03 3 minutes past 5 oclock
-                    window.timeChkStatus.firstQtr = true
-                    chkTime()
-                } else if (MM >= 45){ //ex 5:53 7 minutes before 6 oclock
-                    window.timeChkStatus.thirdQtr = true
-                    chkTime()
-                } else { // for time mostly between 16-44 minutes
-                    window.timeChkStatus.secondQtr = true
-                    chkTime()
-                }
-            }
-
+        },
+        {   name:"Anime Chill",
+            music:[...data.Anime_Chill],
+        },
+        {   name:"OneShot",
+            music:[...data.OneShot]
+        },
+        {   name:"Undertale",
+            music:[...data.Undertale]
+        },
+        {   name:"My Little Pony",
+            music:[...data.mlpFIM,...data.mlpEQG]
+        },
+        {   name:"TF2",
+            music:[...data.TF2]
+        },
+        {   name:"A Hat in Time",
+            music:[...data["A Hat in Time - Soundtrack"],...data.Hatkid_SpaceHub]
         }
     
-    }
-    radio.onplay = ()=>{
-        console.log("PLAYED")
-    }
-    radio.ontimeupdate = (e)=>{
-        // console.log(24)
-        // console.log(e)
-    }
+        ]
+        let radio = document.getElementById("rad")
+        radio.stations = stations2
+        window.timeChkStatus = {
+            hour: new Date().getHours(),
+            firstQtr:false,
+            secondQtr:false,
+            thirdQtr:false
+        }
+        radio.onready = ()=>{ //enables audioElem to play balanced audio
+            // console.log("RADIO READY")
+            let stations = radio.getElementsByTagName("audio")
+            for(let i=0;i<stations.length;i++){
+                stations[i].setupNormalizedPlayer()
+            }
+        }
+        radio.onwait = ()=>{
+            // console.log("WAITING")
+        }
+        radio.onpause = ()=>{
+            // console.log("PAUSED")
+        }
+        radio.onend = ()=>{
+            // console.log("ENDED")
+
+            if(Math.floor(Math.random() * 600))return       
+            radio.interrupt()
+
+            let synth = window.speechSynthesis
+            let voices = synth.getVoices()
+            const update = new SpeechSynthesisUtterance()
+            
+            let d = new Date()
+            let HH = d.getHours() > 12 ? d.getHours() - 12 : d.getHours() == 0 ? 12 : d.getHours()
+            let MM = d.getMinutes()
+            
+            let chkTime = ()=>{
+                let partOfTheDay
+                if(d.getHours() >= 5 && d.getHours() < 12){ //morning
+                    partOfTheDay = " in the morning"
+                } else if (d.getHours() >= 12 && d.getHours() < 18){ //afternoon
+                    partOfTheDay = " in the afternoon"
+                } else if (d.getHours() >= 18 && d.getHours() < 20){ //evening
+                    partOfTheDay = " in the evening"
+                } else { //night
+                    partOfTheDay = " at night"
+                }
+
+                update.text = "It is now, " + HH + ", " + MM + partOfTheDay
+                update.onend = ()=>{
+                    // console.log("SYNTH DONE")
+                    radio.resume()
+                    update.onend = ()=>{}
+                }
+                synth.speak(update)
+            }
+            if(MM <= 15 && !window.timeChkStatus.firstQtr){ //ex 5:03 3 minutes past 5 oclock
+                window.timeChkStatus.firstQtr = true
+                chkTime()
+            } else if (MM >= 45 && !window.timeChkStatus.thirdQtr){ //ex 5:53 7 minutes before 6 oclock
+                window.timeChkStatus.thirdQtr = true
+                chkTime()
+            } else if (MM > 15 && MM < 45 && !window.timeChkStatus.secondQtr){ // for time mostly between 16-44 minutes
+                window.timeChkStatus.secondQtr = true
+                chkTime()
+            } else {
+                
+                if(HH <= window.timeChkStatus.hour){
+                    // console.log("duplicate Timechk prevented")
+                    radio.resume()
+                    update.onend = ()=>{}
+                    return null
+                } else {
+                    // console.log("reseting")
+                    window.timeChkStatus = {
+                        firstQtr:false,
+                        secondQtr:false,
+                        thirdQtr:false
+                    }
+                    if(MM <= 15){ //ex 5:03 3 minutes past 5 oclock
+                        window.timeChkStatus.firstQtr = true
+                        chkTime()
+                    } else if (MM >= 45){ //ex 5:53 7 minutes before 6 oclock
+                        window.timeChkStatus.thirdQtr = true
+                        chkTime()
+                    } else { // for time mostly between 16-44 minutes
+                        window.timeChkStatus.secondQtr = true
+                        chkTime()
+                    }
+                }
+
+            }
+        
+        }
+        radio.onplay = ()=>{
+            // console.log("PLAYED")
+        }
+        radio.ontimeupdate = (e)=>{
+            // console.log(24)
+            // console.log(e)
+        }
+
+
+    })
+
+
+
+    /* 
+    music - musicArr
+    commercial - commercialArr
+    sponsorship - {intro[],sponsor[],end[],max?}
+    musicIntroSeq - commercial then music
+    musicOutroSeq - music then commercial
+    
+    stations = [
+        {
+            name:"Station1",
+            music:[audArray],
+            commercial:[audArray],
+            musicIntroSeq:[audArray],
+            musicOutroSeq:[audArray],
+            commercialFreq:{min:1,max:2}
+        }
+    ]
+
+    */
+   
+    
 </script>
 
 </html>
