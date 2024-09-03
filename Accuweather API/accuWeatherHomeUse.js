@@ -1,3 +1,4 @@
+// import "./accuWeatherHomeUseStyle.css"
 export class AccuWeather extends HTMLElement {
     apiKey = "";
     locKey = "";
@@ -1706,40 +1707,42 @@ export class AccuWeather extends HTMLElement {
         console.log(this.apiReq);
         this.loadStyles();
     }
-    loadStyles() {
+    async loadStyles() {
         let style = this.newElem("link", {
             props: {
                 rel: "stylesheet",
-                href: 'http://127.0.0.1:5500/Accuweather%20API/accuWeatherHomeUseStyle.css',
-                // href:"./accuWeatherHomeUseStyle.css",
+                // href:'http://127.0.0.1:5500/Accuweather%20API/accuWeatherHomeUseStyle.css',
+                href: "./accuWeatherHomeUseStyle.css",
             },
             appendTo: document.head
         });
-        this.getHrlyForecast();
+        await this.getHrlyForecast();
+        this.setupDashboard();
     }
     async getHrlyForecast() {
-        this.data.hourlyForecast12hrs = [...this.sampHrlyForecast];
-        // this.data.hourlyForecast12hrs = this.sampHrlyForecast
-        /*  let apiResp = await fetch(this.apiReq.hourlyForecast12hrs)
-         let res = await apiResp.json()
-         console.log(res)
-         res.forEach((obj:any)=>{
-             this.data.hourlyForecast12hrs.push({
-                 time:this.getTime(new Date(obj.DateTime).getHours())!,
-                 date:new Date(obj.DateTime).getDate(),
-                 dayIconSrc:this.getDayIcon(new Date(obj.DateTime).getDay())!,
-                 iconSrc: "https://www.awxcdn.com/adc-assets/images/weathericons/" + obj.WeatherIcon+ ".svg",
-                 status:obj.IconPhrase,
-                 temperature: Math.round(obj.Temperature.Value),
-                 heatIndex: Math.round(obj.RealFeelTemperature.Value),
-                 windSpeed: this.getBeaufortScale(res[0].Wind.Speed.Value)!,
-                 rainChance: this.getRainStatus(obj.PrecipitationProbability)!,
-                 rainValue: obj.Rain.Value,
-                 uvIndex:this.getUVIndex(obj.UVIndex)!,
-             })
-         }) */
-        console.log(this.data.hourlyForecast12hrs);
-        this.setupDashboard();
+        return new Promise((resolve) => {
+            this.data.hourlyForecast12hrs = [...this.sampHrlyForecast];
+            /*  let apiResp = await fetch(this.apiReq.hourlyForecast12hrs)
+             let res = await apiResp.json()
+             console.log(res)
+             res.forEach((obj:any)=>{
+                 this.data.hourlyForecast12hrs.push({
+                     time:this.getTime(new Date(obj.DateTime).getHours())!,
+                     date:new Date(obj.DateTime).getDate(),
+                     dayIconSrc:this.getDayIcon(new Date(obj.DateTime).getDay())!,
+                     iconSrc: "https://www.awxcdn.com/adc-assets/images/weathericons/" + obj.WeatherIcon+ ".svg",
+                     status:obj.IconPhrase,
+                     temperature: Math.round(obj.Temperature.Value),
+                     heatIndex: Math.round(obj.RealFeelTemperature.Value),
+                     windSpeed: this.getBeaufortScale(res[0].Wind.Speed.Value)!,
+                     rainChance: this.getRainStatus(obj.PrecipitationProbability)!,
+                     rainValue: obj.Rain.Value,
+                     uvIndex:this.getUVIndex(obj.UVIndex)!,
+                 })
+             }) */
+            console.log(this.data.hourlyForecast12hrs);
+            resolve();
+        });
     }
     setupDashboard() {
         this.append(this.hourlyForecast);
@@ -1751,37 +1754,33 @@ export class AccuWeather extends HTMLElement {
         this.setupGeneralInfo3Lower();
     }
     setupGeneralInfo1() {
-        let img = this.newElem("img", {
-            props: {
-                src: "https://www.awxcdn.com/adc-assets/images/weathericons/30.svg"
-            },
-            appendTo: this.generalInfo1
-        });
+        let img = this.newElem("img", { appendTo: this.generalInfo1 });
         this.generalInfo1.update = () => {
-            if (this.data.hourlyForecast12hrs[0].temperature > this.data.hourlyForecast12hrs[1].temperature) {
-                this.addPEAS(img, {
-                    props: {
-                        src: "https://www.awxcdn.com/adc-assets/images/weathericons/31.svg",
-                    }
-                });
-            }
-            else if (this.data.hourlyForecast12hrs[0].temperature < this.data.hourlyForecast12hrs[1].temperature) {
+            console.log(this.data.hourlyForecast12hrs[0].temperature);
+            console.log(this.data.hourlyForecast12hrs[1].temperature);
+            if (this.data.hourlyForecast12hrs[0].temperature >= 29) {
                 this.addPEAS(img, {
                     props: {
                         src: "https://www.awxcdn.com/adc-assets/images/weathericons/30.svg",
                     }
                 });
             }
-            else
-                throw new Error("failed to update generalInfo1");
+            else if (this.data.hourlyForecast12hrs[0].temperature <= 28) {
+                this.addPEAS(img, {
+                    props: {
+                        src: "https://www.awxcdn.com/adc-assets/images/weathericons/31.svg",
+                    }
+                });
+            }
         };
+        this.generalInfo1.update();
     }
     setupGeneralInfo2() {
         let imgIcon = this.newElem("div", { props: { className: "imgIcon" }, appendTo: this.generalInfo2 });
         let imgDesc = this.newElem("div", { props: { className: "imgDesc" }, appendTo: this.generalInfo2 });
         let img = this.newElem("img", {
             props: {
-                src: "https://www.awxcdn.com/adc-assets/images/weathericons/6.svg"
+                src: this.data.hourlyForecast12hrs[0].iconSrc
             },
             appendTo: imgIcon
         });
@@ -1816,8 +1815,7 @@ export class AccuWeather extends HTMLElement {
         let windSpeedStatus = this.newElem("div", { props: { className: "imgDesc" }, appendTo: windSpeed });
         let status1 = this.newElem("p", { props: { className: this.data.hourlyForecast12hrs[0].windSpeed }, appendTo: windSpeedStatus });
         let rainChanceIcon = this.newElem("div", { props: { className: "imgIcon" }, appendTo: rainChance });
-        // let img2 = this.newElem("img",{props:{src:"/rain-svgrepo-com.svg"},appendTo:rainChanceIcon})
-        let img2 = this.newElem("img", { props: { src: "http://127.0.0.1:5500/Accuweather%20API/rain-svgrepo-com.svg" }, appendTo: rainChanceIcon });
+        let img2 = this.newElem("img", { props: { src: "https://main--imghosting4me.netlify.app/rain-svgrepo-com.svg" }, appendTo: rainChanceIcon });
         let rainChanceStatus = this.newElem("div", { props: { className: "imgDesc" }, appendTo: rainChance });
         let status2 = this.newElem("p", { props: { className: this.data.hourlyForecast12hrs[0].rainChance }, appendTo: rainChanceStatus });
         //------------------------- part2 ------------------------------
@@ -1829,8 +1827,7 @@ export class AccuWeather extends HTMLElement {
         let cDateStatus = this.newElem("div", { props: { className: "imgDesc cDateStatus" }, appendTo: cDate });
         let status3 = this.newElem("p", { props: { innerText: this.data.hourlyForecast12hrs[0].date }, appendTo: cDateStatus });
         let uvIndexIcon = this.newElem("div", { props: { className: "imgIcon" }, appendTo: uvIndex });
-        // let img4 = this.newElem("img",{props:{src:"/uv-index-alt-svgrepo-com.svg"},appendTo:uvIndexIcon})
-        let img4 = this.newElem("img", { props: { src: "http://127.0.0.1:5500/Accuweather%20API/uv-index-alt-svgrepo-com.svg" }, appendTo: uvIndexIcon });
+        let img4 = this.newElem("img", { props: { src: "https://main--imghosting4me.netlify.app/uv-index-alt-svgrepo-com.svg" }, appendTo: uvIndexIcon });
         let uvIndexStatus = this.newElem("div", { props: { className: "imgDesc" }, appendTo: uvIndex });
         let status4 = this.newElem("p", { props: { className: this.data.hourlyForecast12hrs[0].uvIndex }, appendTo: uvIndexStatus });
         this.generalInfo3.updateUpper = () => {
@@ -1922,9 +1919,20 @@ export class AccuWeather extends HTMLElement {
         };
     }
     setupAutoUpdate() {
-        setInterval(() => {
+        setInterval(async () => {
             let d = new Date();
             if (d.getMinutes() == 0) {
+                console.log("HOUR CHANGE DETECTED");
+                if (d.getHours() % 5 == 0) {
+                    await this.getHrlyForecast();
+                }
+                else {
+                    this.data.hourlyForecast12hrs.shift();
+                }
+                this.generalInfo1.update();
+                this.generalInfo2.update();
+                this.generalInfo3.updateUpper();
+                this.generalInfo3.updateLower();
             }
         });
     }
@@ -1996,25 +2004,25 @@ export class AccuWeather extends HTMLElement {
     }
     getDayIcon(i) {
         if (i == 0) {
-            return "http://127.0.0.1:5500/Accuweather%20API/sunday-svgrepo-com.svg";
+            return "https://main--imghosting4me.netlify.app/sunday-svgrepo-com.svg";
         }
         else if (i == 1) {
-            return "http://127.0.0.1:5500/Accuweather%20API/monday-svgrepo-com.svg";
+            return "https://main--imghosting4me.netlify.app/monday-svgrepo-com.svg";
         }
         else if (i == 2) {
-            return "http://127.0.0.1:5500/Accuweather%20API/tuesday-svgrepo-com.svg";
+            return "https://main--imghosting4me.netlify.app/tuesday-svgrepo-com.svg";
         }
         else if (i == 3) {
-            return "http://127.0.0.1:5500/Accuweather%20API/wednesday-svgrepo-com.svg";
+            return "https://main--imghosting4me.netlify.app/wednesday-svgrepo-com.svg";
         }
         else if (i == 4) {
-            return "http://127.0.0.1:5500/Accuweather%20API/thursday-svgrepo-com.svg";
+            return "https://main--imghosting4me.netlify.app/thursday-svgrepo-com.svg";
         }
         else if (i == 5) {
-            return "http://127.0.0.1:5500/Accuweather%20API/friday-svgrepo-com.svg";
+            return "https://main--imghosting4me.netlify.app/friday-svgrepo-com.svg";
         }
         else if (i == 6) {
-            return "http://127.0.0.1:5500/Accuweather%20API/saturday-svgrepo-com.svg";
+            return "https://main--imghosting4me.netlify.app/saturday-svgrepo-com.svg";
         }
     }
     getTime(i) {
@@ -2182,167 +2190,6 @@ export class AccuWeather extends HTMLElement {
         if (obj.appendTo) {
             obj.appendTo.append(elem);
         }
-    }
-    // UNUSED
-    async setupGeneralInfo() {
-        // this.data.currentCondition = this.sampCurCond
-        // this.data.hourlyForecast12hrs = this.sampHrlyForecast
-        /* let apiResp = await fetch(this.apiReq.currentCondition)
-        let res = await apiResp.json()
-        this.data.currentCondition = {
-            status: res[0].WeatherText,
-            iconSrc: "https://www.awxcdn.com/adc-assets/images/weathericons/" + res[0].WeatherIcon+ ".svg",
-            temp: Math.round(res[0].Temperature.Metric.Value) + "\u00B0" ,
-            humidity: res[0].RelativeHumidity,
-            heatIndex: Math.round(res[0].RealFeelTemperature.Metric.Value) + "\u00B0",
-            windSpeed: this.getBeaufortScale(res[0].Wind.Speed.Metric.Value)! ,
-            uvStrength: res[0].UVIndexText,
-            cloudCoverage: res[0].CloudCover + "\u0025"
-        } */
-        // ------------------------------------------------------------------this.generalInfo1------------------------------------------------------------------
-        let imgCont = this.newElem("div", { props: { className: "imgCont" }, appendTo: this.generalInfo1 });
-        let imgDesc = this.newElem("div", { props: { className: "imgDesc" }, appendTo: this.generalInfo1 });
-        /*  this.generalCont.update = ()=>{
-             this.data.hourlyForecast12hrs.forEach((obj:any)=>{
-                 let img = this.newElem("img",{
-                     props:{
-                         src:obj.iconSrc
-                     },
-                     attributes:{
-                         "data-time":obj.time,
-                     },
-                     events:{
-                         "transitionend":()=>{
-                             img.remove()
-                             this.addPEAS(this.generalCont,{props:{className:"generalCont"}})
-                         }
-                     },
-                     appendTo:imgCont
-                 })
- 
-                 let desc = this.newElem("div",{
-                     events:{
-                         "transitionend":()=>{
-                             desc.remove()
-                             this.addPEAS(this.generalCont,{props:{className:"generalCont"}})
-                         }
-                     },
-                     appendTo:imgDesc
-                 })
-                 let temp = this.newElem("p",{
-                     props:{
-                         innerText:obj.temperature
-                     },
-                     appendTo:desc
-                 })
-                 let degree = this.newElem("span",{
-                     props:{
-                         innerText:"C"
-                     },
-                     appendTo:temp
-                 })
-                 let heatIndex = this.newElem("p",{
-                     props:{
-                         innerText:"Feels " + this.data.currentCondition.heatIndex
-                     },
-                     appendTo:desc
-                 })
-             })
-         }
-         this.generalCont.next = ()=>{
-             this.addPEAS(this.generalCont,{props:{className:"generalCont generalContUpdate"}})
-         }
-         this.generalCont.update()
-         setTimeout(()=>this.generalCont.next(),3000)
-          */
-        // ------------------------------------------------------------------this.generalInfo2------------------------------------------------------------------
-        console.log("TO DO: update general info2 to use hourly information");
-        let humidity = this.newElem("p", {
-            props: {
-                innerText: "Humidity " + this.data.currentCondition.humidity
-            },
-            appendTo: this.generalInfo2
-        });
-        let wind = this.newElem("p", {
-            props: {
-                innerText: "Humidity " + this.data.currentCondition.windSpeed
-            },
-            appendTo: this.generalInfo2
-        });
-        let uv = this.newElem("p", {
-            props: {
-                innerText: "UV " + this.data.currentCondition.uvStrength
-            },
-            appendTo: this.generalInfo2
-        });
-        console.log(this.data.currentCondition);
-        // this.setupHrlyForecast()
-    }
-    async setupDailyForecast() {
-        this.data.daily5dayForecast = this.sampDailyForecast;
-        /* let apiResp = await fetch(this.apiReq.daily5dayForecast)
-        let res = await apiResp.json()
-
-        res.DailyForecasts.forEach((obj:any)=>{
-            let d = new Date(obj.Date)
-            let MMDD = (d.getMonth()+1) + "-" + d.getDate()
-            let date = d.toLocaleDateString(undefined,{weekday:"long"})
-            
-            this.data.daily5dayForecast.push({
-                MMDD:MMDD,
-                date:date,
-                iconSrc:"https://www.awxcdn.com/adc-assets/images/weathericons/" + obj.Day.Icon + ".svg",
-                status: obj.Day.IconPhrase,
-                temperature: obj.Temperature.Maximum.Value + "\u00B0",
-                rainChance: obj.Day.PrecipitationProbability + "%"
-            })
-        }) */
-        console.log(this.data.daily5dayForecast);
-        this.setupIndicesForecast();
-    }
-    async setupIndicesForecast() {
-        this.data.indices1Day = this.sampIndicesForecast;
-        /* let apiResp = await fetch(this.apiReq.indices1Day)
-        let res = await apiResp.json()
-
-        console.log(res)
-        let health:any[] = []
-        let outdoor:any[] = []
-        let addIndice = (obj:any,arr:any[],name:string)=>{
-        arr.push({
-            name:name?name:obj.Name,
-            status:obj.Category,
-        })
-        }
-  
-        for(let i=0;i<res.length;i++){
-        let obj = res[i]
-        
-        //health
-        if(obj.ID == 18) addIndice(obj,health,"Dust & Dander") //Dust & Dander chances
-        if(obj.ID == 21) addIndice(obj,health,"Arthritis Pain") //Arthritis Pain chances
-        if(obj.ID == 23) addIndice(obj,health,"Asthma") //Asthma chances
-        if(obj.ID == 25) addIndice(obj,health,"Common Cold") //Common Cold chances
-        if(obj.ID == 26) addIndice(obj,health,"Flu") //Flu chances
-        if(obj.ID == 27) addIndice(obj,health,"Migraine Headache") //Migraine Headache chances
-        if(obj.ID == 30) addIndice(obj,health,"Sinus Headache") //Sinus Headache chances
-        if(obj.ID == 41) addIndice(obj,health,"Dehydration") //Thirst / Dehydration chances
-        //outdoor
-        if(obj.ID == 2) addIndice(obj,outdoor,"Excercise")  //excercise cond
-        if(obj.ID == 12) addIndice(obj,outdoor,"Star visibility") //star visibility cond
-        if(obj.ID == 17) addIndice(obj,outdoor,"Mosquito activity") //mosquito activity cond
-        if(obj.ID == 24) addIndice(obj,outdoor,"Outdoor BBQ") //outdoor bbq cond
-        if(obj.ID == 28) addIndice(obj,outdoor,"Lawn mowing") //lawn mowing cond
-        if(obj.ID == 29) addIndice(obj,outdoor,"Outdoor activity") //outdoor activity cond
-        if(obj.ID == 40) addIndice(obj,outdoor,"Transportation") //transportation cond
-        if(obj.ID == 50) addIndice(obj,outdoor,"Clothes Drying") //clothes drying cond
-        }
-
-        this.data.indices1Day ={
-            health:[...health],
-            outdoor:[...outdoor]
-        } */
-        console.log(this.data.indices1Day);
     }
 }
 customElements.define("accu-weather", AccuWeather);
